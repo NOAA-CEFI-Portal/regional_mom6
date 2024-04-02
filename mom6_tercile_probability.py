@@ -63,7 +63,6 @@ def get_mom6_mask(
 
 
 def get_mom6_raw(
-    iyear : int,
     imonth : int,
     var : str,
 ) -> xr.Dataset:
@@ -210,7 +209,7 @@ if __name__=='__main__':
     ini_year = 2022
     ini_month = 3
     lead_season_index = 3
-    var = 'tos'
+    varname = 'tos'
 
     # getting the regionl mask on mom grid
     ds_lme = get_mom6_regionl_mask()
@@ -219,13 +218,13 @@ if __name__=='__main__':
     da_lmask = get_mom6_mask(mask='wet')
 
     # lazily-loaded the mom6 raw field
-    ds_data = get_mom6_raw(ini_year,ini_month,var)
+    ds_data = get_mom6_raw(imonth=ini_month,var=varname)
 
     # load variable to memory
     da_data = (
         ds_data
         .sel(init=f'{ini_year:04d}-{ini_month:02d}',drop=True).isel(init=0)
-        [var]
+        [varname]
     )
 
     # setup lead bins to average during forecast lead time
