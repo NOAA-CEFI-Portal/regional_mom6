@@ -27,6 +27,8 @@ from dask.distributed import Client
 from mom6_regrid import mom6_encoding_attr
 warnings.simplefilter("ignore")
 
+regrid_var = 'wet'
+
 # %%
 if __name__=="__main__":
 
@@ -36,10 +38,10 @@ if __name__=="__main__":
 
     # %%
     # file location and name
-    mom6_dir = "/Datasets.private/regional_mom6/hist_run/"
+    mom6_static_dir = "/Datasets.private/regional_mom6/static/"
     # %%
     # static field
-    ds_static = xr.open_dataset('/Datasets.private/regional_mom6/ocean_static.nc')
+    ds_static = xr.open_dataset(f'{mom6_static_dir}ocean_static.nc')
     ds_static = ds_static.set_coords(
         ['geolon','geolat',
          'geolon_c','geolat_c',
@@ -80,18 +82,17 @@ if __name__=="__main__":
 
     # %%
     # open each file and regrid
-    varname = 'deptho'
-    ds_regrid = xr.Dataset({varname: data})
+    ds_regrid = xr.Dataset({regrid_var: data})
  
     # perform regrid for each field 
-    ds_regrid[varname] = regridder(ds_static[varname])
+    ds_regrid[regrid_var] = regridder(ds_static[regrid_var])
 
     # output the netcdf file
-    print(f'output {mom6_dir}/regrid/ocean_static.{varname}.nc')
+    print(f'output {mom6_static_dir}/regrid/ocean_static.{regrid_var}.nc')
     mom6_encoding_attr(
             ds_static,
             ds_regrid,
-            var_names=varname,
+            var_names=[regrid_var],
             dataset_name='regional mom6 regrid'
         )
-    ds_regrid.to_netcdf(f'{mom6_dir}/regrid/ocean_static.{varname}.nc')
+    ds_regrid.to_netcdf(f'{mom6_static_dir}/regrid/ocean_static.{regrid_var}.nc')
