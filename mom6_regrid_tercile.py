@@ -6,7 +6,6 @@ REGRIDDED forecast/hindcast data.
 # %%
 import sys
 import warnings
-import numpy as np
 import xarray as xr
 from dask.distributed import Client
 from mom6_regrid import mom6_hindcast,mom6_encoding_attr
