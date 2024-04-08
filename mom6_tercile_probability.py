@@ -111,7 +111,7 @@ def get_mom6(
 
         # merge the static field with the variables
         for file in file_list:
-            iyear_flag = f'i{iyear}' in file
+            #iyear_flag = f'i{iyear}' in file
             imon_flag = f'i{imonth}' in file
             var_flag = var in file
             if imon_flag and var_flag :
@@ -126,7 +126,7 @@ def get_mom6(
 
         # read only the needed file
         for file in file_list:
-            iyear_flag = f'i{iyear}' in file
+            #iyear_flag = f'i{iyear}' in file
             imon_flag = f'i{imonth}' in file
             var_flag = var in file
             if imon_flag and var_flag :
