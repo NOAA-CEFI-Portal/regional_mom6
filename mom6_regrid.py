@@ -23,8 +23,6 @@ import sys
 import warnings
 import numpy as np
 import xarray as xr
-import xesmf as xe
-from dask.distributed import Client
 warnings.simplefilter("ignore")
 
 def mom6_encoding_attr(
@@ -137,9 +135,12 @@ def mom6_encoding_attr(
 
     # copy original attrs and encoding for variables
     for var_name in var_names:
-        ds_data[var_name].attrs = ds_data_ori[var_name].attrs
-        ds_data[var_name].encoding = ds_data_ori[var_name].encoding
-        ds_data[var_name].encoding['complevel'] = 2
+        try:
+            ds_data[var_name].attrs = ds_data_ori[var_name].attrs
+            ds_data[var_name].encoding = ds_data_ori[var_name].encoding
+        except KeyError:
+            print(f'new variable name {var_name}')
+            ds_data[var_name].encoding['complevel'] = 2
 
     return ds_data
 
@@ -205,6 +206,8 @@ def mom6_hindcast(parent_dir):
 
 # %%
 if __name__=="__main__":
+    import xesmf as xe
+    from dask.distributed import Client
 
     client = Client(processes=False,memory_limit='150GB',silence_logs=50)
     print(client)
