@@ -10,6 +10,7 @@ from typing import (
     List,
     Union
 )
+import warnings
 from datetime import date
 from dateutil.relativedelta import relativedelta
 import cftime
@@ -17,12 +18,18 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from scipy.stats import norm as normal
-import warnings
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
 
-class mom6_forecast:
+
+# typing
+RegionalOptions = Literal[
+    'MAB','GOM','SS','GB','SS_LME','NEUS_LME','SEUS_LME',
+    'GOMEX','GSL','NGOMEX','SGOMEX','Antilles','Floridian'
+]
+
+class MOM6Forecast:
     """
     Class for various mom6 forecast related calculation
     1. getting the mom6 files
@@ -56,42 +63,6 @@ class mom6_forecast:
         self.iyear = iyear
         self.imonth = imonth
         self.source = source
-        
-    def mom6_hindcast(
-        self,
-        hindcast_dir : str
-    ) -> List[str]:
-        """
-        Create list of files to be able to be opened 
-        by Xarray.
-
-        Parameters
-        ----------
-        hindcast_dir : str
-            directory path in string to the forecast/hindcast
-
-        Returns
-        -------
-        List 
-            A list of all data name including directory path 
-            for the hindcast/forecast data
-           
-        """
-        # input of array of different variable forecast
-        tob_files = [f"tob_forecasts_i{mon}.nc" for mon in range(3,13,3)]
-        tos_files = [f"tos_forecasts_i{mon}.nc" for mon in range(3,13,3)]
-
-        # h point list
-        hpoint_file_list = (
-            tob_files+
-            tos_files
-        )
-
-        hpoint_file_list = [f"{hindcast_dir}{file}" for file in hpoint_file_list]
-
-        all_file_list = hpoint_file_list
-
-        return all_file_list
 
     def get_mom6(self) -> xr.Dataset:
         """
@@ -109,20 +80,14 @@ class mom6_forecast:
         if self.source == 'raw' :
             # getting the forecast/hindcast data
             mom6_dir = "/Datasets.private/regional_mom6/hindcast/"
-            file_list = self.mom6_hindcast(mom6_dir)
+            file_list = MOM6Misc.mom6_hindcast(mom6_dir)
 
             # static field
-            ds_static = xr.open_dataset('/Datasets.private/regional_mom6/ocean_static.nc')
-            ds_static = ds_static.set_coords(
-                ['geolon','geolat',
-                'geolon_c','geolat_c',
-                'geolon_u','geolat_u',
-                'geolon_v','geolat_v']
-            )
+            ds_static = MOM6Static.get_mom6_grid()
 
             # merge the static field with the variables
             for file in file_list:
-                iyear_flag = f'i{self.iyear}' in file
+                #iyear_flag = f'i{self.iyear}' in file
                 imon_flag = f'i{self.imonth}' in file
                 var_flag = self.var in file
                 if imon_flag and var_flag :
@@ -133,11 +98,11 @@ class mom6_forecast:
         elif self.source == 'regrid':
             # getting the forecast/hindcast data
             mom6_dir = "/Datasets.private/regional_mom6/hindcast/regrid/"
-            file_list = self.mom6_hindcast(mom6_dir)
+            file_list = MOM6Misc.mom6_hindcast(mom6_dir)
 
             # read only the needed file
             for file in file_list:
-                iyear_flag = f'i{self.iyear}' in file
+                #iyear_flag = f'i{self.iyear}' in file
                 imon_flag = f'i{self.imonth}' in file
                 var_flag = self.var in file
                 if imon_flag and var_flag :
@@ -167,10 +132,9 @@ class mom6_forecast:
             mom6_dir = "/Datasets.private/regional_mom6/tercile_calculation/regrid/"
             return xr.open_dataset(f'{mom6_dir}/{self.var}_forecasts_i{self.imonth}.nc')
 
-
     def get_init_fcst_time(
         self,
-        lead_bins : List[int] = [0, 3, 6, 9, 12]
+        lead_bins : List[int] = None
     ) -> dict:
         """_summary_
 
@@ -187,6 +151,9 @@ class mom6_forecast:
             with two key-value pairs, 'init': initial_time and
             'fcst': mean forecasted during the binned period 
         """
+        if lead_bins is None:
+            lead_bins = [0, 3, 6, 9, 12]
+
         # get the cftime of initial time
         btime = cftime.datetime(self.iyear,self.imonth,1)
 
@@ -226,7 +193,7 @@ class mom6_forecast:
         ini_time = f'{ini_time_date.strftime("%b %Y")}'
 
         return {'init':ini_time,'fcsts':mean_forecasttime}
-    
+
     def calculate_tercile_prob(
         self,
         lead_bins : List[int] = None,
@@ -277,7 +244,8 @@ class mom6_forecast:
         else:
             # setup lead bins to average during forecast lead time
             # (should match lead bins used for the historical data
-            # that created the /Datasets.private/regional_mom6/tercile_calculation/historical_terciles.nc
+            # that created the /Datasets.private/regional_mom6/
+            # tercile_calculation/historical_terciles.nc
             # [0, 3, 6, 9, 12] produces 3-month averages
             lead_bin_label = np.arange(0,len(lead_bins)-1)
 
@@ -365,3 +333,237 @@ class mom6_forecast:
 
         return ds_tercile_prob
 
+    def calculate_regional_tercile_prob(
+        self,
+        lead_bins : List[int] = None,
+        region_name : RegionalOptions = 'MAB'
+    ) -> xr.Dataset:
+        """
+        Based on regional averaged value of forecast/hindcast, 
+        use single initialization's normal distribution
+        and pre-defined tercile value based on the long-term 
+        statistic tercile value to find the probability of
+        upper ,normal , and lower tercile 
+        
+        It also find the largest probability in upper (positive),
+        normal (0), lower (negative)
+
+        Parameters
+        ----------
+        lead_bins : List[int]
+            The `lead_bin` used to binned the leading month result
+            ex: one can set `lead_bins = [0, 3, 6, 9, 12]` for four seasonal
+            mean. Default is no binning, lead_bins = None.
+        
+        region_name : ({'MAB','GOM','SS','GB','SS_LME',
+                        'NEUS_LME','SEUS_LME','GOMEX','GSL','NGOMEX',
+                        'SGOMEX','Antilles','Floridian'), default: "MAB"
+            String indicating the regional abbreviation one want to perform
+            the regional averaged tercile calculation.
+
+        
+        Returns
+        -------
+        xr.Dataset
+            two variables are in the dataset. (1) tercile_prob 
+            (2) tercile_prob_max. 
+
+            1 is a 2D matrix with the dimension 
+            of lead x 3. This are the probability of
+            upper(lead), normal(lead), and lower tercile(lead)
+
+            2 is the 1D array of largest probability in upper (positive),
+            normal (0), lower (negative) with dimension of (lead)
+        """
+
+
+class MOM6Static:
+    """
+    Class for getting various Static field
+    1. regional mask in raw regional mom6 grid
+    2. static file for grid information
+    ...
+    """
+    @staticmethod
+    def get_mom6_regionl_mask() -> xr.Dataset:
+        """return the EPU mask in the original mom6 grid
+        """
+        ds = xr.open_dataset('/Datasets.private/regional_mom6/masks/region_masks.nc')
+        return ds.set_coords(['geolon','geolat'])
+
+    @staticmethod
+    def get_mom6_grid() -> xr.Dataset:
+        """return the original mom6 grid information
+        """
+        ds_static = xr.open_dataset('/Datasets.private/regional_mom6/ocean_static.nc')
+        return ds_static.set_coords(
+            ['geolon','geolat',
+            'geolon_c','geolat_c',
+            'geolon_u','geolat_u',
+            'geolon_v','geolat_v']
+        )
+
+
+class MOM6Misc:
+    """MOM6 related methods 
+    """
+    @staticmethod
+    def mom6_hindcast(
+        hindcast_dir : str
+    ) -> List[str]:
+        """
+        Create list of files to be able to be opened 
+        by Xarray.
+
+        Parameters
+        ----------
+        hindcast_dir : str
+            directory path in string to the forecast/hindcast
+
+        Returns
+        -------
+        List 
+            A list of all data name including directory path 
+            for the hindcast/forecast data
+           
+        """
+        # input of array of different variable forecast
+        tob_files = [f"tob_forecasts_i{mon}.nc" for mon in range(3,13,3)]
+        tos_files = [f"tos_forecasts_i{mon}.nc" for mon in range(3,13,3)]
+
+        # h point list
+        hpoint_file_list = (
+            tob_files+
+            tos_files
+        )
+
+        hpoint_file_list = [f"{hindcast_dir}{file}" for file in hpoint_file_list]
+
+        all_file_list = hpoint_file_list
+
+        return all_file_list
+
+    @staticmethod
+    def mom6_encoding_attr(
+        ds_data_ori : xr.Dataset,
+        ds_data : xr.Dataset,
+        dataset_name : str,
+        var_names : List[str] = None
+    ):
+        """
+        This function is designed for creating attribute and netCDF encoding
+        for the preprocessed regional mom6 file format.
+
+        Parameters
+        ----------
+        ds_data_ori : xr.Dataset
+            original dataset
+        ds_data : xr.Dataset
+            new output regridded dataset
+        var_name : string
+            var name in the dataset
+        dataset : string
+            name of the dataset 
+
+        Returns
+        -------
+        ds_data : xr.Dataset
+            new output regridded dataset with attr and encoding setup.
+        
+        Raises
+        ------
+
+        """
+
+        # besides lon lat which has PSL format
+        #  put all dim name that may encounter in
+        #  different mom6 output. These dims will
+        #  follow its original data attr and encoding
+        misc_dims_list = ['time','lead','init','member','z_l']
+
+        if var_names is None:
+            var_names = []
+
+        # global attrs and encoding
+        ds_data.attrs = ds_data_ori.attrs
+        ds_data.encoding = ds_data_ori.encoding
+        ds_data.attrs['history'] = "Derived and written at NOAA Physical Science Laboratory"
+        ds_data.attrs['contact'] = "chia-wei.hsu@noaa.gov"
+        ds_data.attrs['dataset'] = dataset_name
+
+        try:
+            # lon and lat attrs and encoding (PSL format)
+            # longitude attrs
+            ds_data['lon'].attrs = {
+                'standard_name' : 'longitude',
+                'long_name' : 'longitude',
+                'units' : 'degrees_east',
+                'axis' : 'X',
+                'actual_range' : (
+                    np.float64(ds_data['lon'].min()),
+                    np.float64(ds_data['lon'].max())
+                )
+            }
+            ds_data['lon'].encoding = {
+                'zlib': True,
+                'szip': False,
+                'zstd': False,
+                'bzip2': False,
+                'blosc': False,
+                'shuffle': True,
+                'complevel': 2,
+                'fletcher32': False,
+                'contiguous': False,
+                'chunksizes': [len(ds_data['lon'].data)],
+                'original_shape': [len(ds_data['lon'].data)],
+                'dtype': 'float64'}
+        except KeyError:
+            print('no lon dimension')
+
+        try:
+            # latitude attrs
+            ds_data['lat'].attrs = {
+                'standard_name' : 'latitude',
+                'long_name' : 'latitude',
+                'units' : 'degrees_north',
+                'axis' : 'Y',
+                'actual_range' : (
+                    np.float64(ds_data['lat'].min()),
+                    np.float64(ds_data['lat'].max())
+                )
+            }
+            ds_data['lat'].encoding = {
+                'zlib': True,
+                'szip': False,
+                'zstd': False,
+                'bzip2': False,
+                'blosc': False,
+                'shuffle': True,
+                'complevel': 2,
+                'fletcher32': False,
+                'contiguous': False,
+                'chunksizes': [len(ds_data['lon'].data)],
+                'original_shape': [len(ds_data['lon'].data)],
+                'dtype': 'float64'}
+        except KeyError:
+            print('no lat dimension')
+
+        # copy original attrs and encoding for dims
+        for dim in misc_dims_list:
+            try:
+                ds_data[dim].attrs = ds_data_ori[dim].attrs
+                ds_data[dim].encoding = ds_data_ori[dim].encoding
+                ds_data[dim].encoding['complevel'] = 2
+            except KeyError:
+                print(f'no {dim} dimension')
+
+        # copy original attrs and encoding for variables
+        for var_name in var_names:
+            try:
+                ds_data[var_name].attrs = ds_data_ori[var_name].attrs
+                ds_data[var_name].encoding = ds_data_ori[var_name].encoding
+            except KeyError:
+                print(f'new variable name {var_name}')
+                ds_data[var_name].encoding['complevel'] = 2
+
+        return ds_data
