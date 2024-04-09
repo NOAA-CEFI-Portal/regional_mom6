@@ -9,7 +9,7 @@ import warnings
 import numpy as np
 import xarray as xr
 from dask.distributed import Client
-import mom6_process as mp
+from mom6.mom6_module import mom6_process as mp
 
 warnings.simplefilter("ignore")
 
