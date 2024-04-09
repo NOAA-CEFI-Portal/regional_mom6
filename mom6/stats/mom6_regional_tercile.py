@@ -65,16 +65,16 @@ if __name__=="__main__":
                         keep_attrs=True
                     )
                 )
-                
+
                 # store all regional averaged tercile
                 reg_tercile_list.append(da_tercile)
                 reg_list.append(region)
- 
+
         # concat all regional tercile to one DataArray
         da_tercile = xr.concat(reg_tercile_list,dim='region')
         da_tercile['region'] = reg_list
 
-        # store the DataArray to Dataset with tercile seperated 
+        # store the DataArray to Dataset with tercile seperated
         ds_tercile = xr.Dataset()
         ds_tercile.attrs = ds.attrs
         ds_tercile['f_lowmid'] = da_tercile.isel(quantile=0)
