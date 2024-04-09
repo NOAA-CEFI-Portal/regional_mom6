@@ -1,0 +1,31 @@
+# regional_mom.yml
+
+name: regional_mom
+channels:
+  - conda-forge
+dependencies:
+  - bokeh
+  - boto3
+  - cartopy
+  - cf_xarray
+  - cfgrib
+  - cftime
+  - dash
+  - dask
+  - gsw
+  - jupyterlab
+  - matplotlib
+  - nc-time-axis
+  - netcdf4
+  - numba
+  - plotly
+  - pydap
+  - pylint
+  - pyshp
+  - python=3.11
+  - scipy
+  - shapely
+  - xarray
+  - xesmf
+
+prefix: /home/chsu/mambaforge/envs/regional_mom
