@@ -377,7 +377,7 @@ class MOM6Forecast:
         """
 
 # class MOM6Historical:
-    
+
 
 class MOM6Static:
     """
@@ -404,6 +404,41 @@ class MOM6Static:
             'geolon_u','geolat_u',
             'geolon_v','geolat_v']
         )
+    @staticmethod
+    def get_mom6_mask(
+        mask : Literal['wet','wet_c','wet_u','wet_v'] = 'wet',
+        source : Literal['raw','regrid'] = 'raw'
+    ) -> xr.DataArray:
+        """
+        The function is designed to export the various mask provided
+        on the MOM6 grid from the ocean_static.nc file
+
+        Parameters
+        ----------
+        mask : str
+            The mask name based on the variable name in the ocean_static.nc file.
+            It has the following options 1. wet (0 if land, 1 if ocean at
+            tracer points), 2. wet_c (0 if land, 1 if ocean at corner (Bu)
+            points), 3. wet_u (0 if land, 1 if ocean at zonal velocity (Cu) 
+            points), 4. wet_v (0 if land, 1 if ocean at meridional velocity
+            (Cv) points), by default 'wet'.
+        
+        source : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
+            The data extracted should be the regridded result or 
+            the original model grid (curvilinear), by default 'raw'
+
+        Returns
+        -------
+        xr.DataArray
+            The Xarray DataArray object that represent the ocean mask.
+        """
+        if source == 'raw':
+            ds = xr.open_dataset('/Datasets.private/regional_mom6/static/ocean_static.nc')
+            da = ds.set_coords(['geolon','geolat'])[mask]
+        elif source == 'regrid':
+            ds = xr.open_dataset('/Datasets.private/regional_mom6/static/regrid/ocean_static.wet.nc')
+            da = ds[mask]
+        return da
 
 
 class MOM6Misc:
