@@ -1,5 +1,6 @@
 # manuel setting
 *.nc
+.vscode/
 
 
 # Byte-compiled / optimized / DLL files
