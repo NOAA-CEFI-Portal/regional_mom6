@@ -4,11 +4,13 @@ REGRIDDED forecast/hindcast data.
 
 """
 # %%
+import os
 import sys
 import warnings
 import numpy as np
 import xarray as xr
 from dask.distributed import Client
+from mom6 import DATA_PATH
 from mom6.mom6_module import mom6_process as mp
 
 warnings.simplefilter("ignore")
@@ -28,8 +30,8 @@ if __name__=="__main__":
         varname = sys.argv[1]
 
     # data locations
-    MOM6_DIR = "/Datasets.private/regional_mom6/hindcast/"
-    MOM6_TERCILE_DIR = "/Datasets.private/regional_mom6/tercile_calculation/"
+    MOM6_DIR = os.path.join(DATA_PATH,"hindcast/")
+    MOM6_TERCILE_DIR = os.path.join(DATA_PATH,"tercile_calculation/")
     file_list = mp.MOM6Misc.mom6_hindcast(MOM6_DIR)
     var_file_list = []
     for file in file_list :
