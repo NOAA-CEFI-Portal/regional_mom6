@@ -10,6 +10,7 @@ from typing import (
     List,
     Union
 )
+import os
 import warnings
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -18,6 +19,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from scipy.stats import norm as normal
+from mom6 import DATA_PATH
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -79,7 +81,7 @@ class MOM6Forecast:
         """
         if self.source == 'raw' :
             # getting the forecast/hindcast data
-            mom6_dir = "/Datasets.private/regional_mom6/hindcast/"
+            mom6_dir = os.path.join(DATA_PATH,"hindcast/")
             file_list = MOM6Misc.mom6_hindcast(mom6_dir)
 
             # static field
@@ -97,7 +99,7 @@ class MOM6Forecast:
 
         elif self.source == 'regrid':
             # getting the forecast/hindcast data
-            mom6_dir = "/Datasets.private/regional_mom6/hindcast/regrid/"
+            mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
             file_list = MOM6Misc.mom6_hindcast(mom6_dir)
 
             # read only the needed file
@@ -124,19 +126,19 @@ class MOM6Forecast:
         """
         if self.source == 'raw':
             # getting the forecast/hindcast tercile data
-            mom6_dir = "/Datasets.private/regional_mom6/tercile_calculation/"
+            mom6_dir = os.path.join(DATA_PATH,"tercile_calculation/")
             return xr.open_dataset(f'{mom6_dir}/forecast_quantiles_i{self.imonth:02d}.nc')
 
         elif self.source == 'regrid':
             # getting the regridd forecast/hindcast tercile data
-            mom6_dir = "/Datasets.private/regional_mom6/tercile_calculation/regrid/"
+            mom6_dir = os.path.join(DATA_PATH,"tercile_calculation/regrid/")
             return xr.open_dataset(f'{mom6_dir}/{self.var}_forecasts_i{self.imonth}.nc')
 
     def get_init_fcst_time(
         self,
         lead_bins : List[int] = None
     ) -> dict:
-        """_summary_
+        """Setup the initial and forecast time format for output
 
         Parameters
         ----------
@@ -376,6 +378,8 @@ class MOM6Forecast:
             normal (0), lower (negative) with dimension of (lead)
         """
 
+# class MOM6Historical:
+
 
 class MOM6Static:
     """
@@ -388,25 +392,111 @@ class MOM6Static:
     def get_mom6_regionl_mask() -> xr.Dataset:
         """return the EPU mask in the original mom6 grid
         """
-        ds = xr.open_dataset('/Datasets.private/regional_mom6/masks/region_masks.nc')
+        ds = xr.open_dataset(os.path.join(DATA_PATH,"masks/region_masks.nc"))
         return ds.set_coords(['geolon','geolat'])
 
     @staticmethod
     def get_mom6_grid() -> xr.Dataset:
         """return the original mom6 grid information
         """
-        ds_static = xr.open_dataset('/Datasets.private/regional_mom6/ocean_static.nc')
+        ds_static = xr.open_dataset(os.path.join(DATA_PATH,'ocean_static.nc'))
         return ds_static.set_coords(
             ['geolon','geolat',
             'geolon_c','geolat_c',
             'geolon_u','geolat_u',
             'geolon_v','geolat_v']
         )
+    @staticmethod
+    def get_mom6_mask(
+        mask : Literal['wet','wet_c','wet_u','wet_v'] = 'wet',
+        source : Literal['raw','regrid'] = 'raw'
+    ) -> xr.DataArray:
+        """
+        The function is designed to export the various mask provided
+        on the MOM6 grid from the ocean_static.nc file
+
+        Parameters
+        ----------
+        mask : str
+            The mask name based on the variable name in the ocean_static.nc file.
+            It has the following options 1. wet (0 if land, 1 if ocean at
+            tracer points), 2. wet_c (0 if land, 1 if ocean at corner (Bu)
+            points), 3. wet_u (0 if land, 1 if ocean at zonal velocity (Cu) 
+            points), 4. wet_v (0 if land, 1 if ocean at meridional velocity
+            (Cv) points), by default 'wet'.
+        
+        source : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
+            The data extracted should be the regridded result or 
+            the original model grid (curvilinear), by default 'raw'
+
+        Returns
+        -------
+        xr.DataArray
+            The Xarray DataArray object that represent the ocean mask.
+        """
+        if source == 'raw':
+            ds = xr.open_dataset(os.path.join(DATA_PATH,'static/ocean_static.nc'))
+            da = ds.set_coords(['geolon','geolat'])[mask]
+        elif source == 'regrid':
+            ds = xr.open_dataset(os.path.join(DATA_PATH,'static/regrid/ocean_static.wet.nc'))
+            da = ds[mask]
+        return da
 
 
 class MOM6Misc:
     """MOM6 related methods 
     """
+    @staticmethod
+    def mom6_historical(
+        historical_dir : str
+    ) -> List[str]:
+        """
+        Create list of files to be able to be opened 
+        by Xarray.
+
+        Parameters
+        ----------
+        historical_dir : str
+            directory path in string to the historical run
+
+        Returns
+        -------
+        List 
+            A list of all data name including directory path 
+            for the historical run data
+        """
+
+        # h point list
+        hpoint_file_list = [
+            "ocean_monthly.199301-201912.MLD_003.nc",
+            "ocean_monthly.199301-201912.sos.nc",
+            "ocean_monthly.199301-201912.ssh.nc",
+            "ocean_monthly.199301-201912.tob.nc",
+            "ocean_monthly.199301-201912.tos.nc",
+            "ocean_monthly_z.199301-201912.so.nc",
+            "ocean_monthly_z.199301-201912.thetao.nc",
+            "ocean_cobalt_daily_2d.19930101-20191231.btm_o2.nc",
+            "ocean_cobalt_omip_sfc.199301-201912.chlos.nc",
+            "ocean_cobalt_omip_sfc.199301-201912.dissicos.nc",
+            "ocean_cobalt_omip_sfc.199301-201912.talkos.nc",
+            "ocean_cobalt_sfc.199301-201912.sfc_co3_ion.nc",
+            "ocean_cobalt_sfc.199301-201912.sfc_co3_sol_arag.nc",
+            "ocean_cobalt_sfc.199301-201912.sfc_no3.nc",
+            "ocean_cobalt_sfc.199301-201912.sfc_po4.nc",
+            "ocean_cobalt_tracers_int.199301-201912.mesozoo_200.nc"
+        ]
+        hpoint_file_list = [f"{historical_dir}{file}" for file in hpoint_file_list]
+
+        # T point that is the same as h point
+        tpoint_file_list = [
+            "ice_monthly.199301-201912.siconc.nc"
+        ]
+        tpoint_file_list = [f"{historical_dir}{file}" for file in tpoint_file_list]
+
+        all_file_list = hpoint_file_list+tpoint_file_list
+
+        return all_file_list
+
     @staticmethod
     def mom6_hindcast(
         hindcast_dir : str
