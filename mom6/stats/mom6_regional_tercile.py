@@ -53,8 +53,8 @@ if __name__=="__main__":
                 # calculate the regional area-weighted mean
                 da_mask = xr.where(ds_mask[region],1.,np.nan)
                 da = (
-                    (da*ds_mask[region]*da_area).sum(dim=['xh','yh'])/
-                    (ds_mask[region]*da_area).sum(dim=['xh','yh'])
+                    (da*da_mask*da_area).sum(dim=['xh','yh'])/
+                    (da_mask*da_area).sum(dim=['xh','yh'])
                 )   # if regrid of other stagger grid this need to be changed
 
                 # calculate the tercile value
