@@ -311,6 +311,24 @@ class MOM6Forecast:
             mom6_dir = os.path.join(DATA_PATH,"tercile_calculation/regrid/")
             return xr.open_dataset(f'{mom6_dir}/{self.var}_forecasts_i{self.imonth}.nc')
 
+    def get_mom6_tercile_regional(self) -> xr.Dataset:
+        """return the area averaged mom6 tercile value from the forecast/hindcast
+
+        Returns
+        -------
+        xr.Dataset
+            A dataset that include the f_lowmid and f_midhigh value which 
+            represent SST values at the boundaries between the terciles. 
+            `f_lowmid` represent the boundary value between lower and middle
+            tercile. `f_midhigh` represent the boundary value between middle
+            and upper tercile. (the filename 'quantile' MIGHT be error naming)
+        """
+
+        # getting the regional averaged forecast/hindcast tercile data based always on raw data
+        mom6_dir = os.path.join(DATA_PATH,"tercile_calculation/")
+        return xr.open_dataset(f'{mom6_dir}/{self.var}_forecasts_i{self.imonth:2d}.region.nc')
+
+
     def get_init_fcst_time(
         self,
         lead_bins : List[int] = None
