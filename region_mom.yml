@@ -27,5 +27,3 @@ dependencies:
   - shapely
   - xarray
   - xesmf
-
-prefix: /home/chsu/mambaforge/envs/regional_mom
