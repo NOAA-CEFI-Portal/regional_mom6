@@ -70,4 +70,3 @@ if __name__=="__main__":
             ds_tercile.to_netcdf(f'{mom6_tercile_dir}{file[len(mom6_dir):]}',mode='w')
         except PermissionError:
             print(f'{mom6_tercile_dir}{file[len(mom6_dir):]} is used by other scripts' )
-
