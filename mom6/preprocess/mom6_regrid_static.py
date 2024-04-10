@@ -19,12 +19,14 @@ Based on the above mentioned keys
 
 """
 # %%
+import os
 import warnings
 import numpy as np
 import xarray as xr
 import xesmf as xe
 from dask.distributed import Client
-from mom6_regrid import mom6_encoding_attr
+from mom6 import DATA_PATH
+from mom6.mom6_module import mom6_process as mp
 warnings.simplefilter("ignore")
 
 regrid_var = 'wet'
@@ -38,7 +40,8 @@ if __name__=="__main__":
 
     # %%
     # file location and name
-    mom6_static_dir = "/Datasets.private/regional_mom6/static/"
+    mom6_static_dir = os.path.join(DATA_PATH,"static")
+
     # %%
     # static field
     ds_static = xr.open_dataset(f'{mom6_static_dir}ocean_static.nc')
@@ -76,20 +79,20 @@ if __name__=="__main__":
     ds_regrid = xr.Dataset({'var': data})
 
     # %%
-    # use xesmf to create regridder 
+    # use xesmf to create regridder
     # !!!! regridded only suited for geolon and geolat to x and y
     regridder = xe.Regridder(ds_static, ds_regrid, "bilinear", unmapped_to_nan=True)
 
     # %%
     # open each file and regrid
     ds_regrid = xr.Dataset({regrid_var: data})
- 
-    # perform regrid for each field 
+
+    # perform regrid for each field
     ds_regrid[regrid_var] = regridder(ds_static[regrid_var])
 
     # output the netcdf file
     print(f'output {mom6_static_dir}/regrid/ocean_static.{regrid_var}.nc')
-    mom6_encoding_attr(
+    mp.MOM6Misc.mom6_encoding_attr(
             ds_static,
             ds_regrid,
             var_names=[regrid_var],
