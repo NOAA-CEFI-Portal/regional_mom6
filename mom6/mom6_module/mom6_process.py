@@ -10,6 +10,7 @@ from typing import (
     List,
     Union
 )
+import os
 import warnings
 from datetime import date
 from dateutil.relativedelta import relativedelta
@@ -18,6 +19,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from scipy.stats import norm as normal
+from mom6 import DATA_PATH
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -79,7 +81,7 @@ class MOM6Forecast:
         """
         if self.source == 'raw' :
             # getting the forecast/hindcast data
-            mom6_dir = "/Datasets.private/regional_mom6/hindcast/"
+            mom6_dir = os.path.join(DATA_PATH,"hindcast/")
             file_list = MOM6Misc.mom6_hindcast(mom6_dir)
 
             # static field
@@ -97,7 +99,7 @@ class MOM6Forecast:
 
         elif self.source == 'regrid':
             # getting the forecast/hindcast data
-            mom6_dir = "/Datasets.private/regional_mom6/hindcast/regrid/"
+            mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
             file_list = MOM6Misc.mom6_hindcast(mom6_dir)
 
             # read only the needed file
@@ -124,19 +126,19 @@ class MOM6Forecast:
         """
         if self.source == 'raw':
             # getting the forecast/hindcast tercile data
-            mom6_dir = "/Datasets.private/regional_mom6/tercile_calculation/"
+            mom6_dir = os.path.join(DATA_PATH,"tercile_calculation/")
             return xr.open_dataset(f'{mom6_dir}/forecast_quantiles_i{self.imonth:02d}.nc')
 
         elif self.source == 'regrid':
             # getting the regridd forecast/hindcast tercile data
-            mom6_dir = "/Datasets.private/regional_mom6/tercile_calculation/regrid/"
+            mom6_dir = os.path.join(DATA_PATH,"tercile_calculation/regrid/")
             return xr.open_dataset(f'{mom6_dir}/{self.var}_forecasts_i{self.imonth}.nc')
 
     def get_init_fcst_time(
         self,
         lead_bins : List[int] = None
     ) -> dict:
-        """_summary_
+        """Setup the initial and forecast time format for output
 
         Parameters
         ----------
@@ -390,14 +392,14 @@ class MOM6Static:
     def get_mom6_regionl_mask() -> xr.Dataset:
         """return the EPU mask in the original mom6 grid
         """
-        ds = xr.open_dataset('/Datasets.private/regional_mom6/masks/region_masks.nc')
+        ds = xr.open_dataset(os.path.join(DATA_PATH,"masks/region_masks.nc"))
         return ds.set_coords(['geolon','geolat'])
 
     @staticmethod
     def get_mom6_grid() -> xr.Dataset:
         """return the original mom6 grid information
         """
-        ds_static = xr.open_dataset('/Datasets.private/regional_mom6/ocean_static.nc')
+        ds_static = xr.open_dataset(os.path.join(DATA_PATH,'ocean_static.nc'))
         return ds_static.set_coords(
             ['geolon','geolat',
             'geolon_c','geolat_c',
@@ -433,10 +435,10 @@ class MOM6Static:
             The Xarray DataArray object that represent the ocean mask.
         """
         if source == 'raw':
-            ds = xr.open_dataset('/Datasets.private/regional_mom6/static/ocean_static.nc')
+            ds = xr.open_dataset(os.path.join(DATA_PATH,'static/ocean_static.nc'))
             da = ds.set_coords(['geolon','geolat'])[mask]
         elif source == 'regrid':
-            ds = xr.open_dataset('/Datasets.private/regional_mom6/static/regrid/ocean_static.wet.nc')
+            ds = xr.open_dataset(os.path.join(DATA_PATH,'static/regrid/ocean_static.wet.nc'))
             da = ds[mask]
         return da
 
@@ -463,9 +465,9 @@ class MOM6Misc:
             A list of all data name including directory path 
             for the historical run data
         """
-    
+
         # h point list
-        hpoint_file_list = [  
+        hpoint_file_list = [
             "ocean_monthly.199301-201912.MLD_003.nc",
             "ocean_monthly.199301-201912.sos.nc",
             "ocean_monthly.199301-201912.ssh.nc",
@@ -494,7 +496,7 @@ class MOM6Misc:
         all_file_list = hpoint_file_list+tpoint_file_list
 
         return all_file_list
-    
+
     @staticmethod
     def mom6_hindcast(
         hindcast_dir : str
