@@ -1,0 +1,4 @@
+# remove notebook from linguist count
+# treat notebooks as generated files 
+
+mom6/notebook/* linguist-generated=true
