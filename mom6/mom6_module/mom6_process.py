@@ -34,8 +34,10 @@ RegionalOptions = Literal[
 class MOM6Forecast:
     """
     Class for various mom6 forecast related calculation
-    1. getting the mom6 files
-    2. calculate the forecast probability in each tercile
+    - get the mom6 files
+    - get the mom6 tercile from hindcast 
+    - calculate the forecast probability in each tercile
+    - get forecast time stamp
     ...
     """
     def __init__(
@@ -43,20 +45,20 @@ class MOM6Forecast:
         iyear : int,
         imonth : int,
         var : str,
-        source : Literal['raw','regrid'] = 'regrid'
+        grid : Literal['raw','regrid'] = 'regrid'
     ) -> None:
         """
-        mom6_tercile class needed attribute value
+        input for the class to get the individual forecast
 
         Parameters
         ----------
-        imonth : int
+        iyear : int
             initial year of forecast
         imonth : int
             initial month
         var : str
             variable name one want to exetract from the data
-        source : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
+        grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
             The data extracted should be the regridded result or 
             the original model grid (curvilinear), by default 'raw'
 
@@ -64,7 +66,7 @@ class MOM6Forecast:
         self.var = var
         self.iyear = iyear
         self.imonth = imonth
-        self.source = source
+        self.grid = grid
 
     def get_mom6(self) -> xr.Dataset:
         """
@@ -79,7 +81,7 @@ class MOM6Forecast:
             all forecast field include in the `file_list`. The
             Dataset object is lazily-loaded.
         """
-        if self.source == 'raw' :
+        if self.grid == 'raw' :
             # getting the forecast/hindcast data
             mom6_dir = os.path.join(DATA_PATH,"hindcast/")
             file_list = MOM6Misc.mom6_hindcast(mom6_dir)
@@ -97,7 +99,7 @@ class MOM6Forecast:
 
             ds = xr.merge([ds_static,ds])
 
-        elif self.source == 'regrid':
+        elif self.grid == 'regrid':
             # getting the forecast/hindcast data
             mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
             file_list = MOM6Misc.mom6_hindcast(mom6_dir)
@@ -109,6 +111,56 @@ class MOM6Forecast:
                 var_flag = self.var in file
                 if imon_flag and var_flag :
                     ds = xr.open_dataset(file).sel(init=f'{self.iyear}-{self.imonth}')
+
+        return ds
+    
+    @staticmethod
+    def get_mom6_all(
+        var : str,
+        grid : Literal['raw','regrid'] = 'regrid'
+    ) -> xr.Dataset:
+        """
+        Return the mom6 all rawgrid/regridded hindcast/forecast field
+        with the static field combined and setting the
+        lon lat related variables to coordinate 
+
+        Parameters
+        ----------
+        var : str
+            variable name one want to exetract from the data
+        grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
+            The data extracted should be the regridded result or 
+            the original model grid (curvilinear), by default 'raw'
+
+        Returns
+        -------
+        xr.Dataset
+            The Xarray Dataset object is the merged dataset of
+            all forecast field include in the `file_list`. The
+            Dataset object is lazily-loaded.
+        """
+        if grid == 'raw' :
+            # getting the forecast/hindcast data
+            mom6_dir = os.path.join(DATA_PATH,"hindcast/")
+            file_list = MOM6Misc.mom6_hindcast(mom6_dir)
+
+            file_read = [file for file in file_list if var in file]
+
+            # static field
+            ds_static = MOM6Static.get_mom6_grid()
+
+            # merge the static field with the variables
+            ds = xr.open_mfdataset(file_read,combine='nested',concat_dim='init').sortby('init')
+            ds = xr.merge([ds_static,ds])
+            ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
+
+        elif grid == 'regrid':
+            # getting the forecast/hindcast data
+            mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
+            file_list = MOM6Misc.mom6_hindcast(mom6_dir)
+
+            file_read = [file for file in file_list if var in file]
+            ds = xr.open_mfdataset(file_read,combine='nested',concat_dim='init').sortby('init')
 
         return ds
 
@@ -124,12 +176,12 @@ class MOM6Forecast:
             tercile. `f_midhigh` represent the boundary value between middle
             and upper tercile. (the filename 'quantile' MIGHT be error naming)
         """
-        if self.source == 'raw':
+        if self.grid == 'raw':
             # getting the forecast/hindcast tercile data
             mom6_dir = os.path.join(DATA_PATH,"tercile_calculation/")
             return xr.open_dataset(f'{mom6_dir}/forecast_quantiles_i{self.imonth:02d}.nc')
 
-        elif self.source == 'regrid':
+        elif self.grid == 'regrid':
             # getting the regridd forecast/hindcast tercile data
             mom6_dir = os.path.join(DATA_PATH,"tercile_calculation/regrid/")
             return xr.open_dataset(f'{mom6_dir}/{self.var}_forecasts_i{self.imonth}.nc')
@@ -335,51 +387,180 @@ class MOM6Forecast:
 
         return ds_tercile_prob
 
-    def calculate_regional_tercile_prob(
-        self,
-        lead_bins : List[int] = None,
-        region_name : RegionalOptions = 'MAB'
-    ) -> xr.Dataset:
-        """
-        Based on regional averaged value of forecast/hindcast, 
-        use single initialization's normal distribution
-        and pre-defined tercile value based on the long-term 
-        statistic tercile value to find the probability of
-        upper ,normal , and lower tercile 
+    # def calculate_regional_tercile_prob(
+    #     self,
+    #     lead_bins : List[int] = None,
+    #     region_name : RegionalOptions = 'MAB'
+    # ) -> xr.Dataset:
+    #     """
+    #     Based on regional averaged value of forecast/hindcast, 
+    #     use single initialization's normal distribution
+    #     and pre-defined tercile value based on the long-term 
+    #     statistic tercile value to find the probability of
+    #     upper ,normal , and lower tercile 
         
-        It also find the largest probability in upper (positive),
-        normal (0), lower (negative)
+    #     It also find the largest probability in upper (positive),
+    #     normal (0), lower (negative)
+
+    #     Parameters
+    #     ----------
+    #     lead_bins : List[int]
+    #         The `lead_bin` used to binned the leading month result
+    #         ex: one can set `lead_bins = [0, 3, 6, 9, 12]` for four seasonal
+    #         mean. Default is no binning, lead_bins = None.
+        
+    #     region_name : ({'MAB','GOM','SS','GB','SS_LME',
+    #                     'NEUS_LME','SEUS_LME','GOMEX','GSL','NGOMEX',
+    #                     'SGOMEX','Antilles','Floridian'), default: "MAB"
+    #         String indicating the regional abbreviation one want to perform
+    #         the regional averaged tercile calculation.
+
+        
+    #     Returns
+    #     -------
+    #     xr.Dataset
+    #         two variables are in the dataset. (1) tercile_prob
+    #         (2) tercile_prob_max.
+
+    #         1 is a 2D matrix with the dimension
+    #         of lead x 3. This are the probability of
+    #         upper(lead), normal(lead), and lower tercile(lead)
+
+    #         2 is the 1D array of largest probability in upper (positive),
+    #         normal (0), lower (negative) with dimension of (lead)
+    #     """
+
+class MOM6Historical:
+    """
+    Class for various mom6 historical run related calculation
+    - get the mom6 files
+
+    """
+    def __init__(
+        self,
+        var : str,
+        year : int,
+        month : int,
+        day : int = 1,
+        grid : Literal['raw','regrid'] = 'regrid'
+    ) -> None:
+        """
+        input for getting the historical run data
 
         Parameters
         ----------
-        lead_bins : List[int]
-            The `lead_bin` used to binned the leading month result
-            ex: one can set `lead_bins = [0, 3, 6, 9, 12]` for four seasonal
-            mean. Default is no binning, lead_bins = None.
-        
-        region_name : ({'MAB','GOM','SS','GB','SS_LME',
-                        'NEUS_LME','SEUS_LME','GOMEX','GSL','NGOMEX',
-                        'SGOMEX','Antilles','Floridian'), default: "MAB"
-            String indicating the regional abbreviation one want to perform
-            the regional averaged tercile calculation.
+        var : str
+            variable name one want to exetract from the data
+        year : int
+            year of historical run
+        month : int
+            month of the historical run
+        day : int
+            day in month of the historical run
+        grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
+            The data extracted should be the regridded result or 
+            the original model grid (curvilinear), by default 'raw'
 
-        
+        """
+        self.var = var
+        self.year = year
+        self.month = month
+        self.day = day
+        self.grid = grid
+
+    def get_mom6(self) -> xr.Dataset:
+        """
+        Return the mom6 rawgrid/regridded historical run field
+        with the static field combined and setting the
+        lon lat related variables to coordinate 
+
         Returns
         -------
         xr.Dataset
-            two variables are in the dataset. (1) tercile_prob 
-            (2) tercile_prob_max. 
-
-            1 is a 2D matrix with the dimension 
-            of lead x 3. This are the probability of
-            upper(lead), normal(lead), and lower tercile(lead)
-
-            2 is the 1D array of largest probability in upper (positive),
-            normal (0), lower (negative) with dimension of (lead)
+            The Xarray Dataset object is the merged dataset of
+            all forecast field include in the `file_list`. The
+            Dataset object is lazily-loaded.
         """
+        if self.grid == 'raw' :
+            # getting the forecast/hindcast data
+            mom6_dir = os.path.join(DATA_PATH,"hist_run/")
+            file_list = MOM6Misc.mom6_historical(mom6_dir)
 
-# class MOM6Historical:
+            # static field
+            ds_static = MOM6Static.get_mom6_grid()
 
+            # merge the static field with the variables
+            for file in file_list:
+                var_flag = self.var in file
+                if var_flag :
+                    ds = xr.open_dataset(file).sel(time=f'{self.year}-{self.month}')
+            
+            ds = xr.merge([ds_static,ds])
+            # remove the first time index 1980 exist after merging with static field
+            ds = ds.sel(time=f'{self.year}-{self.month}')
+
+        elif self.grid == 'regrid':
+            # getting the forecast/hindcast data
+            mom6_dir = os.path.join(DATA_PATH,"hist_run/regrid/")
+            file_list = MOM6Misc.mom6_historical(mom6_dir)
+
+            # read only the needed file
+            for file in file_list:
+                var_flag = self.var in file
+                if var_flag :
+                    ds = xr.open_dataset(file).sel(time=f'{self.year}-{self.month}')
+
+        return ds
+
+    @staticmethod
+    def get_mom6_all(
+        var : str,
+        grid : Literal['raw','regrid'] = 'regrid'
+    ) -> xr.Dataset:
+        """
+        Return the mom6 all rawgrid/regridded historical run field
+        with the static field combined and setting the
+        lon lat related variables to coordinate 
+
+        Parameters
+        ----------
+        var : str
+            variable name one want to exetract from the data
+        grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
+            The data extracted should be the regridded result or 
+            the original model grid (curvilinear), by default 'raw'
+
+        Returns
+        -------
+        xr.Dataset
+            The Xarray Dataset object is the merged dataset of
+            all forecast field include in the `file_list`. The
+            Dataset object is lazily-loaded.
+        """
+        if grid == 'raw' :
+            # getting the forecast/hindcast data
+            mom6_dir = os.path.join(DATA_PATH,"hist_run/")
+            file_list = MOM6Misc.mom6_historical(mom6_dir)
+
+            file_read = [file for file in file_list if var in file]
+
+            # static field
+            ds_static = MOM6Static.get_mom6_grid()
+
+            # merge the static field with the variables
+            ds = xr.open_mfdataset(file_read,combine='nested',concat_dim='time').sortby('time')
+            ds = xr.merge([ds_static,ds])
+            ds = ds.isel(time=slice(1,None))  # exclude the 1980 empty field due to merge
+
+        elif grid == 'regrid':
+            # getting the forecast/hindcast data
+            mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
+            file_list = MOM6Misc.mom6_historical(mom6_dir)
+
+            file_read = [file for file in file_list if var in file]
+            ds = xr.open_mfdataset(file_read,combine='nested',concat_dim='time').sortby('time')
+
+        return ds
 
 class MOM6Static:
     """
@@ -409,7 +590,7 @@ class MOM6Static:
     @staticmethod
     def get_mom6_mask(
         mask : Literal['wet','wet_c','wet_u','wet_v'] = 'wet',
-        source : Literal['raw','regrid'] = 'raw'
+        grid : Literal['raw','regrid'] = 'raw'
     ) -> xr.DataArray:
         """
         The function is designed to export the various mask provided
@@ -425,7 +606,7 @@ class MOM6Static:
             points), 4. wet_v (0 if land, 1 if ocean at meridional velocity
             (Cv) points), by default 'wet'.
         
-        source : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
+        grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
             The data extracted should be the regridded result or 
             the original model grid (curvilinear), by default 'raw'
 
@@ -434,10 +615,10 @@ class MOM6Static:
         xr.DataArray
             The Xarray DataArray object that represent the ocean mask.
         """
-        if source == 'raw':
+        if grid == 'raw':
             ds = xr.open_dataset(os.path.join(DATA_PATH,'static/ocean_static.nc'))
             da = ds.set_coords(['geolon','geolat'])[mask]
-        elif source == 'regrid':
+        elif grid == 'regrid':
             ds = xr.open_dataset(os.path.join(DATA_PATH,'static/regrid/ocean_static.wet.nc'))
             da = ds[mask]
         return da
