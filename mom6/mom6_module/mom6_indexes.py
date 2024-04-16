@@ -142,54 +142,38 @@ class GulfStreamIndex:
         ds_regrid = xr.Dataset()
         ds_regrid['ssh'] = regridder(ds_data['ssh'])
 
-# %% [markdown]
-# ## Calculate the Sea Surface Height (SSH) anomaly
-# We calculate the anomaly based on the monthly climatology.
+        # Calculate the Sea Surface Height (SSH) anomaly
+        # We calculate the anomaly based on the monthly climatology.
+        da_regrid_anom = (
+            ds_regrid['ssh'].groupby('time.month')-
+            ds_regrid['ssh'].groupby('time.month').mean('time')
+        )
 
-# %%
-da_regrid_anom = ds_regrid['ssh'].groupby('time.month')-ds_regrid['ssh'].groupby('time.month').mean('time')
+        # Calculate the Standard Deviation of SSH Anomaly
+        da_std = da_regrid_anom.std('time')
 
-# %%
-da_regrid_anom.isel(time=1).plot()
+        # Calculate the Latitude of Maximum Standard Deviation
+        # - determine the maximum latitude index
+        da_lat_ind_maxstd = da_std.argmax('lat').compute()
+        da_lat_ind_maxstd.name = 'lat_ind_of_maxstd'
 
-# %% [markdown]
-# ## Calculate the Standard Deviation of SSH Anomaly
+        # - use the maximum latitude index to find the latitude
+        da_lat_maxstd = da_std.lat.isel(lat=da_lat_ind_maxstd).compute()
+        da_lat_maxstd.name = 'lat_of_maxstd'
 
-# %%
-da_std = da_regrid_anom.std('time')
-da_std.plot()
+        # Calculate the Gulf Stream Index
+        # - use the maximum latitude index to find the SSH anomaly along the line shown above.
+        # - calculate the longitude mean of the SSH anomaly (time dependent) 
+        #     $$\text{{SSHa}}$$
+        # - calculate the stardarde deviation of the $\text{{SSHa}}$
+        #     $$\text{{SSHa\_std}}$$
+        # - calculate the index
+        #     $$\text{{Gulf Stream Index}} = \frac{\text{{SSHa}}}{\text{{SSHa\_std}}}$$
+        da_ssh_mean_along_gs = da_regrid_anom.isel(lat=da_lat_ind_maxstd).mean('lon')
+        da_ssh_mean_std_along_gs = da_regrid_anom.isel(lat=da_lat_ind_maxstd).mean('lon').std('time')
+        da_gs_index = da_ssh_mean_along_gs/da_ssh_mean_std_along_gs
+        ds_gs = xr.Dataset()
+        ds_gs['gulf_stream_index'] = da_gs_index
+        
 
-# %% [markdown]
-# ## Calculate the Latitude of Maximum Standard Deviation
-# - determine the maximum latitude index
-# - use the maximum latitude index to find the latitude
-
-# %%
-da_lat_ind_maxstd = da_std.argmax('lat').compute()
-da_lat_ind_maxstd.name = 'lat_ind_of_maxstd'
-da_lat_ind_maxstd.plot()
-
-# %%
-da_lat_maxstd = da_std.lat.isel(lat=da_lat_ind_maxstd).compute()
-da_lat_maxstd.name = 'lat_of_maxstd'
-da_lat_maxstd.plot()
-
-# %% [markdown]
-# ## Calculate the Gulf Stream Index
-# - use the maximum latitude index to find the SSH anomaly along the line shown above.
-# - calculate the longitude mean of the SSH anomaly (time dependent) 
-#     $$\text{{SSHa}}$$
-# - calculate the stardarde deviation of the $\text{{SSHa}}$
-#     $$\text{{SSHa\_std}}$$
-# - calculate the index
-#     $$\text{{Gulf Stream Index}} = \frac{\text{{SSHa}}}{\text{{SSHa\_std}}}$$
-
-# %%
-da_ssh_mean_along_gs = da_regrid_anom.isel(lat=da_lat_ind_maxstd).mean('lon')
-da_ssh_mean_std_along_gs = da_regrid_anom.isel(lat=da_lat_ind_maxstd).mean('lon').std('time')
-da_gs_index = da_ssh_mean_along_gs/da_ssh_mean_std_along_gs
-
-# %%
-da_gs_index.plot()
-
-
+        return ds_gs
