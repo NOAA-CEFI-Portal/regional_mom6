@@ -24,16 +24,16 @@ if __name__=='__main__':
     ini_month = 3
     lead_season_index = 3
     varname = 'tos'
-    data_source = 'regrid'
+    data_grid = 'regrid'
 
     # getting the regionl mask on mom grid
     ds_lme = mp.MOM6Static.get_mom6_regionl_mask()
 
     # getting the ocean mask on mom grid
-    da_lmask = mp.MOM6Static.get_mom6_mask(mask='wet',source=data_source)
+    da_lmask = mp.MOM6Static.get_mom6_mask(mask='wet',grid=data_grid)
 
     # loaded the mom6 raw field
-    mom6Forecast = mp.MOM6Forecast(iyear=ini_year,imonth=ini_month,var=varname,source=data_source)
+    mom6Forecast = mp.MOM6Forecast(iyear=ini_year,imonth=ini_month,var=varname,grid=data_grid)
     ds_data = mom6Forecast.get_mom6()
 
     # load variable to memory
@@ -129,10 +129,10 @@ if __name__=='__main__':
     newRdYlBu_r = ListedColormap(newRdYlBu_r)
 
     # plotting setting
-    if data_source == 'raw':
+    if data_grid == 'raw':
         lon='geolon'
         lat='geolat'
-    elif data_source == 'regrid':
+    elif data_grid == 'regrid':
         lon='lon'
         lat='lat'
     level = [-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.33,0,0.33,0.40,0.5,0.6,0.7,0.8,0.9,1]
