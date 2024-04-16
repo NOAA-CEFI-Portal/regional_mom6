@@ -4,21 +4,14 @@ name: regional_mom
 channels:
   - conda-forge
 dependencies:
-  - bokeh
-  - boto3
   - cartopy
-  - cf_xarray
-  - cfgrib
   - cftime
-  - dash
   - dask
   - gsw
   - jupyterlab
   - matplotlib
   - nc-time-axis
   - netcdf4
-  - numba
-  - plotly
   - pydap
   - pylint
   - pyshp
@@ -27,3 +20,4 @@ dependencies:
   - shapely
   - xarray
   - xesmf
+  - pytest
