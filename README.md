@@ -1,3 +1,5 @@
+[![unittest](https://github.com/NOAA-PSL/regional_mom6/actions/workflows/gha_pytest_push.yml/badge.svg)](https://github.com/NOAA-PSL/regional_mom6/actions/workflows/gha_pytest_push.yml)
+
 NOAA Climate, Ecosystems, and Fisheries Initiative (CEFI) - Data Portal Team
 ========
 
