@@ -1,6 +1,4 @@
-# regional_mom.yml
-
-name: regional_mom
+name: regional_mom6
 channels:
   - conda-forge
 dependencies:
