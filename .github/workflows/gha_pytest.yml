@@ -19,6 +19,10 @@ jobs:
           environment-file: regional_mom6.yml
           init-shell: bash
 
+      - name: Setup package config file
+        shell: bash -l {0}
+        run: cp config.json.template config.json
+
       - name: pytesting
         shell: bash -l {0}
         run: pytest
