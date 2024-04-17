@@ -13,7 +13,9 @@ from typing import (
 import os
 import warnings
 from datetime import date
+import requests
 from dateutil.relativedelta import relativedelta
+from bs4 import BeautifulSoup
 import cftime
 import numpy as np
 import pandas as pd
@@ -31,6 +33,94 @@ RegionalOptions = Literal[
     'GOMEX','GSL','NGOMEX','SGOMEX','Antilles','Floridian'
 ]
 
+
+
+class OpenDapStore:
+    """class to handle the OPeNDAP request
+    """
+    def __init__(
+            self,
+            grid : Literal['raw','regrid'] = 'raw',
+            data_type : Literal['forecast','historical'] = 'historical'
+    ) -> None:
+        """
+        input for the class to get the opendap data
+
+        Parameters
+        ----------
+        grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
+            The data extracted should be the regridded result or 
+            the original model grid (curvilinear), by default 'raw'
+        data_type : Literal[&#39;forecast&#39;,&#39;historical&#39;], optional
+            This determine the data type the user want to use 
+            to calculate the indexes, by default 'historical'
+
+        """
+        self.grid = grid
+        self.data_type = data_type
+
+
+    def get_catalog(self)-> list:
+        """Getting the cataloged files
+
+        Returns
+        -------
+        list
+            a list of url in the form of string that 
+            provide the locations of the data when
+            accessing using opendap
+
+        Raises
+        ------
+        FileNotFoundError
+            When the files is empty that means the init setting 
+            or code must have some incorrect pairing. Debug possibly 
+            needed.
+        """
+        # print(self.data_type)
+        if self.data_type == 'historical' :
+            datatype = 'hist_run'
+        elif self.data_type == 'forecast' :
+            datatype = 'hindcast'
+        # print(datatype)
+
+        if self.grid == 'raw' :
+            gridtype = ''
+        elif self.grid == 'regrid' :
+            gridtype = 'regrid'
+
+        catalog_url = (
+            'https://psl.noaa.gov/thredds/catalog/'+
+            f'Projects/CEFI/regional_mom6/{datatype}/{gridtype}/'
+        )
+        opendap_url = (
+            'https://psl.noaa.gov/thredds/dodsC/'+
+            f'Projects/CEFI/regional_mom6/{datatype}/{gridtype}/'
+        )
+
+        # Send a GET request to the URL
+        html_response = requests.get(catalog_url+'catalog.html', timeout=10)
+
+        # Parse the html response
+        soup = BeautifulSoup(html_response.text, 'html.parser')
+
+        # get all code tage in a tag in the "content" div
+        div_content = soup.find('div', class_='content')
+        a_tags = div_content.find_all('a')
+        all_file_list = [a_tag.find_all('code')[0].text for a_tag in a_tags]
+
+        # remove regrid file and directory
+        files = []
+        for file in all_file_list:
+            if 'bilinear' not in file:
+                if '.nc' in file:
+                    files.append(opendap_url+file)
+        if not files :
+            raise FileNotFoundError
+
+        return files
+
+
 class MOM6Forecast:
     """
     Class for various mom6 forecast related calculation
@@ -45,7 +135,8 @@ class MOM6Forecast:
         iyear : int,
         imonth : int,
         var : str,
-        grid : Literal['raw','regrid'] = 'regrid'
+        grid : Literal['raw','regrid'] = 'raw',
+        source : Literal['local','opendap'] = 'local'
     ) -> None:
         """
         input for the class to get the individual forecast
@@ -61,12 +152,15 @@ class MOM6Forecast:
         grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
             The data extracted should be the regridded result or 
             the original model grid (curvilinear), by default 'raw'
+        source : Literal[&#39;local&#39;,&#39;opendap&#39;], optional
+            The source where to import the data, by default 'local'
 
         """
         self.var = var
         self.iyear = iyear
         self.imonth = imonth
         self.grid = grid
+        self.source = source
 
     def get_mom6(self) -> xr.Dataset:
         """
@@ -82,27 +176,37 @@ class MOM6Forecast:
             Dataset object is lazily-loaded.
         """
         if self.grid == 'raw' :
-            # getting the forecast/hindcast data
-            mom6_dir = os.path.join(DATA_PATH,"hindcast/")
-            file_list = MOM6Misc.mom6_hindcast(mom6_dir)
+            if self.source == 'local':
+                # getting the forecast/hindcast data
+                mom6_dir = os.path.join(DATA_PATH,"hindcast/")
+                file_list = MOM6Misc.mom6_hindcast(mom6_dir)
+                # static field
+                ds_static = MOM6Static.get_mom6_grid()
+            elif self.source == 'opendap':
+                file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
+                for file in file_list:
+                    var_flag = 'static' in file
+                    if var_flag :
+                        ds_static = xr.open_dataset(file)
 
-            # static field
-            ds_static = MOM6Static.get_mom6_grid()
-
-            # merge the static field with the variables
+            # get individual file
             for file in file_list:
                 #iyear_flag = f'i{self.iyear}' in file
                 imon_flag = f'i{self.imonth}' in file
                 var_flag = self.var in file
                 if imon_flag and var_flag :
-                    ds = xr.open_dataset(file).sel(init=f'{self.iyear}-{self.imonth}')
+                    ds = xr.open_dataset(file).sel(init=f'{self.iyear}-{self.imonth}').compute()
 
+            # merge the static field with the variables
             ds = xr.merge([ds_static,ds])
 
         elif self.grid == 'regrid':
-            # getting the forecast/hindcast data
-            mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
-            file_list = MOM6Misc.mom6_hindcast(mom6_dir)
+            if self.source == 'local':
+                # getting the forecast/hindcast data
+                mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
+                file_list = MOM6Misc.mom6_hindcast(mom6_dir)
+            elif self.source == 'opendap':
+                file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
 
             # read only the needed file
             for file in file_list:
@@ -110,14 +214,15 @@ class MOM6Forecast:
                 imon_flag = f'i{self.imonth}' in file
                 var_flag = self.var in file
                 if imon_flag and var_flag :
-                    ds = xr.open_dataset(file).sel(init=f'{self.iyear}-{self.imonth}')
+                    ds = xr.open_dataset(file).sel(init=f'{self.iyear}-{self.imonth}').compute()
 
         return ds
-    
+
     @staticmethod
     def get_mom6_all(
         var : str,
-        grid : Literal['raw','regrid'] = 'regrid'
+        grid : Literal['raw','regrid'] = 'raw',
+        source : Literal['local','opendap'] = 'local'
     ) -> xr.Dataset:
         """
         Return the mom6 all rawgrid/regridded hindcast/forecast field
@@ -131,6 +236,8 @@ class MOM6Forecast:
         grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
             The data extracted should be the regridded result or 
             the original model grid (curvilinear), by default 'raw'
+        source : Literal[&#39;local&#39;,&#39;opendap&#39;], optional
+            The source where to import the data, by default 'local'
 
         Returns
         -------
@@ -140,27 +247,45 @@ class MOM6Forecast:
             Dataset object is lazily-loaded.
         """
         if grid == 'raw' :
-            # getting the forecast/hindcast data
-            mom6_dir = os.path.join(DATA_PATH,"hindcast/")
-            file_list = MOM6Misc.mom6_hindcast(mom6_dir)
+            if source == 'local':
+                # getting the forecast/hindcast data
+                mom6_dir = os.path.join(DATA_PATH,"hindcast/")
+                file_list = MOM6Misc.mom6_hindcast(mom6_dir)
+                # static field
+                ds_static = MOM6Static.get_mom6_grid()
+            elif source == 'opendap':
+                file_list = OpenDapStore(grid=grid,data_type='forecast').get_catalog()
+                for file in file_list:
+                    var_flag = 'static' in file
+                    if var_flag :
+                        ds_static = xr.open_dataset(file)
 
             file_read = [file for file in file_list if var in file]
 
-            # static field
-            ds_static = MOM6Static.get_mom6_grid()
-
             # merge the static field with the variables
-            ds = xr.open_mfdataset(file_read,combine='nested',concat_dim='init').sortby('init')
+            ds = xr.open_mfdataset(
+                file_read,
+                combine='nested',
+                concat_dim='init',
+                chunks={'init': 4,'member':1,'lead':-1}
+            ).sortby('init')
             ds = xr.merge([ds_static,ds])
             ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
 
         elif grid == 'regrid':
-            # getting the forecast/hindcast data
-            mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
-            file_list = MOM6Misc.mom6_hindcast(mom6_dir)
+            if source == 'local':
+                # getting the forecast/hindcast data
+                mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
+                file_list = MOM6Misc.mom6_hindcast(mom6_dir)
+            elif source == 'opendap':
+                file_list = OpenDapStore(grid=grid,data_type='forecast').get_catalog()
 
             file_read = [file for file in file_list if var in file]
-            ds = xr.open_mfdataset(file_read,combine='nested',concat_dim='init').sortby('init')
+            ds = xr.open_mfdataset(
+                file_read,combine='nested',
+                concat_dim='init',
+                chunks={'init': 1,'member':1,'lead':1}
+            ).sortby('init')
 
         return ds
 
@@ -393,12 +518,12 @@ class MOM6Forecast:
     #     region_name : RegionalOptions = 'MAB'
     # ) -> xr.Dataset:
     #     """
-    #     Based on regional averaged value of forecast/hindcast, 
+    #     Based on regional averaged value of forecast/hindcast,
     #     use single initialization's normal distribution
-    #     and pre-defined tercile value based on the long-term 
+    #     and pre-defined tercile value based on the long-term
     #     statistic tercile value to find the probability of
-    #     upper ,normal , and lower tercile 
-        
+    #     upper ,normal , and lower tercile
+
     #     It also find the largest probability in upper (positive),
     #     normal (0), lower (negative)
 
@@ -408,14 +533,14 @@ class MOM6Forecast:
     #         The `lead_bin` used to binned the leading month result
     #         ex: one can set `lead_bins = [0, 3, 6, 9, 12]` for four seasonal
     #         mean. Default is no binning, lead_bins = None.
-        
+
     #     region_name : ({'MAB','GOM','SS','GB','SS_LME',
     #                     'NEUS_LME','SEUS_LME','GOMEX','GSL','NGOMEX',
     #                     'SGOMEX','Antilles','Floridian'), default: "MAB"
     #         String indicating the regional abbreviation one want to perform
     #         the regional averaged tercile calculation.
 
-        
+
     #     Returns
     #     -------
     #     xr.Dataset
@@ -442,7 +567,8 @@ class MOM6Historical:
         year : int,
         month : int,
         day : int = 1,
-        grid : Literal['raw','regrid'] = 'regrid'
+        grid : Literal['raw','regrid'] = 'raw',
+        source : Literal['local','opendap'] = 'local'
     ) -> None:
         """
         input for getting the historical run data
@@ -460,6 +586,8 @@ class MOM6Historical:
         grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
             The data extracted should be the regridded result or 
             the original model grid (curvilinear), by default 'raw'
+        source : Literal[&#39;local&#39;,&#39;opendap&#39;], optional
+            The source where to import the data, by default 'local'
 
         """
         self.var = var
@@ -467,6 +595,7 @@ class MOM6Historical:
         self.month = month
         self.day = day
         self.grid = grid
+        self.source = source
 
     def get_mom6(self) -> xr.Dataset:
         """
@@ -482,40 +611,50 @@ class MOM6Historical:
             Dataset object is lazily-loaded.
         """
         if self.grid == 'raw' :
-            # getting the forecast/hindcast data
-            mom6_dir = os.path.join(DATA_PATH,"hist_run/")
-            file_list = MOM6Misc.mom6_historical(mom6_dir)
-
-            # static field
-            ds_static = MOM6Static.get_mom6_grid()
+            if self.source == 'local':
+                # getting the forecast/hindcast data
+                mom6_dir = os.path.join(DATA_PATH,"hist_run/")
+                file_list = MOM6Misc.mom6_historical(mom6_dir)
+                # static field
+                ds_static = MOM6Static.get_mom6_grid()
+            elif self.source == 'opendap':
+                file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
+                for file in file_list:
+                    var_flag = 'static' in file
+                    if var_flag :
+                        ds_static = xr.open_dataset(file)
 
             # merge the static field with the variables
             for file in file_list:
                 var_flag = self.var in file
                 if var_flag :
-                    ds = xr.open_dataset(file).sel(time=f'{self.year}-{self.month}')
-            
+                    ds = xr.open_dataset(file).sel(time=f'{self.year}-{self.month}').compute()
+
             ds = xr.merge([ds_static,ds])
             # remove the first time index 1980 exist after merging with static field
             ds = ds.sel(time=f'{self.year}-{self.month}')
 
         elif self.grid == 'regrid':
-            # getting the forecast/hindcast data
-            mom6_dir = os.path.join(DATA_PATH,"hist_run/regrid/")
-            file_list = MOM6Misc.mom6_historical(mom6_dir)
+            if self.source == 'local':
+                # getting the forecast/hindcast data
+                mom6_dir = os.path.join(DATA_PATH,"hist_run/regrid/")
+                file_list = MOM6Misc.mom6_historical(mom6_dir)
+            elif self.source == 'opendap':
+                file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
 
             # read only the needed file
             for file in file_list:
                 var_flag = self.var in file
                 if var_flag :
-                    ds = xr.open_dataset(file).sel(time=f'{self.year}-{self.month}')
+                    ds = xr.open_dataset(file).sel(time=f'{self.year}-{self.month}').compute()
 
         return ds
 
     @staticmethod
     def get_mom6_all(
         var : str,
-        grid : Literal['raw','regrid'] = 'regrid'
+        grid : Literal['raw','regrid'] = 'raw',
+        source : Literal['local','opendap'] = 'local'
     ) -> xr.Dataset:
         """
         Return the mom6 all rawgrid/regridded historical run field
@@ -529,6 +668,8 @@ class MOM6Historical:
         grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
             The data extracted should be the regridded result or 
             the original model grid (curvilinear), by default 'raw'
+        source : Literal[&#39;local&#39;,&#39;opendap&#39;], optional
+            The source where to import the data, by default 'local'
 
         Returns
         -------
@@ -538,27 +679,45 @@ class MOM6Historical:
             Dataset object is lazily-loaded.
         """
         if grid == 'raw' :
-            # getting the forecast/hindcast data
-            mom6_dir = os.path.join(DATA_PATH,"hist_run/")
-            file_list = MOM6Misc.mom6_historical(mom6_dir)
+            if source == 'local':
+                # getting the historical run data
+                mom6_dir = os.path.join(DATA_PATH,"hist_run/")
+                file_list = MOM6Misc.mom6_historical(mom6_dir)
+                # static field
+                ds_static = MOM6Static.get_mom6_grid()
+            elif source == 'opendap':
+                file_list = OpenDapStore(grid=grid,data_type='historical').get_catalog()
+                for file in file_list:
+                    var_flag = 'static' in file
+                    if var_flag :
+                        ds_static = xr.open_dataset(file)
 
             file_read = [file for file in file_list if var in file]
 
-            # static field
-            ds_static = MOM6Static.get_mom6_grid()
-
             # merge the static field with the variables
-            ds = xr.open_mfdataset(file_read,combine='nested',concat_dim='time').sortby('time')
+            ds = xr.open_mfdataset(
+                file_read,combine='nested',
+                concat_dim='time',
+                chunks={'time': 100}
+            ).sortby('time')
             ds = xr.merge([ds_static,ds])
             ds = ds.isel(time=slice(1,None))  # exclude the 1980 empty field due to merge
 
         elif grid == 'regrid':
-            # getting the forecast/hindcast data
-            mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
-            file_list = MOM6Misc.mom6_historical(mom6_dir)
+            if source == 'local':
+                # getting the historical run data
+                mom6_dir = os.path.join(DATA_PATH,"hist_run/regrid/")
+                file_list = MOM6Misc.mom6_historical(mom6_dir)
+            elif source == 'opendap':
+                file_list = OpenDapStore(grid=grid,data_type='historical').get_catalog()
 
             file_read = [file for file in file_list if var in file]
-            ds = xr.open_mfdataset(file_read,combine='nested',concat_dim='time').sortby('time')
+            ds = xr.open_mfdataset(
+                file_read,
+                combine='nested',
+                concat_dim='time',
+                chunks={'time': 100}
+            ).sortby('time')
 
         return ds
 
