@@ -6,7 +6,7 @@ on:
       - develop
 
 jobs:
-  checking_json:
+  unittest:
     runs-on: ubuntu-latest
 
     steps:
