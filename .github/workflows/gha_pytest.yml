@@ -2,21 +2,18 @@ name: PR pytest checking
 
 on:
   pull_request:
-     branches:
-       - develop
-       - main
-     paths:
-       - './'
+    branches:
+      - develop
 
 jobs:
   checking_json:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Micromamba ${{ matrix.python-version }}
+      - name: Setup Micromamba
         uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: regional_mom6.yml
