@@ -7,19 +7,11 @@ regional MOM6 output shown in Ross et al., 2023
 Indexes include:
 1. Gulf stream index
 """
-from typing import (
-    Literal,
-    List,
-    Union
-)
-import os
+
 import warnings
 import numpy as np
 import xarray as xr
 import xesmf as xe
-from mom6 import DATA_PATH
-from mom6.mom6_module import mom6_process as mp
-
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -28,30 +20,30 @@ class GulfStreamIndex:
     """
     The class is use to recreate the Gulf Stream Index calculation in detail. 
     Original sources are [Ross et al., 2023](https://gmd.copernicus.org/articles/16/6943/2023/).
-    and [GFDL CEFI github repository](https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main/diagnostics/physics/ssh_eval.py).
+    and [GFDL CEFI github repository]
+    (https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main/diagnostics/physics/ssh_eval.py).
     
     """
 
     def __init__(
        self,
-       data_type : Literal['forecast','historical'] = 'forecast',
-       grid : Literal['raw','regrid'] = 'regrid'
+       ds_data : xr.Dataset,
+       ssh_name : str = 'ssh'
     ) -> None:
-        """
-        input for the class to determine what data the user 
-        want the index to be calculated from.
+        """_summary_
 
         Parameters
         ----------
-        data_type : Literal[&#39;forecast&#39;,&#39;historical&#39;], optional
-            This determine the data type the user want to use 
-            to calculate the indexes, by default 'forecast'
-        grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
-            This determine the type of grid solution the user 
-            want to use to calculate the indexes, by default 'regrid'
+        ds_data : xr.Dataset
+            The sea level height dataset one want to use to 
+            derived the gulf stream index. The coordinate
+            must have the name "lon" and "lat" exactly
+        ssh_name : str
+            The sea level height variable name in the dataset 
         """
-        self.data_type = data_type
-        self.grid = grid
+        self.dataset = ds_data
+        self.varname = ssh_name
+
 
     @staticmethod
     def __region_focus(
@@ -95,7 +87,7 @@ class GulfStreamIndex:
         xr.Dataset
             the regridded Dataset structure
         """
-        
+
 
         # longitude coordinate change -180 180 to 0 360
         if lon_max < 0. :
@@ -120,27 +112,37 @@ class GulfStreamIndex:
     def generate_index(
         self,
     ) -> xr.Dataset:
-        
+        """Generate the gulf stream index
+
+        Returns
+        -------
+        xr.Dataset
+            dataset containing the gulf_stream_index
+            variables.
+        """
+
         # getting the dataset
-        if self.data_type in ['historical']:
-            ds_data = mp.MOM6Historical.get_mom6_all('ssh',grid=self.grid)
-        elif self.data_type in ['forecast']:
-            ds_data = mp.MOM6Forecast.get_mom6_all('ssh',grid=self.grid)        
+        ds_data = self.dataset
 
         # change longitude range from -180 180 to 0 360
-        ds_data['geolon'] = ds_data['geolon']+360.
+        try:
+            lon = ds_data['lon'].data
+        except KeyError as e:
+            raise KeyError("Coordinates should have 'lon' and 'lat' with exact naming") from e
+        lon_ind = np.where(lon<0)
+        lon[lon_ind] += 360.
+        ds_data['lon'].data = lon
+        # ds_data = ds_data.sortby('lon')
 
         # Define Regridding data structure
         ds_regrid = self.__region_focus()
 
         # use xesmf to create regridder
-        if self.grid in ['raw']:
-            ds_data = ds_data.rename({'geolon':'lon','geolat':'lat'})
         regridder = xe.Regridder(ds_data, ds_regrid, "bilinear", unmapped_to_nan=True)
 
         # perform regrid for each field
         ds_regrid = xr.Dataset()
-        ds_regrid['ssh'] = regridder(ds_data['ssh'])
+        ds_regrid['ssh'] = regridder(ds_data[self.varname])
 
         # Calculate the Sea Surface Height (SSH) anomaly
         # We calculate the anomaly based on the monthly climatology.
@@ -163,17 +165,25 @@ class GulfStreamIndex:
 
         # Calculate the Gulf Stream Index
         # - use the maximum latitude index to find the SSH anomaly along the line shown above.
-        # - calculate the longitude mean of the SSH anomaly (time dependent) 
+        # - calculate the longitude mean of the SSH anomaly (time dependent)
         #     $$\text{{SSHa}}$$
         # - calculate the stardarde deviation of the $\text{{SSHa}}$
         #     $$\text{{SSHa\_std}}$$
         # - calculate the index
         #     $$\text{{Gulf Stream Index}} = \frac{\text{{SSHa}}}{\text{{SSHa\_std}}}$$
-        da_ssh_mean_along_gs = da_regrid_anom.isel(lat=da_lat_ind_maxstd).mean('lon')
-        da_ssh_mean_std_along_gs = da_regrid_anom.isel(lat=da_lat_ind_maxstd).mean('lon').std('time')
+        da_ssh_mean_along_gs = (
+            da_regrid_anom
+            .isel(lat=da_lat_ind_maxstd)
+            .mean('lon')
+        )
+        da_ssh_mean_std_along_gs = (
+            da_regrid_anom
+            .isel(lat=da_lat_ind_maxstd)
+            .mean('lon')
+            .std('time')
+        )
         da_gs_index = da_ssh_mean_along_gs/da_ssh_mean_std_along_gs
         ds_gs = xr.Dataset()
         ds_gs['gulf_stream_index'] = da_gs_index
-        
 
         return ds_gs
