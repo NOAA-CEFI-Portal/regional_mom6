@@ -1,0 +1,12 @@
+name: regional_mom6
+channels:
+  - conda-forge
+dependencies:
+  - dask
+  - netcdf4
+  - pydap
+  - python=3.11
+  - xarray
+  - xesmf
+  - pytest
+  - beautifulsoup4

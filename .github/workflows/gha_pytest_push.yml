@@ -1,0 +1,29 @@
+name: push pytest unittest
+
+on:
+  push:
+    branches:
+      - develop
+      - main    
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: regional_mom6.yml
+          init-shell: bash
+
+      - name: Setup package config file
+        shell: bash -l {0}
+        run: cp config.json.template config.json
+
+      - name: pytesting
+        shell: bash -l {0}
+        run: pytest
