@@ -16,22 +16,37 @@ We welcome external contribution to the package. Please feel free to submit issu
 To use the module in the package at this stage
 1. Create a conda/mamba env based on the region_mom.yml
 
-    ```conda env create -f region_mom.yml```
-2. Activate the conda env `regional_mom`
+   ```
+   conda env create -f region_mom.yml
+   ```
+3. Activate the conda env `regional_mom`
 
-    ```conda activate regional_mom```
-3. change your location to the top level of cloned repo
+   ```
+   conda activate regional_mom
+   ```
+4. change your location to the top level of cloned repo
 
-    ```cd <dir_path_to_regional_mom6>/regional_mom6/```
-4. pip install the package in develop mode
+   ```
+   cd <dir_path_to_regional_mom6>/regional_mom6/
+   ```
+5. pip install the package in develop mode
 
-    ```pip install -e .```
-5. setup config file (data path for local data directory)
+   ```
+   pip install -e .
+   ```
+6. setup config file (data path for local data directory)
 
-    ```cp config.json.template config.json```
-    and open the `config.json` and input the absolute path to the top level of the regional mom6 data
+    ```
+    cp config.json.template config.json
+    ```
+   
+    open the `config.json` and input the absolute path to the top level of the regional mom6 data
 
-    ```"data_path": "<your-mom6data-path-here>"```
+    ```
+    {
+    "data_path": "<your-mom6data-path-here>"
+    }
+    ```
 
     current setup assuming the data directory structure is fixed (flexibility need to be considered)
 
