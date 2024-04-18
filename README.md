@@ -26,3 +26,12 @@ To use the module in the package at this stage
 4. pip install the package in develop mode
 
     ```pip install -e .```
+5. setup config file (data path for local data directory)
+
+    ```cp config.json.template config.json```
+    and open the `config.json` and input the absolute path to the top level of the regional mom6 data
+
+    ```"data_path": "<your-mom6data-path-here>"```
+
+    current setup assuming the data directory structure is fixed (flexibility need to be considered)
+
