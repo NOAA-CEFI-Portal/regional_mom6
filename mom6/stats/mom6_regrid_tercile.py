@@ -2,6 +2,10 @@
 This script is designed to calculate the tercile value based on the
 REGRIDDED forecast/hindcast data. 
 
+----
+future improvement
+1. the ability to also deal with the raw grid
+
 """
 # %%
 import os
