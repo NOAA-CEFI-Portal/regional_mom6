@@ -1,6 +1,7 @@
 """
-This script is designed to calculate the tercile value based on the
-REGRIDDED forecast/hindcast data. 
+This script is designed to calculate the regionally 
+avereaged tercile value (EPU) based on the raw gridded
+regional MOM6 forecast output
 
 """
 # %%
