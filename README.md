@@ -17,12 +17,12 @@ To use the module in the package at this stage
 1. Create a conda/mamba env based on the region_mom.yml
 
    ```
-   conda env create -f region_mom.yml
+   conda env create -f regional_mom6.yml
    ```
-3. Activate the conda env `regional_mom`
+3. Activate the conda env `regional_mom6`
 
    ```
-   conda activate regional_mom
+   conda activate regional_mom6
    ```
 4. change your location to the top level of cloned repo
 
