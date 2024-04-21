@@ -11,6 +11,7 @@ from typing import (
     Union
 )
 import os
+import glob
 import warnings
 from datetime import date
 import requests
@@ -326,7 +327,7 @@ class MOM6Forecast:
 
         # getting the regional averaged forecast/hindcast tercile data based always on raw data
         mom6_dir = os.path.join(DATA_PATH,"tercile_calculation/")
-        return xr.open_dataset(f'{mom6_dir}/{self.var}_forecasts_i{self.imonth:2d}.region.nc')
+        return xr.open_dataset(f'{mom6_dir}/{self.var}_forecasts_i{self.imonth:02d}.region.nc')
 
 
     def get_init_fcst_time(
@@ -530,48 +531,48 @@ class MOM6Forecast:
 
         return ds_tercile_prob
 
-    # def calculate_regional_tercile_prob(
-    #     self,
-    #     lead_bins : List[int] = None,
-    #     region_name : RegionalOptions = 'MAB'
-    # ) -> xr.Dataset:
-    #     """
-    #     Based on regional averaged value of forecast/hindcast,
-    #     use single initialization's normal distribution
-    #     and pre-defined tercile value based on the long-term
-    #     statistic tercile value to find the probability of
-    #     upper ,normal , and lower tercile
+    def calculate_regional_tercile_prob(
+        self,
+        lead_bins : List[int] = None,
+        region_name : RegionalOptions = 'MAB'
+    ) -> xr.Dataset:
+        """
+        Based on regional averaged value of forecast/hindcast,
+        use single initialization's normal distribution
+        and pre-defined tercile value based on the long-term
+        statistic tercile value to find the probability of
+        upper ,normal , and lower tercile
 
-    #     It also find the largest probability in upper (positive),
-    #     normal (0), lower (negative)
+        It also find the largest probability in upper (positive),
+        normal (0), lower (negative)
 
-    #     Parameters
-    #     ----------
-    #     lead_bins : List[int]
-    #         The `lead_bin` used to binned the leading month result
-    #         ex: one can set `lead_bins = [0, 3, 6, 9, 12]` for four seasonal
-    #         mean. Default is no binning, lead_bins = None.
+        Parameters
+        ----------
+        lead_bins : List[int]
+            The `lead_bin` used to binned the leading month result
+            ex: one can set `lead_bins = [0, 3, 6, 9, 12]` for four seasonal
+            mean. Default is no binning, lead_bins = None.
 
-    #     region_name : ({'MAB','GOM','SS','GB','SS_LME',
-    #                     'NEUS_LME','SEUS_LME','GOMEX','GSL','NGOMEX',
-    #                     'SGOMEX','Antilles','Floridian'), default: "MAB"
-    #         String indicating the regional abbreviation one want to perform
-    #         the regional averaged tercile calculation.
+        region_name : ({'MAB','GOM','SS','GB','SS_LME',
+                        'NEUS_LME','SEUS_LME','GOMEX','GSL','NGOMEX',
+                        'SGOMEX','Antilles','Floridian'), default: "MAB"
+            String indicating the regional abbreviation one want to perform
+            the regional averaged tercile calculation.
 
 
-    #     Returns
-    #     -------
-    #     xr.Dataset
-    #         two variables are in the dataset. (1) tercile_prob
-    #         (2) tercile_prob_max.
+        Returns
+        -------
+        xr.Dataset
+            two variables are in the dataset. (1) tercile_prob
+            (2) tercile_prob_max.
 
-    #         1 is a 2D matrix with the dimension
-    #         of lead x 3. This are the probability of
-    #         upper(lead), normal(lead), and lower tercile(lead)
+            1 is a 2D matrix with the dimension
+            of lead x 3. This are the probability of
+            upper(lead), normal(lead), and lower tercile(lead)
 
-    #         2 is the 1D array of largest probability in upper (positive),
-    #         normal (0), lower (negative) with dimension of (lead)
-    #     """
+            2 is the 1D array of largest probability in upper (positive),
+            normal (0), lower (negative) with dimension of (lead)
+        """
 
 class MOM6Historical:
     """
@@ -751,7 +752,13 @@ class MOM6Static:
         """return the EPU mask in the original mom6 grid
         """
         ds = xr.open_dataset(os.path.join(DATA_PATH,"masks/region_masks.nc"))
-        return ds.set_coords(['geolon','geolat'])
+        ds = ds.set_coords(['geolon','geolat'])
+        # change the boolean to 1,nan for mask
+        for var in list(ds.keys()):
+            if var not in ['areacello', 'geolat', 'geolon']:
+                ds[var] = xr.where(ds[var],1.,np.nan)
+
+        return ds
 
     @staticmethod
     def get_mom6_grid() -> xr.Dataset:
@@ -875,19 +882,21 @@ class MOM6Misc:
             for the hindcast/forecast data
            
         """
-        # input of array of different variable forecast
-        tob_files = [f"tob_forecasts_i{mon}.nc" for mon in range(3,13,3)]
-        tos_files = [f"tos_forecasts_i{mon}.nc" for mon in range(3,13,3)]
+        # # input of array of different variable forecast
+        # tob_files = [f"tob_forecasts_i{mon}.nc" for mon in range(3,13,3)]
+        # tos_files = [f"tos_forecasts_i{mon}.nc" for mon in range(3,13,3)]
 
-        # h point list
-        hpoint_file_list = (
-            tob_files+
-            tos_files
-        )
+        # # h point list
+        # hpoint_file_list = (
+        #     tob_files+
+        #     tos_files
+        # )
 
-        hpoint_file_list = [f"{hindcast_dir}{file}" for file in hpoint_file_list]
+        # hpoint_file_list = [f"{hindcast_dir}{file}" for file in hpoint_file_list]
 
-        all_file_list = hpoint_file_list
+        # all_file_list = hpoint_file_list
+
+        all_file_list = glob.glob(f'{hindcast_dir}/*.nc')
 
         return all_file_list
 
