@@ -8,7 +8,6 @@ regional MOM6 forecast output
 import os
 import sys
 import warnings
-import numpy as np
 import xarray as xr
 from dask.distributed import Client
 from mom6 import DATA_PATH
@@ -52,7 +51,8 @@ if __name__=="__main__":
         for region in list(ds_mask.keys()):
             if region != 'areacello':
                 # calculate the regional area-weighted mean
-                da_mask = xr.where(ds_mask[region],1.,np.nan)
+                da_mask = ds_mask[region]
+                
                 da = (
                     (da*da_mask*da_area).sum(dim=['xh','yh'])/
                     (da_mask*da_area).sum(dim=['xh','yh'])
