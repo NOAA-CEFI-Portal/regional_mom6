@@ -134,18 +134,10 @@ class MOM6Forecast:
         tercile_relative_dir : str = None,
         grid : Literal['raw','regrid'] = 'raw',
         source : Literal['local','opendap'] = 'local',
-        iyear : int = 1993,
-        imonth : int = 3,
     ) -> None:
         """
-        input for the class to get the individual forecast
+        input for the class to get the forecast data
 
-        Parameters
-        ----------
-        iyear : int
-            initial year of forecast
-        imonth : int
-            initial month
         var : str
             variable name one want to exetract from the data
         data_relative_dir : str
@@ -170,45 +162,18 @@ class MOM6Forecast:
 
         """
         self.var = var
-        self.iyear = iyear
-        self.imonth = imonth
         self.grid = grid
         self.source = source
         self.data_relative_dir = data_relative_dir
         self.static_relative_dir = static_relative_dir
         self.tercile_relative_dir = tercile_relative_dir
 
-    @staticmethod
-    def get_mom6_all(
-        var : str,
-        data_relative_dir : str = None,
-        static_relative_dir  : str = None,
-        grid : Literal['raw','regrid'] = 'raw',
-        source : Literal['local','opendap'] = 'local'
-    ) -> xr.Dataset:
+
+    def get_all(self) -> xr.Dataset:
         """
         Return the mom6 all rawgrid/regridded hindcast/forecast field
         with the static field combined and setting the
         lon lat related variables to coordinate 
-
-        Parameters
-        ----------
-        var : str
-            variable name one want to exetract from the data
-        data_relative_dir : str
-            relative path from DATAPATH setup in config file to 
-            the actual forecast/hindcast data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/
-        static_relative_dir : str 
-            relative path from DATAPATH setup in config file to 
-            the actual static file (grid info) data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/.
-            This is needed when setting grid to `raw`
-        grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
-            The data extracted should be the regridded result or 
-            the original model grid (curvilinear), by default 'raw'
-        source : Literal[&#39;local&#39;,&#39;opendap&#39;], optional
-            The source where to import the data, by default 'local'
 
         Returns
         -------
@@ -217,27 +182,27 @@ class MOM6Forecast:
             all forecast field include in the `file_list`. The
             Dataset object is lazily-loaded.
         """
-        if grid == 'raw' :
-            if source == 'local':
+        if self.grid == 'raw' :
+            if self.source == 'local':
                 # getting the forecast/hindcast data
-                if data_relative_dir is None :
+                if self.data_relative_dir is None :
                     raise OSError('for local source please input the path to data file')
                 else:
-                    mom6_dir = os.path.join(DATA_PATH,data_relative_dir)
+                    mom6_dir = os.path.join(DATA_PATH,self.data_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
                 # static field
-                if static_relative_dir is None :
+                if self.static_relative_dir is None :
                     raise OSError('for raw grid please input the path to grid file')
                 else:
-                    ds_static = MOM6Static.get_mom6_grid(static_relative_dir)
-            elif source == 'opendap':
-                file_list = OpenDapStore(grid=grid,data_type='forecast').get_catalog()
+                    ds_static = MOM6Static.get_mom6_grid(self.static_relative_dir)
+            elif self.source == 'opendap':
+                file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 for file in file_list:
                     var_flag = 'static' in file
                     if var_flag :
                         ds_static = xr.open_dataset(file)
 
-            file_read = [file for file in file_list if var in file]
+            file_read = [file for file in file_list if self.var in file]
 
             # merge the static field with the variables
             ds = xr.open_mfdataset(
@@ -247,28 +212,30 @@ class MOM6Forecast:
                 chunks={'init': 4,'member':1,'lead':-1}
             ).sortby('init')
             ds = xr.merge([ds_static,ds])
-            ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
+            # ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
 
             # test if accident read regrid file
             try:
-                test_regrid = ds['lon']
-                test_regrid = ds['lat']
-                raise OSError('regrid file should not have lon lat dim. Check data directory path or grid setting!')
+                test_regrid_lon = ds['lon']
+                test_regrid_lat = ds['lat']
+                raise OSError(
+                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'Check data directory path or grid setting!')
             except KeyError:
                 pass
 
-        elif grid == 'regrid':
-            if source == 'local':
+        elif self.grid == 'regrid':
+            if self.source == 'local':
                 # getting the forecast/hindcast data
-                if data_relative_dir is None :
+                if self.data_relative_dir is None :
                     raise OSError('for local source please input the path to data file')
                 else:
-                    mom6_dir = os.path.join(DATA_PATH,data_relative_dir)
+                    mom6_dir = os.path.join(DATA_PATH,self.data_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
-            elif source == 'opendap':
-                file_list = OpenDapStore(grid=grid,data_type='forecast').get_catalog()
+            elif self.source == 'opendap':
+                file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
 
-            file_read = [file for file in file_list if var in file]
+            file_read = [file for file in file_list if self.var in file]
             ds = xr.open_mfdataset(
                 file_read,combine='nested',
                 concat_dim='init',
@@ -277,38 +244,25 @@ class MOM6Forecast:
 
             # test if accident read raw file
             try:
-                test_raw = ds['xh']
-                test_raw = ds['yh']
-                raise OSError('regrid file should not have xh yh dim. Check data directory path or grid setting!')
+                test_raw_x = ds['xh']
+                test_raw_y = ds['yh']
+                raise OSError(
+                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'Check data directory path or grid setting!')
             except KeyError:
                 pass
-            
+
         return ds
-    
-    @staticmethod
-    def get_mom6_tercile(
-        var : str,
-        data_relative_dir : str,
-        grid : Literal['raw','regrid'] = 'raw',
-        source : Literal['local','opendap'] = 'local',
+
+    def get_tercile(
+        self,
         average_type : Literal['grid','region'] = 'grid'
     ) -> xr.Dataset:
         """return the mom6 tercile from the forecast
 
         Parameters
         ----------
-        var : str
-            variable name one want to exetract from the data
-        data_relative_dir : str
-            relative path from DATAPATH setup in config file to 
-            the actual forecast/hindcast data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/
-        grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
-            The data extracted should be the regridded result or 
-            the original model grid (curvilinear), by default 'raw'
-        source : Literal[&#39;local&#39;,&#39;opendap&#39;], optional
-            The source where to import the data, by default 'local'
-        data_type :  Literal[&#39;grid&#39;,&#39;region&#39;], optional
+        average_type :  Literal[&#39;grid&#39;,&#39;region&#39;], optional
             The type of data. Gridded choose 'grid' and regional 
             area averaged choose 'region', by default 'grid'
 
@@ -321,32 +275,100 @@ class MOM6Forecast:
             tercile. `f_midhigh` represent the boundary value between middle
             and upper tercile. (the filename 'quantile' MIGHT be error naming)
         """
-        mom6_dir = os.path.join(DATA_PATH,data_relative_dir)
-        file_list = glob.glob(f'{mom6_dir}/*.nc')
+        if self.grid == 'raw' :
+            if self.source == 'local':
+                # getting the forecast/hindcast data
+                if self.tercile_relative_dir is None :
+                    raise OSError('for local source please input the path to tercile file')
+                else:
+                    mom6_dir = os.path.join(DATA_PATH,self.tercile_relative_dir)
+                file_list = glob.glob(f'{mom6_dir}/*.nc')
+                # static field
+                if self.static_relative_dir is None :
+                    raise OSError('for raw grid please input the path to grid file')
+                else:
+                    ds_static = MOM6Static.get_mom6_grid(self.static_relative_dir)
+            elif self.source == 'opendap':
+                file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
+                for file in file_list:
+                    var_flag = 'static' in file
+                    if var_flag :
+                        ds_static = xr.open_dataset(file)
 
-        # refine based on var name
-        file_read = [file for file in file_list if var in file]
+            # refine based on var name
+            file_read = [file for file in file_list if self.var in file]
+            # refine based on region
+            if average_type == 'grid':
+                file_read = [file for file in file_read if '.region.' not in file]
+            elif average_type == 'region':
+                file_read = [file for file in file_read if '.region.' in file]
 
-        # refine based on region
-        if average_type == 'grid':
-            file_read = [file for file in file_read if '.region.' not in file]
-        elif average_type == 'region':
-            file_read = [file for file in file_read if '.region.' in file]
+            # merge the static field with the variables
+            ds = xr.open_mfdataset(
+                file_read,
+                combine='nested',
+                concat_dim='init',
+                chunks={'init': 4,'member':1,'lead':-1}
+            ).sortby('init')
+            ds = xr.merge([ds_static,ds])
+            # ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
 
-        ds = xr.open_mfdataset(
+            # test if accident read regrid file
+            try:
+                test_regrid_lon = ds['lon']
+                test_regrid_lat = ds['lat']
+                raise OSError(
+                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'Check data directory path or grid setting!')
+            except KeyError:
+                pass
+
+        elif self.grid == 'regrid':
+            if self.source == 'local':
+                # getting the forecast/hindcast data
+                if self.tercile_relative_dir is None :
+                    raise OSError('for local source please input the path to data file')
+                else:
+                    mom6_dir = os.path.join(DATA_PATH,self.tercile_relative_dir)
+                file_list = glob.glob(f'{mom6_dir}/*.nc')
+            elif self.source == 'opendap':
+                file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
+
+            file_read = [file for file in file_list if self.var in file]
+            ds = xr.open_mfdataset(
                 file_read,combine='nested',
                 concat_dim='init',
                 chunks={'init': 1,'member':1,'lead':1}
             ).sortby('init')
-        
+
+            # test if accident read raw file
+            try:
+                test_raw_x = ds['xh']
+                test_raw_y = ds['yh']
+                raise OSError(
+                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'Check data directory path or grid setting!')
+            except KeyError:
+                pass
+
         return ds
 
-        
-    def get_mom6(self) -> xr.Dataset:
+    def get_single(
+        self,
+        iyear : int = 1993,
+        imonth : int = 3,
+    ) -> xr.Dataset:
         """
         Return the mom6 rawgrid/regridded hindcast/forecast field
         with the static field combined and setting the
         lon lat related variables to coordinate 
+
+        Parameters
+        ----------
+        iyear : int
+            initial year of forecast
+        imonth : int
+            initial month
 
         Returns
         -------
@@ -355,26 +377,18 @@ class MOM6Forecast:
             all forecast field include in the `file_list`. The
             Dataset object is lazily-loaded.
         """
-        ds = self.get_mom6_all(
-            var = self.var,
-            data_relative_dir=self.data_relative_dir,
-            grid = self.grid,
-            source = self.source,
-            static_relative_dir=self.static_relative_dir
-        )
+        ds = self.get_all()
 
         min_year = ds['init.year'].min().data
         max_year = ds['init.year'].max().data
-        min_mon = ds['init.month'].min().data
-        max_mon = ds['init.month'].max().data
 
-        ds = ds.sel(init=f'{self.iyear}-{self.imonth}',method='nearest')
+        ds = ds.sel(init=f'{iyear}-{imonth:02d}',method='nearest')
 
-        if ds['init.year'].data != self.iyear and ds['init.month'].data != self.imonth:
+        if ds['init.year'].data != iyear or ds['init.month'].data != imonth:
             raise IndexError(
                 'input iyear and imonth out of data range, '+
                 f'{min_year} <= iyear <= {max_year}, '+
-                f'{min_mon} <= imonth <= {max_mon} '
+                'imonth can only be 3,6,9,12'
             )
 
         return ds
@@ -382,12 +396,18 @@ class MOM6Forecast:
 
     def get_init_fcst_time(
         self,
+        iyear : int = 1993,
+        imonth : int = 3,
         lead_bins : List[int] = None
     ) -> dict:
         """Setup the initial and forecast time format for output
 
         Parameters
         ----------
+        iyear : int
+            initial year of forecast
+        imonth : int
+            initial month
         lead_bins : List[int]
             The `lead_bin` used to binned the leading month result
             example is `lead_bins = [0, 3, 6, 9, 12]` for four seasonal
@@ -403,7 +423,7 @@ class MOM6Forecast:
             lead_bins = [0, 3, 6, 9, 12]
 
         # get the cftime of initial time
-        btime = cftime.datetime(self.iyear,self.imonth,1)
+        btime = cftime.datetime(iyear,imonth,1)
 
         # store the forecast time format based on all leadtime
         forecasttime = []
@@ -445,20 +465,16 @@ class MOM6Forecast:
 
 class MOM6Historical:
     """
-    Class for various mom6 historical run related calculation
-    - get the mom6 files
+    Class for various mom6 historical run IO
 
     """
     def __init__(
         self,
         var : str,
-        data_relative_dir : str,
-        year : int,
-        month : int,
-        day : int = 1,
+        data_relative_dir : str = None,
         static_relative_dir  : str = None,
         grid : Literal['raw','regrid'] = 'raw',
-        source : Literal['local','opendap'] = 'local'
+        source : Literal['local','opendap'] = 'local',
     ) -> None:
         """
         input for getting the historical run data
@@ -469,18 +485,12 @@ class MOM6Historical:
             variable name one want to exetract from the data
         data_relative_dir : str
             relative path from DATAPATH setup in config file to 
-            the actual forecast/hindcast data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/
-        year : int
-            year of historical run
-        month : int
-            month of the historical run
-        day : int
-            day in month of the historical run
+            the actual historical run data, by setting 'hist_run/'
+            which makes the absolute path to DATAPATH/hist_run/
         static_relative_dir : str 
             relative path from DATAPATH setup in config file to 
-            the actual static file (grid info) data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/.
+            the actual static file (grid info) data, by setting 'static/'
+            which makes the absolute path to DATAPATH/static/.
             This is needed when setting grid to `raw`
         grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
             The data extracted should be the regridded result or 
@@ -490,45 +500,16 @@ class MOM6Historical:
 
         """
         self.var = var
-        self.year = year
-        self.month = month
-        self.day = day
         self.grid = grid
         self.source = source
         self.data_relative_dir = data_relative_dir
         self.static_relative_dir = static_relative_dir
 
-    @staticmethod
-    def get_mom6_all(
-        var : str,
-        data_relative_dir  : str,
-        static_relative_dir  : str = None,
-        grid : Literal['raw','regrid'] = 'raw',
-        source : Literal['local','opendap'] = 'local'
-    ) -> xr.Dataset:
+    def get_all(self) -> xr.Dataset:
         """
         Return the mom6 all rawgrid/regridded historical run field
         with the static field combined and setting the
         lon lat related variables to coordinate 
-
-        Parameters
-        ----------
-        var : str
-            variable name one want to exetract from the data
-        data_relative_dir : str
-            relative path from DATAPATH setup in config file to 
-            the actual forecast/hindcast data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/
-        static_relative_dir : str 
-            relative path from DATAPATH setup in config file to 
-            the actual static file (grid info) data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/.
-            This is needed when setting grid to `raw`
-        grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
-            The data extracted should be the regridded result or 
-            the original model grid (curvilinear), by default 'raw'
-        source : Literal[&#39;local&#39;,&#39;opendap&#39;], optional
-            The source where to import the data, by default 'local'
 
         Returns
         -------
@@ -537,24 +518,27 @@ class MOM6Historical:
             all forecast field include in the `file_list`. The
             Dataset object is lazily-loaded.
         """
-        if grid == 'raw' :
-            if source == 'local':
+        if self.grid == 'raw' :
+            if self.source == 'local':
                 # getting the historical run data
-                mom6_dir = os.path.join(DATA_PATH,data_relative_dir)
+                if self.data_relative_dir is None :
+                    raise OSError('for local source please input the path to data file')
+                else:
+                    mom6_dir = os.path.join(DATA_PATH,self.data_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
                 # static field
-                if static_relative_dir is None :
+                if self.static_relative_dir is None :
                     raise IOError('for raw grid please input the path to grid file')
                 else:
-                    ds_static = MOM6Static.get_mom6_grid(static_relative_dir)
-            elif source == 'opendap':
-                file_list = OpenDapStore(grid=grid,data_type='historical').get_catalog()
+                    ds_static = MOM6Static.get_mom6_grid(self.static_relative_dir)
+            elif self.source == 'opendap':
+                file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
                 for file in file_list:
                     var_flag = 'static' in file
                     if var_flag :
                         ds_static = xr.open_dataset(file)
 
-            file_read = [file for file in file_list if var in file]
+            file_read = [file for file in file_list if self.var in file]
 
             # merge the static field with the variables
             ds = xr.open_mfdataset(
@@ -565,15 +549,28 @@ class MOM6Historical:
             ds = xr.merge([ds_static,ds])
             ds = ds.isel(time=slice(1,None))  # exclude the 1980 empty field due to merge
 
-        elif grid == 'regrid':
-            if source == 'local':
-                # getting the historical run data
-                mom6_dir = os.path.join(DATA_PATH,data_relative_dir)
-                file_list = glob.glob(f'{mom6_dir}/*.nc')
-            elif source == 'opendap':
-                file_list = OpenDapStore(grid=grid,data_type='historical').get_catalog()
+            # test if accident read regrid file
+            try:
+                test_regrid_lon = ds['lon']
+                test_regrid_lat = ds['lat']
+                raise OSError(
+                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'Check data directory path or grid setting!')
+            except KeyError:
+                pass
 
-            file_read = [file for file in file_list if var in file]
+        elif self.grid == 'regrid':
+            if self.source == 'local':
+                # getting the historical run data
+                if self.data_relative_dir is None :
+                    raise OSError('for local source please input the path to data file')
+                else:
+                    mom6_dir = os.path.join(DATA_PATH,self.data_relative_dir)
+                file_list = glob.glob(f'{mom6_dir}/*.nc')
+            elif self.source == 'opendap':
+                file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
+
+            file_read = [file for file in file_list if self.var in file]
             ds = xr.open_mfdataset(
                 file_read,
                 combine='nested',
@@ -581,13 +578,37 @@ class MOM6Historical:
                 chunks={'time': 100}
             ).sortby('time')
 
+            # test if accident read raw file
+            try:
+                test_raw_x = ds['xh']
+                test_raw_y = ds['yh']
+                raise OSError(
+                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'Check data directory path or grid setting!')
+            except KeyError:
+                pass
+
         return ds
 
-    def get_mom6(self) -> xr.Dataset:
+    def get_single(
+        self,
+        year : int = 1993,
+        month : int = 1,
+        day : int = 1,
+    ) -> xr.Dataset:
         """
         Return the mom6 rawgrid/regridded historical run field
         with the static field combined and setting the
         lon lat related variables to coordinate 
+
+        Parameters
+        -------
+        year : int
+            year of historical run
+        month : int
+            month of the historical run
+        day : int
+            day in month of the historical run
 
         Returns
         -------
@@ -596,14 +617,36 @@ class MOM6Historical:
             all forecast field include in the `file_list`. The
             Dataset object is lazily-loaded.
         """
-        ds = self.get_mom6_all(
-            var = self.var,
-            data_relative_dir = self.data_relative_dir,
-            grid = self.grid,
-            source = self.source,
-            static_relative_dir=self.static_relative_dir
-        )
-        ds = ds.sel(time=f'{self.year}-{self.month}',method='nearest').compute()
+        ds = self.get_all()
+
+        min_year = ds['time.year'].min().data
+        max_year = ds['time.year'].max().data
+        delta_t = (
+            ds.isel(time=1).time.data-ds.isel(time=0).time.data
+        ).astype('timedelta64[D]')/np.timedelta64(1,'D')
+        days = int(delta_t)
+        if days > 1:
+            ds = ds.sel(time=f'{year}-{month:02d}-15',method='nearest')
+
+            if (ds['time.year'].data != year or
+                ds['time.month'].data != month):
+                raise IndexError(
+                    'input year and month out of data range, '+
+                    f'{min_year} <= year <= {max_year}, '+
+                    '1 <= month <= 12'
+                )
+        if days <= 1:
+            ds = ds.sel(time=f'{year}-{month:02d}-{day:02d}',method='nearest')
+
+            if (ds['time.year'].data != year or
+                ds['time.month'].data != month or
+                ds['time.day'].data != day):
+                raise IndexError(
+                    'input year and month out of data range, '+
+                    f'{min_year} <= year <= {max_year}, '+
+                    '1 <= month <= 12'
+                    '1 <= day <= 31'
+                )
 
         return ds
 
@@ -611,7 +654,7 @@ class MOM6Static:
     """
     Class for getting various Static field
     1. regional mask in raw regional mom6 grid
-    2. static file for grid information
+    2. static file for grid and mask information
     ...
     """
     @staticmethod
