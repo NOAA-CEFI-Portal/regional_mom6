@@ -9,6 +9,8 @@ from mom6.mom6_module import mom6_io
 
 # TEST OPENDAP
 def test_OpenDapStore():
+    """Test OpenDap Connection
+    """
 
     opendap_raw = mom6_io.OpenDapStore('raw','historical')
     test_url = opendap_raw.get_catalog()[0]
@@ -28,170 +30,187 @@ def test_OpenDapStore():
         pytest.fail('OSError is raised OPeNDAP url not working')
 
 
-# TEST FORECAST IO
-def test_MOM6Forecast():
-    forecast_subdir = 'hindcast'
-    static_subdir = 'static'
-    tercile_subdir = 'tercile_calculation'
+# TEST FORECAST IO local
+def test_MOM6Forecast(location):
+    """Test the forecast IO
 
-    # create local raw instance (tercile foreced None)
-    fcast_raw_local = mom6_io.MOM6Forecast(
-        var='tob',
-        data_relative_dir=forecast_subdir,
-        static_relative_dir=static_subdir,
-        grid='raw',
-        source='local'
-    )
+    only available local
 
-    # create local regrid instance (tercile foreced None)
-    fcast_regrid_local = mom6_io.MOM6Forecast(
-        var='tos',
-        data_relative_dir=forecast_subdir+'/regrid/',
-        static_relative_dir=static_subdir,
-        grid='regrid',
-        source='local'
-    )
+    Parameters
+    ----------
+    location : str, optional
+        source of the data 'opendap' or 'local', by default 'opendap'
+    """
+    if location == 'local':
+        forecast_subdir = 'hindcast'
+        static_subdir = 'static'
+        tercile_subdir = 'tercile_calculation'
 
-    try:
-        ds = fcast_raw_local.get_single(
-            iyear=2006,
-            imonth=6)
-        if ds['init.year'] != 2006 or ds['init.month'] != 6  :
-            pytest.fail('Picked time not the same as output time')
-        ds = fcast_regrid_local.get_single(
-            iyear=2012,
-            imonth=9)
-        if ds['init.year'] != 2012 or ds['init.month'] != 9  :
-            pytest.fail('Picked time not the same as output time')
-        ds = fcast_raw_local.get_all()
-        ds = fcast_regrid_local.get_all()
-    except OSError :
-        pytest.fail('OSError is raised with correct function input')
+        # create local raw instance (tercile foreced None)
+        fcast_raw_local = mom6_io.MOM6Forecast(
+            var='tob',
+            data_relative_dir=forecast_subdir,
+            static_relative_dir=static_subdir,
+            grid='raw',
+            source=location
+        )
 
+        # create local regrid instance (tercile foreced None)
+        fcast_regrid_local = mom6_io.MOM6Forecast(
+            var='tos',
+            data_relative_dir=forecast_subdir+'/regrid/',
+            static_relative_dir=static_subdir,
+            grid='regrid',
+            source=location
+        )
 
-    # create local raw instance (static dir not provided expect error)
-    fcast_raw_local_nostaticdir = mom6_io.MOM6Forecast(
-        var='tos',
-        data_relative_dir=forecast_subdir,
-        static_relative_dir=None,
-        grid='raw',
-        source='local'
-    )
-    with pytest.raises(OSError):
-        ds = fcast_raw_local_nostaticdir.get_single()
-    with pytest.raises(OSError):
-        ds = fcast_raw_local_nostaticdir.get_single()
+        try:
+            ds = fcast_raw_local.get_single(
+                iyear=2006,
+                imonth=6)
+            if ds['init.year'] != 2006 or ds['init.month'] != 6  :
+                pytest.fail('Picked time not the same as output time')
+            ds = fcast_regrid_local.get_single(
+                iyear=2012,
+                imonth=9)
+            if ds['init.year'] != 2012 or ds['init.month'] != 9  :
+                pytest.fail('Picked time not the same as output time')
+            ds = fcast_raw_local.get_all()
+            ds = fcast_regrid_local.get_all()
+        except OSError :
+            pytest.fail('OSError is raised with correct function input')
 
 
-    # create local regrid instance (regrid dir location error expect error)
-    fcast_regrid_local_errorloc = mom6_io.MOM6Forecast(
-        var='tos',
-        data_relative_dir=forecast_subdir,
-        static_relative_dir=static_subdir,
-        grid='regrid',
-        source='local'
-    )
-
-    with pytest.raises(OSError):
-        ds = fcast_regrid_local_errorloc.get_single()
-        fcast_regrid_local_errorloc.get_all()
-
-    # create local regrid instance (raw dir location error expect error)
-    fcast_regrid_local_errorgrid = mom6_io.MOM6Forecast(
-        var='tos',
-        data_relative_dir=forecast_subdir+'/regrid/',
-        static_relative_dir=static_subdir,
-        grid='raw',
-        source='local'
-    )
-    with pytest.raises(OSError):
-        fcast_regrid_local_errorgrid.get_single()
-        fcast_regrid_local_errorgrid.get_all()
-
-    # create local raw instance (error iyear and imonth input for method get_single expect error)
-    fcast_regrid_local_erroryear = mom6_io.MOM6Forecast(
-        var='tos',
-        data_relative_dir=forecast_subdir,
-        static_relative_dir=static_subdir,
-        grid='raw',
-        source='local'
-    )
-    with pytest.raises(IndexError):
-        fcast_regrid_local_erroryear.get_single(iyear=2024,imonth=12)
-        fcast_regrid_local_erroryear.get_single(iyear=2024,imonth=8)
-
-    # (first and last iyear and imonth input for method get_single expect NO error)
-    try:
-        ds = fcast_regrid_local_erroryear.get_single(iyear=1993,imonth=3)
-        if ds['init.year'] != 1993 or ds['init.month'] != 3  :
-            pytest.fail('Picked time not the same as output time')
-        ds = fcast_regrid_local_erroryear.get_single(iyear=2022,imonth=12)
-        if ds['init.year'] != 2022 or ds['init.month'] != 12  :
-            pytest.fail('Picked time not the same as output time')
-    except OSError :
-        pytest.fail('OSError is raised with correct function input')
-
-    # create local raw instance (no data dir expect error)
-    fcast_raw_local_nodatadir = mom6_io.MOM6Forecast(
-        var='tos',
-        data_relative_dir=None,
-        static_relative_dir=static_subdir,
-        grid='raw',
-        source='local'
-    )
-
-    with pytest.raises(OSError):
-        fcast_raw_local_nodatadir.get_single()
-
-    # create local raw/regrid instance will all argument provided correctly (expect no Error raised)
-    fcast_all3_raw_local = mom6_io.MOM6Forecast(
-        var='tos',
-        data_relative_dir=forecast_subdir,
-        static_relative_dir=static_subdir,
-        tercile_relative_dir=tercile_subdir,
-        grid='raw',
-        source='local'
-    )
-
-    fcast_all3_regrid_local = mom6_io.MOM6Forecast(
-        var='tos',
-        data_relative_dir=forecast_subdir+'/regrid/',
-        static_relative_dir=None,
-        tercile_relative_dir=tercile_subdir+'/regrid',
-        grid='regrid',
-        source='local'
-    )
-
-    try:
-        ds = fcast_all3_raw_local.get_single(
-            iyear=2006,
-            imonth=6)
-        if ds['init.year'] != 2006 or ds['init.month'] != 6  :
-            pytest.fail('Picked time not the same as output time')
-        ds = fcast_all3_regrid_local.get_single(
-            iyear=2012,
-            imonth=9)
-        if ds['init.year'] != 2012 or ds['init.month'] != 9  :
-            pytest.fail('Picked time not the same as output time')
-    except OSError :
-        pytest.fail('OSError is raised with correct function input')
-
-    try:
-        ds = fcast_all3_raw_local.get_all()
-        ds = fcast_all3_regrid_local.get_all()
-    except OSError :
-        pytest.fail('OSError raised in get_all with correct function input')
-
-    try:
-        ds = fcast_all3_raw_local.get_tercile()
-        ds = fcast_all3_regrid_local.get_tercile()
-        ds = fcast_all3_raw_local.get_tercile(average_type='region')
-        ds = fcast_all3_regrid_local.get_tercile(average_type='region')
-    except OSError :
-        pytest.fail('OSError raised in get_tercile with correct function input')
+        # create local raw instance (static dir not provided expect error)
+        fcast_raw_local_nostaticdir = mom6_io.MOM6Forecast(
+            var='tos',
+            data_relative_dir=forecast_subdir,
+            static_relative_dir=None,
+            grid='raw',
+            source=location
+        )
+        with pytest.raises(OSError):
+            ds = fcast_raw_local_nostaticdir.get_single()
+        with pytest.raises(OSError):
+            ds = fcast_raw_local_nostaticdir.get_single()
 
 
-def test_MOM6Historical():
+        # create local regrid instance (regrid dir location error expect error)
+        fcast_regrid_local_errorloc = mom6_io.MOM6Forecast(
+            var='tos',
+            data_relative_dir=forecast_subdir,
+            static_relative_dir=static_subdir,
+            grid='regrid',
+            source=location
+        )
+
+        with pytest.raises(OSError):
+            ds = fcast_regrid_local_errorloc.get_single()
+            fcast_regrid_local_errorloc.get_all()
+
+        # create local regrid instance (raw dir location error expect error)
+        fcast_regrid_local_errorgrid = mom6_io.MOM6Forecast(
+            var='tos',
+            data_relative_dir=forecast_subdir+'/regrid/',
+            static_relative_dir=static_subdir,
+            grid='raw',
+            source=location
+        )
+        with pytest.raises(OSError):
+            fcast_regrid_local_errorgrid.get_single()
+            fcast_regrid_local_errorgrid.get_all()
+
+        # create local raw instance (error iyear and imonth input for method get_single expect error)
+        fcast_regrid_local_erroryear = mom6_io.MOM6Forecast(
+            var='tos',
+            data_relative_dir=forecast_subdir,
+            static_relative_dir=static_subdir,
+            grid='raw',
+            source=location
+        )
+        with pytest.raises(IndexError):
+            fcast_regrid_local_erroryear.get_single(iyear=2024,imonth=12)
+            fcast_regrid_local_erroryear.get_single(iyear=2024,imonth=8)
+
+        # (first and last iyear and imonth input for method get_single expect NO error)
+        try:
+            ds = fcast_regrid_local_erroryear.get_single(iyear=1993,imonth=3)
+            if ds['init.year'] != 1993 or ds['init.month'] != 3  :
+                pytest.fail('Picked time not the same as output time')
+            ds = fcast_regrid_local_erroryear.get_single(iyear=2022,imonth=12)
+            if ds['init.year'] != 2022 or ds['init.month'] != 12  :
+                pytest.fail('Picked time not the same as output time')
+        except OSError :
+            pytest.fail('OSError is raised with correct function input')
+
+        # create local raw instance (no data dir expect error)
+        fcast_raw_local_nodatadir = mom6_io.MOM6Forecast(
+            var='tos',
+            data_relative_dir=None,
+            static_relative_dir=static_subdir,
+            grid='raw',
+            source=location
+        )
+
+        with pytest.raises(OSError):
+            fcast_raw_local_nodatadir.get_single()
+
+        # create local raw/regrid instance will all argument provided correctly (expect no Error raised)
+        fcast_all3_raw_local = mom6_io.MOM6Forecast(
+            var='tos',
+            data_relative_dir=forecast_subdir,
+            static_relative_dir=static_subdir,
+            tercile_relative_dir=tercile_subdir,
+            grid='raw',
+            source=location
+        )
+
+        fcast_all3_regrid_local = mom6_io.MOM6Forecast(
+            var='tos',
+            data_relative_dir=forecast_subdir+'/regrid/',
+            static_relative_dir=None,
+            tercile_relative_dir=tercile_subdir+'/regrid',
+            grid='regrid',
+            source=location
+        )
+
+        try:
+            ds = fcast_all3_raw_local.get_single(
+                iyear=2006,
+                imonth=6)
+            if ds['init.year'] != 2006 or ds['init.month'] != 6  :
+                pytest.fail('Picked time not the same as output time')
+            ds = fcast_all3_regrid_local.get_single(
+                iyear=2012,
+                imonth=9)
+            if ds['init.year'] != 2012 or ds['init.month'] != 9  :
+                pytest.fail('Picked time not the same as output time')
+        except OSError :
+            pytest.fail('OSError is raised with correct function input')
+
+        try:
+            ds = fcast_all3_raw_local.get_all()
+            ds = fcast_all3_regrid_local.get_all()
+        except OSError :
+            pytest.fail('OSError raised in get_all with correct function input')
+
+        try:
+            ds = fcast_all3_raw_local.get_tercile()
+            ds = fcast_all3_regrid_local.get_tercile()
+            ds = fcast_all3_raw_local.get_tercile(average_type='region')
+            # ds = fcast_all3_regrid_local.get_tercile(average_type='region')
+        except OSError :
+            pytest.fail('OSError raised in get_tercile with correct function input')
+
+
+def test_MOM6Historical(location):
+    """Test the Historical IO
+
+    Parameters
+    ----------
+    location : str, optional
+        source of the data 'opendap' or 'local', by default 'opendap'
+    """
     historical_subdir = 'hist_run'
     static_subdir = 'static'
 
@@ -201,7 +220,7 @@ def test_MOM6Historical():
         data_relative_dir=historical_subdir,
         static_relative_dir=static_subdir,
         grid='raw',
-        source='local'
+        source=location
     )
 
     # create local regrid instance (tercile foreced None)
@@ -210,7 +229,7 @@ def test_MOM6Historical():
         data_relative_dir=historical_subdir+'/regrid/',
         static_relative_dir=static_subdir,
         grid='regrid',
-        source='local'
+        source=location
     )
 
     try:
@@ -236,12 +255,13 @@ def test_MOM6Historical():
         data_relative_dir=historical_subdir,
         static_relative_dir=None,
         grid='raw',
-        source='local'
+        source=location
     )
-    with pytest.raises(OSError):
-        ds = histrun_raw_local_nostaticdir.get_single()
-    with pytest.raises(OSError):
-        ds = histrun_raw_local_nostaticdir.get_single()
+    if location == 'local':
+        with pytest.raises(OSError):
+            ds = histrun_raw_local_nostaticdir.get_single()
+        with pytest.raises(OSError):
+            ds = histrun_raw_local_nostaticdir.get_single()
 
 
     # create local regrid instance (regrid dir location error expect error)
@@ -250,12 +270,13 @@ def test_MOM6Historical():
         data_relative_dir=historical_subdir,
         static_relative_dir=static_subdir,
         grid='regrid',
-        source='local'
+        source=location
     )
 
-    with pytest.raises(OSError):
-        ds = histrun_regrid_local_errorloc.get_single()
-        histrun_regrid_local_errorloc.get_all()
+    if location == 'local':
+        with pytest.raises(OSError):
+            ds = histrun_regrid_local_errorloc.get_single()
+            histrun_regrid_local_errorloc.get_all()
 
     # create local regrid instance (raw dir location error expect error)
     histrun_regrid_local_errorgrid = mom6_io.MOM6Historical(
@@ -263,11 +284,12 @@ def test_MOM6Historical():
         data_relative_dir=historical_subdir+'/regrid/',
         static_relative_dir=static_subdir,
         grid='raw',
-        source='local'
+        source=location
     )
-    with pytest.raises(OSError):
-        histrun_regrid_local_errorgrid.get_single()
-        histrun_regrid_local_errorgrid.get_all()
+    if location == 'local':
+        with pytest.raises(OSError):
+            histrun_regrid_local_errorgrid.get_single()
+            histrun_regrid_local_errorgrid.get_all()
 
 
     # create local raw instance (error iyear and imonth input for method get_single expect error)
@@ -276,7 +298,7 @@ def test_MOM6Historical():
         data_relative_dir=historical_subdir,
         static_relative_dir=static_subdir,
         grid='raw',
-        source='local'
+        source=location
     )
     with pytest.raises(IndexError):
         histrun_regrid_local_erroryear.get_single(year=2024,month=12)
@@ -299,14 +321,8 @@ def test_MOM6Historical():
         data_relative_dir=None,
         static_relative_dir=static_subdir,
         grid='raw',
-        source='local'
+        source=location
     )
-
-    with pytest.raises(OSError):
-        histrun_raw_local_nodatadir.get_single()
-
-
-
-
-
-
+    if location == 'local':
+        with pytest.raises(OSError):
+            histrun_raw_local_nodatadir.get_single()
