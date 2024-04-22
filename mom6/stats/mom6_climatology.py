@@ -4,11 +4,13 @@ climatology (monthly and daily smoothed)
 
 """
 # %%
+import os
+import glob
 import warnings
 import xarray as xr
 from dask.distributed import Client
 from mom6 import DATA_PATH
-from mom6.mom6_module import mom6_process as mp
+from mom6.mom6_module.mom6_io import MOM6Misc
 from mom6.mom6_module import time_series_processes as tsp
 
 warnings.simplefilter("ignore")
@@ -22,9 +24,8 @@ if __name__=="__main__":
 
     # %%
     # file location and name
-    MOM6_DIR = f"{DATA_PATH}/hist_run/regrid/"
-    file_list = mp.MOM6Misc.mom6_historical(MOM6_DIR)
-
+    MOM6_DIR = os.path.join(DATA_PATH,"hist_run/regrid/")
+    file_list = glob.glob(f'{MOM6_DIR}/*.nc')
     # %%
     # open each file and calculate climatology
     for file in file_list :
@@ -50,7 +51,7 @@ if __name__=="__main__":
         # %%
         # output the netcdf file
         print(f'output {MOM6_DIR}/climo/{file[len(MOM6_DIR):][:-3]}.climo.nc')
-        mp.MOM6Misc.mom6_encoding_attr(
+        MOM6Misc.mom6_encoding_attr(
                 ds,
                 ds_climo,
                 var_names=[varname],
