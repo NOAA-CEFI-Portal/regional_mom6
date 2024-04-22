@@ -194,7 +194,7 @@ class MOM6Forecast:
                 if self.static_relative_dir is None :
                     raise OSError('for raw grid please input the path to grid file')
                 else:
-                    ds_static = MOM6Static.get_mom6_grid(self.static_relative_dir)
+                    ds_static = MOM6Static.get_grid(self.static_relative_dir)
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 for file in file_list:
@@ -287,7 +287,7 @@ class MOM6Forecast:
                 if self.static_relative_dir is None :
                     raise OSError('for raw grid please input the path to grid file')
                 else:
-                    ds_static = MOM6Static.get_mom6_grid(self.static_relative_dir)
+                    ds_static = MOM6Static.get_grid(self.static_relative_dir)
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 for file in file_list:
@@ -530,7 +530,7 @@ class MOM6Historical:
                 if self.static_relative_dir is None :
                     raise IOError('for raw grid please input the path to grid file')
                 else:
-                    ds_static = MOM6Static.get_mom6_grid(self.static_relative_dir)
+                    ds_static = MOM6Static.get_grid(self.static_relative_dir)
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
                 for file in file_list:
@@ -658,7 +658,7 @@ class MOM6Static:
     ...
     """
     @staticmethod
-    def get_mom6_regionl_mask(
+    def get_regionl_mask(
         data_relative_dir : str
     ) -> xr.Dataset:
         """return the EPU mask in the original mom6 grid
@@ -684,7 +684,7 @@ class MOM6Static:
         return ds
 
     @staticmethod
-    def get_mom6_grid(
+    def get_grid(
         data_relative_dir : str
     ) -> xr.Dataset:
         """return the original mom6 grid information
@@ -709,7 +709,7 @@ class MOM6Static:
             'geolon_v','geolat_v']
         )
     @staticmethod
-    def get_mom6_mask(
+    def get_mask(
         data_relative_dir : str,
         mask : Literal['wet','wet_c','wet_u','wet_v'] = 'wet',
     ) -> xr.DataArray:
@@ -739,8 +739,10 @@ class MOM6Static:
         """
 
         ds = xr.open_dataset(os.path.join(DATA_PATH,data_relative_dir,'ocean_static.nc'))
-        da = ds.set_coords(['geolon','geolat'])[mask]
-
+        try:
+            da = ds.set_coords(['geolon','geolat'])[mask]
+        except KeyError :
+            pass
         return da
 
 
