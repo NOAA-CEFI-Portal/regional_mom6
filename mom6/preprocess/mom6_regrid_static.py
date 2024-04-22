@@ -26,7 +26,7 @@ import xarray as xr
 import xesmf as xe
 from dask.distributed import Client
 from mom6 import DATA_PATH
-from mom6.mom6_module import mom6_process as mp
+from mom6.mom6_module.mom6_io import MOM6Misc
 warnings.simplefilter("ignore")
 
 regrid_var = 'wet'
@@ -92,7 +92,7 @@ if __name__=="__main__":
 
     # output the netcdf file
     print(f'output {mom6_static_dir}/regrid/ocean_static.{regrid_var}.nc')
-    mp.MOM6Misc.mom6_encoding_attr(
+    MOM6Misc.mom6_encoding_attr(
             ds_static,
             ds_regrid,
             var_names=[regrid_var],
