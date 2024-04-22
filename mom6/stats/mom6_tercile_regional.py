@@ -24,15 +24,24 @@ if __name__=="__main__":
     print(client.cluster.dashboard_link)
 
     # check argument exist
-    if len(sys.argv) < 2:
-        print("Usage: python mom6_regional_tercile.py VARNAME")
+    if len(sys.argv) < 3:
+        print("Usage: python mom6_tercile_regional.py VARNAME GRIDTYPE")
         sys.exit(1)
     else:
         varname = sys.argv[1]
+        grid = sys.argv[2]     # regrid or raw
 
     # data locations
-    MOM6_DIR = os.path.join(DATA_PATH,"hindcast/")
-    MOM6_TERCILE_DIR = os.path.join(DATA_PATH,"tercile_calculation/")
+    if grid == 'raw':
+        MOM6_DIR = os.path.join(DATA_PATH,"hindcast/")
+        MOM6_TERCILE_DIR = os.path.join(DATA_PATH,"tercile_calculation/")
+    elif grid == 'regrid':
+        MOM6_DIR = os.path.join(DATA_PATH,"hindcast/regrid/")
+        MOM6_TERCILE_DIR = os.path.join(DATA_PATH,"tercile_calculation/regrid/")
+    else:
+        print("Usage: python mom6_tercile_regional.py VARNAME GRIDTYPE")
+        raise NotImplementedError('GRIDTYPE can only be "raw" or "regrid"')
+
     file_list = glob.glob(MOM6_DIR+'/*.nc')
     var_file_list = []
     for file in file_list :
@@ -86,7 +95,7 @@ if __name__=="__main__":
         ds_tercile = ds_tercile.drop_vars('quantile')
 
         # output the netcdf file
-        print(f'output {MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-3]}.region.nc')
+        print(f'output {MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-4]}.region.nc')
         MOM6Misc.mom6_encoding_attr(
                 ds,
                 ds_tercile,
@@ -94,6 +103,6 @@ if __name__=="__main__":
                 dataset_name='regional mom6 tercile'
             )
         try:
-            ds_tercile.to_netcdf(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-3]}.region.nc',mode='w')
+            ds_tercile.to_netcdf(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-4]}.region.nc',mode='w')
         except PermissionError:
-            print(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-3]}.region.nc is used by other scripts' )
+            print(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-4]}.region.nc is used by other scripts' )

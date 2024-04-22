@@ -27,15 +27,24 @@ if __name__=="__main__":
     print(client.cluster.dashboard_link)
 
     # check argument exist
-    if len(sys.argv) < 2:
-        print("Usage: python mom6_regrid_tercile.py VARNAME")
+    if len(sys.argv) < 3:
+        print("Usage: python mom6_tercile.py VARNAME GRIDTYPE")
         sys.exit(1)
     else:
         varname = sys.argv[1]
+        grid = sys.argv[2]     # regrid or raw
 
     # data locations
-    mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
-    mom6_tercile_dir = os.path.join(DATA_PATH,"tercile_calculation/regrid/")
+    if grid == 'raw':
+        mom6_dir = os.path.join(DATA_PATH,"hindcast/")
+        mom6_tercile_dir = os.path.join(DATA_PATH,"tercile_calculation/")
+    elif grid == 'regrid':
+        mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
+        mom6_tercile_dir = os.path.join(DATA_PATH,"tercile_calculation/regrid/")
+    else:
+        print("Usage: python mom6_tercile.py VARNAME GRIDTYPE")
+        raise NotImplementedError('GRIDTYPE can only be "raw" or "regrid"')
+
     file_list = glob.glob(mom6_dir+'/*.nc')
     var_file_list = []
     for file in file_list :
@@ -64,7 +73,7 @@ if __name__=="__main__":
         ds_tercile = ds_tercile.drop_vars('quantile')
 
         # output the netcdf file
-        print(f'output {mom6_tercile_dir}{file[len(mom6_dir):]}')
+        print(f'output {mom6_tercile_dir}{file[len(mom6_dir):-6]}tercile_{file[-6:]}')
         MOM6Misc.mom6_encoding_attr(
                 ds,
                 ds_tercile,
@@ -72,6 +81,6 @@ if __name__=="__main__":
                 dataset_name='regional mom6 regrid tercile'
             )
         try:
-            ds_tercile.to_netcdf(f'{mom6_tercile_dir}{file[len(mom6_dir):]}',mode='w')
+            ds_tercile.to_netcdf(f'{mom6_tercile_dir}{file[len(mom6_dir):-6]}tercile_{file[-6:]}',mode='w')
         except PermissionError:
-            print(f'{mom6_tercile_dir}{file[len(mom6_dir):]} is used by other scripts' )
+            print(f'{mom6_tercile_dir}{file[len(mom6_dir):-6]}tercile_{file[-6:]} is used by other scripts')
