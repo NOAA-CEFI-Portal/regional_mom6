@@ -31,7 +31,12 @@ if __name__=='__main__':
     lead_season_index = 3
     varname = 'tos'
     data_grid = 'raw'
-    region = 'MAB'
+    region = 'SS_LME'
+
+    # RegionalOptions = Literal[
+    # 'MAB','GOM','SS','GB','SS_LME','NEUS_LME','SEUS_LME',
+    # 'GOMEX','GSL','NGOMEX','SGOMEX','Antilles','Floridian'
+    # ]
 
     # getting the regionl mask on mom grid
     ds_lme = MOM6Static.get_regionl_mask(DATA_PATH+'masks/')
@@ -44,7 +49,7 @@ if __name__=='__main__':
     ds_data = mom6Forecast.get_single(iyear=ini_year,imonth=ini_month)
 
     # load variable to memory (remove the init dimension)
-    da_data = ds_data[varname].isel(init=0)
+    da_data = ds_data[varname]
 
     # Area weighted average to the specific region
     da_data = (
@@ -78,6 +83,7 @@ if __name__=='__main__':
     # load the predetermined hindcast/forecast tercile value
     #  this is based on 30 years statistic 1993-2023
     da_tercile = mom6Forecast.get_tercile('region').sel(region=region)
+    da_tercile = da_tercile.sel(init=ini_month)
 
     # average the forecast over the lead bins
     da_tercile_binned = (
@@ -212,4 +218,4 @@ if __name__=='__main__':
         )
         )
     )
-    fig.savefig(f'{proj_dir}/figures/tercile_regional.png')
+    fig.savefig(f'{proj_dir}/figures/tercile_{data_grid}_regional.png')

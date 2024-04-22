@@ -3,6 +3,9 @@ This script is designed to calculate the regionally
 avereaged tercile value (EPU) based on the raw gridded
 regional MOM6 forecast output
 
+regrid product need to have EPU mask avaialble if one 
+want to add to the script
+
 """
 # %%
 import os
@@ -35,12 +38,9 @@ if __name__=="__main__":
     if grid == 'raw':
         MOM6_DIR = os.path.join(DATA_PATH,"hindcast/")
         MOM6_TERCILE_DIR = os.path.join(DATA_PATH,"tercile_calculation/")
-    elif grid == 'regrid':
-        MOM6_DIR = os.path.join(DATA_PATH,"hindcast/regrid/")
-        MOM6_TERCILE_DIR = os.path.join(DATA_PATH,"tercile_calculation/regrid/")
     else:
         print("Usage: python mom6_tercile_regional.py VARNAME GRIDTYPE")
-        raise NotImplementedError('GRIDTYPE can only be "raw" or "regrid"')
+        raise NotImplementedError('GRIDTYPE can only be "raw"')
 
     file_list = glob.glob(MOM6_DIR+'/*.nc')
     var_file_list = []
@@ -95,7 +95,7 @@ if __name__=="__main__":
         ds_tercile = ds_tercile.drop_vars('quantile')
 
         # output the netcdf file
-        print(f'output {MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-4]}.region.nc')
+        print(f'output {MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-3]}.region.nc')
         MOM6Misc.mom6_encoding_attr(
                 ds,
                 ds_tercile,
@@ -103,6 +103,6 @@ if __name__=="__main__":
                 dataset_name='regional mom6 tercile'
             )
         try:
-            ds_tercile.to_netcdf(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-4]}.region.nc',mode='w')
+            ds_tercile.to_netcdf(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-3]}.region.nc',mode='w')
         except PermissionError:
-            print(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-4]}.region.nc is used by other scripts' )
+            print(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-3]}.region.nc is used by other scripts' )

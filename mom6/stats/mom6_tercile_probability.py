@@ -21,8 +21,7 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 from scipy.stats import norm as normal
-from mom6 import DATA_PATH
-from mom6.mom6_module.mom6_io import MOM6Static, MOM6Forecast
+from mom6.mom6_module.mom6_io import MOM6Forecast
 
 
 if __name__=='__main__':
@@ -32,17 +31,21 @@ if __name__=='__main__':
     ini_month = 3
     lead_season_index = 3
     varname = 'tos'
-    data_grid = 'regrid'
+    data_grid = 'raw'
 
-    # getting the ocean mask on mom grid
-    da_lmask = MOM6Static.get_mask(DATA_PATH+'static/',mask='wet')
 
     # loaded the mom6 raw field
-    mom6Forecast = MOM6Forecast(varname,'hindcast/','static/','tercile_calculation/',grid=data_grid)
+    if data_grid == 'regrid':
+        data_dir = 'hindcast/regrid/'
+        tercile_dir = 'tercile_calculation/regrid/'
+    elif data_grid == 'raw':
+        data_dir = 'hindcast/'
+        tercile_dir = 'tercile_calculation/'
+    mom6Forecast = MOM6Forecast(varname,data_dir,'static/',tercile_dir,grid=data_grid)
     ds_data = mom6Forecast.get_single(iyear=ini_year,imonth=ini_month)
 
     # load variable to memory
-    da_data = ds_data[varname].isel(init=0)
+    da_data = ds_data[varname]
 
     # setup lead bins to average during forecast lead time
     # (should match lead bins used for the historical data
@@ -70,6 +73,7 @@ if __name__=='__main__':
     # load the predetermined hindcast/forecast tercile value
     #  this is based on 30 years statistic 1993-2023
     ds_tercile = mom6Forecast.get_tercile('grid')
+    ds_tercile = ds_tercile.sel(init=ini_month)
 
     # average the forecast over the lead bins
     ds_tercile_binned = (
@@ -116,7 +120,6 @@ if __name__=='__main__':
     ds_tercile_prob=xr.Dataset()
     ds_tercile_prob['tercile_prob'] = da_tercile_prob
     ds_tercile_prob['tercile_prob_max'] = da_tercile_prob_max
-    ds_tercile_prob['mask'] = da_lmask
 
     ############# plotting the max tercile probability
     # get time format
@@ -178,17 +181,17 @@ if __name__=='__main__':
     cbar.ax.tick_params(labelsize=12,rotation=0)
     cbar.set_label(label=colorbar_labelname,size=12, labelpad=15)
 
-    imm=(ds_tercile_prob['mask']
-        .plot.pcolormesh(
-            x=lon,
-            y=lat,
-            ax=ax2,
-            levels=np.arange(0,1+1),
-            cmap='grey',
-            transform=ccrs.PlateCarree(central_longitude=0)
-        )
-    )
-    imm.colorbar.remove()
+    # imm=(ds_tercile_prob['mask']
+    #     .plot.pcolormesh(
+    #         x=lon,
+    #         y=lat,
+    #         ax=ax2,
+    #         levels=np.arange(0,1+1),
+    #         cmap='grey',
+    #         transform=ccrs.PlateCarree(central_longitude=0)
+    #     )
+    # )
+    # imm.colorbar.remove()
 
     abovearrow = ax2.text(1.31, 0.65, "Upper tercile %",color='white',transform=ax2.transAxes,
                 ha="center", va="bottom", rotation=90, size=12,
@@ -216,4 +219,4 @@ if __name__=='__main__':
         )
         )
     )
-    fig.savefig(f'{proj_dir}/figures/tercile_regrid.png')
+    fig.savefig(f'{proj_dir}/figures/tercile_{data_grid}.png')
