@@ -1,9 +1,22 @@
+#!/usr/bin/env python
+
+"""
+Testing the module mom6_indexes
+
+For local testing:
+`pytest --location=local` 
+
+
+The location option is implemented due to the conftest.py
+
+"""
+
 import numpy as np
 from mom6.mom6_module import mom6_indexes
-from mom6.mom6_module import mom6_process
+from mom6.mom6_module.mom6_io import MOM6Historical
 
 
-def test_gulf_stream_index(location:str='opendap'):
+def test_gulf_stream_index(location):
     """testing the gulf stream index calculation
 
     Parameters
@@ -17,10 +30,10 @@ def test_gulf_stream_index(location:str='opendap'):
         The location input in string does not exist.
     """
     if location == 'local':
-        ds_test = mom6_process.MOM6Historical.get_mom6_all('ssh','raw',location)
+        ds_test = MOM6Historical('ssh','hist_run/','static/','raw',location).get_all()
         ds_test = ds_test.rename({'geolon':'lon','geolat':'lat'})
     elif location == 'opendap':
-        ds_test = mom6_process.MOM6Historical.get_mom6_all('ssh','raw',location)
+        ds_test = MOM6Historical('ssh','hist_run/','static/','raw',location).get_all()
         ds_test = ds_test.isel(time=slice(0,24)).load()
         ds_test = ds_test.rename({'geolon':'lon','geolat':'lat'})
     else :

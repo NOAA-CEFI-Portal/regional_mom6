@@ -21,11 +21,12 @@ Based on the above mentioned keys
 # %%
 import os
 import sys
+import glob
 import warnings
 import numpy as np
 import xarray as xr
 from mom6 import DATA_PATH
-from mom6.mom6_module import mom6_process as mp
+from mom6.mom6_module.mom6_io import MOM6Static,MOM6Misc
 warnings.simplefilter("ignore")
 
 # %%
@@ -45,16 +46,16 @@ if __name__=="__main__":
     if sys.argv[1] == 'hist':
         # file location and name
         # mom6_dir = "/Datasets.private/regional_mom6/hist_run/"
-        mom6_dir = os.path.join(DATA_PATH,"hist_run/regrid/")
-        file_list = mp.MOM6Misc.mom6_historical(mom6_dir)
+        mom6_dir = os.path.join(DATA_PATH,"hist_run/")
+        file_list = glob.glob(f'{mom6_dir}/*.nc')
     elif sys.argv[1] == 'fcst':
         # mom6_dir = "/Datasets.private/regional_mom6/hindcast/"
-        mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
-        file_list = mp.MOM6Misc.mom6_hindcast(mom6_dir)
+        mom6_dir = os.path.join(DATA_PATH,"hindcast/")
+        file_list = glob.glob(f'{mom6_dir}/*.nc')
 
     # %%
     # static field
-    ds_static = mp.MOM6Static.get_mom6_grid()
+    ds_static = MOM6Static.get_grid(DATA_PATH+'static/')
     ds_static['geolon'] = ds_static['geolon']+360.
     # for xesmf to rename
     ds_static = ds_static.rename({'geolon':'lon','geolat':'lat'})
@@ -122,7 +123,7 @@ if __name__=="__main__":
 
         # output the netcdf file
         print(f'output {mom6_dir}/regrid/{file[len(mom6_dir):]}')
-        mp.MOM6Misc.mom6_encoding_attr(
+        MOM6Misc.mom6_encoding_attr(
                 ds,
                 ds_regrid,
                 var_names=list(ds_regrid.keys()),
