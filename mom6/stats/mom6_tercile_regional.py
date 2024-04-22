@@ -7,11 +7,12 @@ regional MOM6 forecast output
 # %%
 import os
 import sys
+import glob
 import warnings
 import xarray as xr
 from dask.distributed import Client
 from mom6 import DATA_PATH
-from mom6.mom6_module import mom6_process as mp
+from mom6.mom6_module.mom6_io import MOM6Static,MOM6Misc
 
 warnings.simplefilter("ignore")
 
@@ -32,7 +33,7 @@ if __name__=="__main__":
     # data locations
     MOM6_DIR = os.path.join(DATA_PATH,"hindcast/")
     MOM6_TERCILE_DIR = os.path.join(DATA_PATH,"tercile_calculation/")
-    file_list = mp.MOM6Misc.mom6_hindcast(MOM6_DIR)
+    file_list = glob.glob(MOM6_DIR+'/*.nc')
     var_file_list = []
     for file in file_list :
         if varname in file :
@@ -41,7 +42,7 @@ if __name__=="__main__":
     # open data file
     for file in var_file_list :
         ds = xr.open_dataset(file)
-        ds_mask = mp.MOM6Static.get_mom6_regionl_mask()
+        ds_mask = MOM6Static.get_regionl_mask('masks/')
 
         # apply mask
         da = ds[varname]
@@ -86,7 +87,7 @@ if __name__=="__main__":
 
         # output the netcdf file
         print(f'output {MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-3]}.region.nc')
-        mp.MOM6Misc.mom6_encoding_attr(
+        MOM6Misc.mom6_encoding_attr(
                 ds,
                 ds_tercile,
                 var_names=list(ds_tercile.keys()),

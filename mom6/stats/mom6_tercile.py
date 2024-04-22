@@ -9,12 +9,13 @@ future improvement
 """
 # %%
 import os
+import glob
 import sys
 import warnings
 import xarray as xr
 from dask.distributed import Client
 from mom6 import DATA_PATH
-from mom6.mom6_module import mom6_process as mp
+from mom6.mom6_module.mom6_io import MOM6Misc
 # from mom6_regrid import mom6_hindcast,mom6_encoding_attr
 warnings.simplefilter("ignore")
 
@@ -35,7 +36,7 @@ if __name__=="__main__":
     # data locations
     mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
     mom6_tercile_dir = os.path.join(DATA_PATH,"tercile_calculation/regrid/")
-    file_list = mp.MOM6Misc.mom6_hindcast(mom6_dir)
+    file_list = glob.glob(mom6_dir+'/*.nc')
     var_file_list = []
     for file in file_list :
         if varname in file :
@@ -64,7 +65,7 @@ if __name__=="__main__":
 
         # output the netcdf file
         print(f'output {mom6_tercile_dir}{file[len(mom6_dir):]}')
-        mp.MOM6Misc.mom6_encoding_attr(
+        MOM6Misc.mom6_encoding_attr(
                 ds,
                 ds_tercile,
                 var_names=list(ds_tercile.keys()),

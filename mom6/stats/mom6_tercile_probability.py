@@ -21,7 +21,8 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 from scipy.stats import norm as normal
-from mom6.mom6_module import mom6_process as mp
+from mom6 import DATA_PATH
+from mom6.mom6_module.mom6_io import MOM6Static, MOM6Forecast
 
 
 if __name__=='__main__':
@@ -34,11 +35,11 @@ if __name__=='__main__':
     data_grid = 'regrid'
 
     # getting the ocean mask on mom grid
-    da_lmask = mp.MOM6Static.get_mom6_mask(mask='wet',grid=data_grid)
+    da_lmask = MOM6Static.get_mask(DATA_PATH+'static/',mask='wet')
 
     # loaded the mom6 raw field
-    mom6Forecast = mp.MOM6Forecast(iyear=ini_year,imonth=ini_month,var=varname,grid=data_grid)
-    ds_data = mom6Forecast.get_mom6()
+    mom6Forecast = MOM6Forecast(varname,'hindcast/','static/','tercile_calculation/',grid=data_grid)
+    ds_data = mom6Forecast.get_single(iyear=ini_year,imonth=ini_month)
 
     # load variable to memory
     da_data = ds_data[varname].isel(init=0)
@@ -68,7 +69,7 @@ if __name__=='__main__':
 
     # load the predetermined hindcast/forecast tercile value
     #  this is based on 30 years statistic 1993-2023
-    ds_tercile = mom6Forecast.get_mom6_tercile()
+    ds_tercile = mom6Forecast.get_tercile('grid')
 
     # average the forecast over the lead bins
     ds_tercile_binned = (
