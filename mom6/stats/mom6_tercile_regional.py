@@ -1,15 +1,21 @@
 """
-This script is designed to calculate the tercile value based on the
-REGRIDDED forecast/hindcast data. 
+This script is designed to calculate the regionally 
+avereaged tercile value (EPU) based on the raw gridded
+regional MOM6 forecast output
+
+regrid product need to have EPU mask avaialble if one 
+want to add to the script
 
 """
 # %%
+import os
 import sys
+import glob
 import warnings
-import numpy as np
 import xarray as xr
 from dask.distributed import Client
-from mom6.mom6_module import mom6_process as mp
+from mom6 import DATA_PATH
+from mom6.mom6_module.mom6_io import MOM6Static,MOM6Misc
 
 warnings.simplefilter("ignore")
 
@@ -21,16 +27,22 @@ if __name__=="__main__":
     print(client.cluster.dashboard_link)
 
     # check argument exist
-    if len(sys.argv) < 2:
-        print("Usage: python mom6_regional_tercile.py VARNAME")
+    if len(sys.argv) < 3:
+        print("Usage: python mom6_tercile_regional.py VARNAME GRIDTYPE")
         sys.exit(1)
     else:
         varname = sys.argv[1]
+        grid = sys.argv[2]     # regrid or raw
 
     # data locations
-    MOM6_DIR = "/Datasets.private/regional_mom6/hindcast/"
-    MOM6_TERCILE_DIR = "/Datasets.private/regional_mom6/tercile_calculation/"
-    file_list = mp.MOM6Misc.mom6_hindcast(MOM6_DIR)
+    if grid == 'raw':
+        MOM6_DIR = os.path.join(DATA_PATH,"hindcast/")
+        MOM6_TERCILE_DIR = os.path.join(DATA_PATH,"tercile_calculation/")
+    else:
+        print("Usage: python mom6_tercile_regional.py VARNAME GRIDTYPE")
+        raise NotImplementedError('GRIDTYPE can only be "raw"')
+
+    file_list = glob.glob(MOM6_DIR+'/*.nc')
     var_file_list = []
     for file in file_list :
         if varname in file :
@@ -39,7 +51,7 @@ if __name__=="__main__":
     # open data file
     for file in var_file_list :
         ds = xr.open_dataset(file)
-        ds_mask = mp.MOM6Static.get_mom6_regionl_mask()
+        ds_mask = MOM6Static.get_regionl_mask('masks/')
 
         # apply mask
         da = ds[varname]
@@ -49,10 +61,11 @@ if __name__=="__main__":
         for region in list(ds_mask.keys()):
             if region != 'areacello':
                 # calculate the regional area-weighted mean
-                da_mask = xr.where(ds_mask[region],1.,np.nan)
+                da_mask = ds_mask[region]
+                
                 da = (
-                    (da*ds_mask[region]*da_area).sum(dim=['xh','yh'])/
-                    (ds_mask[region]*da_area).sum(dim=['xh','yh'])
+                    (da*da_mask*da_area).sum(dim=['xh','yh'])/
+                    (da_mask*da_area).sum(dim=['xh','yh'])
                 )   # if regrid of other stagger grid this need to be changed
 
                 # calculate the tercile value
@@ -82,14 +95,14 @@ if __name__=="__main__":
         ds_tercile = ds_tercile.drop_vars('quantile')
 
         # output the netcdf file
-        print(f'output {MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-3]}.region.nc')
-        mp.MOM6Misc.mom6_encoding_attr(
+        print(f'output {MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-3]}.region.nc')
+        MOM6Misc.mom6_encoding_attr(
                 ds,
                 ds_tercile,
                 var_names=list(ds_tercile.keys()),
                 dataset_name='regional mom6 tercile'
             )
         try:
-            ds_tercile.to_netcdf(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-3]}.region.nc',mode='w')
+            ds_tercile.to_netcdf(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-3]}.region.nc',mode='w')
         except PermissionError:
-            print(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-3]}.region.nc is used by other scripts' )
+            print(f'{MOM6_TERCILE_DIR}{file[len(MOM6_DIR):-6]}tercile_{file[-6:-3]}.region.nc is used by other scripts' )
