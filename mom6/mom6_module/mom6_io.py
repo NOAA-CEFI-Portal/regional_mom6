@@ -335,6 +335,13 @@ class MOM6Forecast:
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
 
             file_read = [file for file in file_list if self.var in file]
+
+            # refine based on region
+            if average_type == 'grid':
+                file_read = [file for file in file_read if '.region.' not in file]
+            elif average_type == 'region':
+                file_read = [file for file in file_read if '.region.' in file]
+
             ds = xr.open_mfdataset(
                 file_read,combine='nested',
                 concat_dim='init',
