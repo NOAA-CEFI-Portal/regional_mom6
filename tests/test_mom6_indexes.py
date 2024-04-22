@@ -16,7 +16,7 @@ from mom6.mom6_module import mom6_indexes
 from mom6.mom6_module.mom6_io import MOM6Historical
 
 
-def test_gulf_stream_index(location:str='opendap'):
+def test_gulf_stream_index(location):
     """testing the gulf stream index calculation
 
     Parameters
