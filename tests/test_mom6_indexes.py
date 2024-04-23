@@ -55,3 +55,19 @@ def test_gulf_stream_index(location):
         assert np.abs(np.abs(ds_gs.gulf_stream_index).sum().compute().data - 20.642387) < 1e-5
         assert np.abs(ds_gs.gulf_stream_index.max().compute().data - 1.7084963) < 1e-6
         assert np.abs(ds_gs.gulf_stream_index.min().compute().data - -1.7084963) < 1e-6
+
+
+def test_cold_pool_index(data_file,static_data_file):
+    """testing the cold pool index calculation
+    
+    Parameters
+    ----------
+    data_file : str
+        Data file used to test cold pool index
+    static_data_file : str
+        Static data file with depth information
+    """
+    ds_test = xr.open_mfdataset([data_file,static_data_file],chunks={'time':1},parallel=True)
+    ds_test = ds_test.drop_vars('mask')
+    mom_cpi = mom6_indexes.ColdPoolIndex(ds_test,'bottomT')
+    ds_cpi_mon, ds_cpi_ann = mom_cpi.generate_index()

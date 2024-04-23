@@ -261,7 +261,7 @@ class ColdPoolIndex:
         )
         return da_mask_regrid_crop
     
-    def index_coldpool(self):
+    def generate_index(self):
         '''
         Define Coldpool Domain and Calculate Index
         Depth: Between 20m and 200m isobath
