@@ -4,16 +4,21 @@
 Testing the module mom6_indexes
 
 For local testing:
-`pytest --location=local` 
+`pytest --location=local`
+
+For coldpool testing:
+`pytest --data=<GLORYS data file> --static=<GLORYS static file>
 
 
 The location option is implemented due to the conftest.py
+The data and static options are also implemented in conftest.py. Default file path needed
 
 """
 
 import numpy as np
 from mom6.mom6_module import mom6_indexes
 from mom6.mom6_module.mom6_io import MOM6Historical
+import xarray as xr
 
 
 def test_gulf_stream_index(location):
