@@ -12,6 +12,7 @@ import warnings
 import numpy as np
 import xarray as xr
 import xesmf as xe
+from mom6.mom6_module import mom6_io
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -228,10 +229,9 @@ class ColdPoolIndex:
             Cropped and regridded dataset"""
         
         #Create region mask from MOM6 model
-        mab_file = '/Datasets.private/regional_mom6/masks/region_masks.nc'
-        static_file = '/Datasets.private/regional_mom6/ocean_static.nc'
-        # ds_static = xr.open_dataset(static_file)
-        ds_mask = xr.open_mfdataset([mab_file,static_file],parallel=True)
+        ds_mab = mom6_io.MOM6Static.get_regionl_mask('masks/')
+        ds_grid = mom6_io.MOM6Static.get_grid('')
+        ds_mask = xr.merge([ds_mab,ds_grid])
         ds_mask = ds_mask.set_coords(['geolon','geolat','geolon_c','geolat_c','geolon_u','geolat_u','geolon_v','geolat_v'])
 
         # Regrid the mask to GLORYS
