@@ -195,21 +195,24 @@ class MOM6Forecast:
                     raise OSError('for raw grid please input the path to grid file')
                 else:
                     ds_static = MOM6Static.get_grid(self.static_relative_dir)
+                # setup chuck
+                io_chunk = {}
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 for file in file_list:
                     var_flag = 'static' in file
                     if var_flag :
                         ds_static = xr.open_dataset(file)
+                io_chunk = {'init': 4,'member':1,'lead':-1}
 
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'{self.var}_' in file]
 
             # merge the static field with the variables
             ds = xr.open_mfdataset(
                 file_read,
                 combine='nested',
                 concat_dim='init',
-                chunks={'init': 4,'member':1,'lead':-1}
+                chunks=io_chunk
             ).sortby('init')
             ds = xr.merge([ds_static,ds])
             # ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
@@ -232,14 +235,16 @@ class MOM6Forecast:
                 else:
                     mom6_dir = os.path.join(DATA_PATH,self.data_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
+                io_chunk = {}
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
+                io_chunk = {'init': 1,'member':1,'lead':-1}
 
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'{self.var}_' in file]
             ds = xr.open_mfdataset(
                 file_read,combine='nested',
                 concat_dim='init',
-                chunks={'init': 1,'member':1,'lead':1}
+                chunks=io_chunk
             ).sortby('init')
 
             # test if accident read raw file
@@ -288,15 +293,17 @@ class MOM6Forecast:
                     raise OSError('for raw grid please input the path to grid file')
                 else:
                     ds_static = MOM6Static.get_grid(self.static_relative_dir)
+                io_chunk = {}
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 for file in file_list:
                     var_flag = 'static' in file
                     if var_flag :
                         ds_static = xr.open_dataset(file)
+                io_chunk = {'init': 4,'member':1,'lead':-1}
 
             # refine based on var name
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'{self.var}_' in file]
             # refine based on region
             if average_type == 'grid':
                 file_read = [file for file in file_read if '.region.' not in file]
@@ -308,7 +315,7 @@ class MOM6Forecast:
                 file_read,
                 combine='nested',
                 concat_dim='init',
-                chunks={'init': 4,'member':1,'lead':-1}
+                chunks=io_chunk
             ).sortby('init')
             ds = xr.merge([ds_static,ds])
             # ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
@@ -331,10 +338,12 @@ class MOM6Forecast:
                 else:
                     mom6_dir = os.path.join(DATA_PATH,self.tercile_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
+                io_chunk = {}
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
+                io_chunk = {'init': 4,'member':1,'lead':-1}
 
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'{self.var}_' in file]
 
             # refine based on region
             if average_type == 'grid':
@@ -345,7 +354,7 @@ class MOM6Forecast:
             ds = xr.open_mfdataset(
                 file_read,combine='nested',
                 concat_dim='init',
-                chunks={'init': 1,'member':1,'lead':1}
+                chunks=io_chunk
             ).sortby('init')
 
             # test if accident read raw file
@@ -538,20 +547,22 @@ class MOM6Historical:
                     raise IOError('for raw grid please input the path to grid file')
                 else:
                     ds_static = MOM6Static.get_grid(self.static_relative_dir)
+                io_chunk = {}
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
                 for file in file_list:
                     var_flag = 'static' in file
                     if var_flag :
                         ds_static = xr.open_dataset(file)
+                io_chunk = {'time': 100}
 
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'.{self.var}.' in file]
 
             # merge the static field with the variables
             ds = xr.open_mfdataset(
                 file_read,combine='nested',
                 concat_dim='time',
-                chunks={'time': 100}
+                chunks=io_chunk
             ).sortby('time')
             ds = xr.merge([ds_static,ds])
             ds = ds.isel(time=slice(1,None))  # exclude the 1980 empty field due to merge
@@ -577,7 +588,7 @@ class MOM6Historical:
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
 
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'.{self.var}.' in file]
             ds = xr.open_mfdataset(
                 file_read,
                 combine='nested',
@@ -968,3 +979,11 @@ class MOM6Misc:
                 ds_data[var_name].encoding['complevel'] = 2
 
         return ds_data
+    
+ds_so = MOM6Historical(
+    var = 'so',
+    data_relative_dir = 'hist_run/',
+    static_relative_dir = 'static/',
+    grid = 'raw',
+    source = 'local'
+).get_all()
