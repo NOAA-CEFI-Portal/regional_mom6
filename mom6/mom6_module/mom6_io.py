@@ -979,11 +979,3 @@ class MOM6Misc:
                 ds_data[var_name].encoding['complevel'] = 2
 
         return ds_data
-    
-ds_so = MOM6Historical(
-    var = 'so',
-    data_relative_dir = 'hist_run/',
-    static_relative_dir = 'static/',
-    grid = 'raw',
-    source = 'local'
-).get_all()
