@@ -12,7 +12,6 @@ import warnings
 import numpy as np
 import xarray as xr
 import xesmf as xe
-from mom6.mom6_module import mom6_io
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -31,8 +30,7 @@ class GulfStreamIndex:
        ds_data : xr.Dataset,
        ssh_name : str = 'ssh'
     ) -> None:
-        """_summary_
-
+        """
         Parameters
         ----------
         ds_data : xr.Dataset
@@ -194,115 +192,99 @@ class ColdPoolIndex:
     This class is used to create the Cold Pool Index calculation
     Original sources are [Ross et al., 2023](https://gmd.copernicus.org/articles/16/6943/2023/).
     and [GFDL CEFI github repository]
-    (https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main/diagnostics/physics/NWA12/coldpool.py)
+    (https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main
+     /diagnostics/physics/NWA12/coldpool.py)
     """
     def __init__(
         self,
         ds_data: xr.Dataset,
-        bottomT_name: str = 'bottomT'
-    ):
-        """_summary_
-        
+        ds_cpi_mask: xr.Dataset,
+        bottom_temp_name: str = 'bottomT',
+        mask_name: str = 'CPI_mask'
+    ) -> None:
+        """
         Parameters
         ----------
         ds_data: xr.Dataset
             The bottom temperature dataset used to
             derive the cold pool index.
+        ds_cpi_mask: xr.Dataset
+            The CPI mask.
         bottomT_name" str
             The bottom temperature variable name in the data set
+        mask_name" str
+            The CPI mask variable name in the `ds_cpi_mask`
         """
         self.dataset = ds_data
-        self.varname = bottomT_name
-    
-    def mask_region(ds):
+        self.mask = ds_cpi_mask
+        self.varname = bottom_temp_name
+        self.maskname = mask_name
+
+    def regrid_and_mask(self)->xr.DataArray:
         """
-        Generate the region mask and regrid data using MOM6 model
-        
-        Parameters
-        ----------
-        ds : xr.Dataset
-            Dataset that needs to be regridded
+        Regrid data from MOM6 model to the mask grid 
+        to apply the mask 
         
         Returns
         -------
-        da_mask_regrid_crop : xr.Dataset
-            Cropped and regridded dataset"""
-        
-        #Create region mask from MOM6 model
-        ds_mab = mom6_io.MOM6Static.get_regionl_mask('masks/')
-        ds_grid = mom6_io.MOM6Static.get_grid('')
-        ds_mask = xr.merge([ds_mab,ds_grid])
-        ds_mask = ds_mask.set_coords(['geolon','geolat','geolon_c','geolat_c','geolon_u','geolat_u','geolon_v','geolat_v'])
+        da_regrid : xr.DataArray
+            regridded and masked dataset
+        """
+        ds_mask = self.mask
+        ds_data = self.dataset
 
-        # Regrid the mask to GLORYS
-        # Use xesmf to create regridder using bilinear method 
+        # Regrid the regional MOM6 data to GLORYS grid
+        # Use xesmf to create regridder using bilinear method
         # !!!! Regridded only suited for geolon and geolat to x and y
-        regridder = xe.Regridder(ds_mask.rename({'geolon':'lon','geolat':'lat'}), ds, "bilinear", unmapped_to_nan=True)
-        da_mask = xr.where(ds_mask.MAB,x=1,y=np.nan)
+        regridder = xe.Regridder(
+            ds_data.rename({'geolon':'lon','geolat':'lat'}),
+            ds_mask,
+            "bilinear",
+            unmapped_to_nan=True
+        )
 
         # Perform regrid using adaptive masking
-        #  https://pangeo-xesmf.readthedocs.io/en/latest/notebooks/Masking.html#Adaptive-masking
-        da_mask_regrid = regridder(da_mask, skipna=True, na_thres=0.25).compute()
+        #  https://pangeo-xesmf.readthedocs.io/en/latest/
+        #  notebooks/Masking.html#Adaptive-masking
+        da_regrid = regridder(ds_data[self.varname], skipna=True, na_thres=0.25).compute()
+        da_regrid = da_regrid*ds_mask[self.maskname]
 
-        #Crop the region to the southern flank of the Georges Bank
-        da_mask_regrid_crop = (da_mask_regrid
-            .where(
-                (da_mask_regrid.latitude>=38)&
-                (da_mask_regrid.latitude<=41.5)&
-                (da_mask_regrid.longitude<=-68.5+360)&
-                (da_mask_regrid.longitude>=-75+360),
-                drop=True
-            )
-            .where(
-                (da_mask_regrid.latitude<=41)&
-                (da_mask_regrid.longitude>=-70+360),
-                drop=True
-            )
-        )
-        return da_mask_regrid_crop
-    
+        return da_regrid
+
     def generate_index(self):
         '''
-        Define Coldpool Domain and Calculate Index
-        Depth: Between 20m and 200m isobath
-        Time: Between June and September from 1959 to 2022
-        Temperature: Average bottom temperature was cooler than 10 degrees Celsius (and > 6?)
-        Location: Mid-Atlantic Bight (MAB) domain between 38N-41.5N and between 75W-68.5W
+        Masked data to the Coldpool Domain and Calculate Index
+        Coldpool Domain:
+            Depth: Between 20m and 200m isobath
+            Time: Between June and September from 1959 to 2022
+            Temperature: Average bottom temperature was cooler than 10 degrees Celsius (and > 6?)
+            Location: Mid-Atlantic Bight (MAB) domain between 38N-41.5N and between 75W-68.5W
         
         Returns
         -------
-        da_cpi_mon : xr.Dataset
-            Cold pool index calculation based on monthly climatology
-        da_cpi_ann : xr.Dataset
-            Cold pool index calculation based on yearly climatology'''
-        #Get data and regrid it
-        ds = self.dataset
-        ds_regrid = self.mask_region(ds)
-        #Set depth mask per coldpool domain definition
-        da_mask_depth = ds.deptho.where((ds.deptho>20.)&(ds.deptho<200.),other=np.nan)
-        da_mask_depth = xr.where(da_mask_depth.notnull(),x=1,y=np.nan)
+        da_cpi_ann : xr.DataArray
+            Yearly cold pool index calculation based on yearly climatology
+        
+        '''
+        #Get masked data and regrid it
+        da_regrid = self.regrid_and_mask()
 
-        #Set time mask
-        da_bottomT_Jun2Sep = ds.bottomT.where((ds['time.month']>=6)&(ds['time.month']<=9),drop=True)
-        da_bottomT_mon_ltm = da_bottomT_Jun2Sep.groupby(da_bottomT_Jun2Sep['time.month']).mean(dim='time').compute()
-        da_bottomT_ann_ltm = da_bottomT_Jun2Sep.groupby(da_bottomT_Jun2Sep['time.year']).mean(dim='time').mean(dim='year').compute()
-        # da_mask_bottomT_mon = da_bottomT_Jun2Sep.groupby(da_bottomT_Jun2Sep['time.month']).mean(dim='time').compute()
-        # da_mask_bottomT_ann = da_bottomT_Jun2Sep.mean(dim='time').compute()
+        #Calculate annual time series and long term mean at each grid
+        da_tob_jun2sep = da_regrid.where(
+            (da_regrid['time.month']>=6)&
+            (da_regrid['time.month']<=9),
+            drop=True
+        )
+        da_tob_ann = (
+            da_tob_jun2sep
+            .groupby(da_tob_jun2sep['time.year'])
+            .mean(dim='time')
+        ).compute()
+        da_tob_ann_ltm = da_tob_ann.mean('year')
 
-        #Set temperature mask to less than 10 degrees Celsius
-        #TODO: Set to temperature mask to greater than 6 degrees Celsius - pending confirmation
-        da_mask_bottomT_mon = xr.where(da_bottomT_mon_ltm<10, x=1, y=np.nan)
-        da_mask_bottomT_ann = xr.where(da_bottomT_ann_ltm<10, x=1, y=np.nan)
+        #Compute Cold Pool Index using the logic found here:
+        # https://noaa-edab.github.io/tech-doc/cold_pool.html
+        da_tob_ann_anom = da_tob_ann-da_tob_ann_ltm
+        da_cpi_ann = da_tob_ann_anom.mean(['latitude', 'longitude'])
 
-    #Create final cold pool mask using the cropped location mask, temperature mask, and depth mask
-        da_mask_total_mon = ds_regrid*da_mask_bottomT_mon*da_mask_depth
-        da_mask_total_ann = ds_regrid*da_mask_bottomT_ann*da_mask_depth
-
-        da_bottomT_mon = da_bottomT_Jun2Sep
-        da_bottomT_ann = da_bottomT_Jun2Sep.groupby(da_bottomT_Jun2Sep['time.year']).mean(dim='time')
-
-        #Compute Cold Pool Index using the logic found here: https://noaa-edab.github.io/tech-doc/cold_pool.html
-        da_cpi_mon = ((da_bottomT_mon.groupby(da_bottomT_Jun2Sep['time.month'])-da_bottomT_mon_ltm)*da_mask_total_mon).compute()
-        da_cpi_ann = ((da_bottomT_ann-da_bottomT_ann_ltm)*da_mask_total_ann).compute()
-
-        return da_cpi_mon, da_cpi_ann
+        return da_cpi_ann
