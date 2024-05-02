@@ -222,7 +222,8 @@ class MOM6Forecast:
                 test_regrid_lon = ds['lon']
                 test_regrid_lat = ds['lat']
                 raise OSError(
-                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'regrid file should not have '+
+                    f'lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -252,7 +253,8 @@ class MOM6Forecast:
                 test_raw_x = ds['xh']
                 test_raw_y = ds['yh']
                 raise OSError(
-                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'regrid file should not have '+
+                    f'xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -325,7 +327,8 @@ class MOM6Forecast:
                 test_regrid_lon = ds['lon']
                 test_regrid_lat = ds['lat']
                 raise OSError(
-                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'regrid file should not have '+
+                    f'lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -362,7 +365,8 @@ class MOM6Forecast:
                 test_raw_x = ds['xh']
                 test_raw_y = ds['yh']
                 raise OSError(
-                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'regrid file should not have '+
+                    f'xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -572,7 +576,8 @@ class MOM6Historical:
                 test_regrid_lon = ds['lon']
                 test_regrid_lat = ds['lat']
                 raise OSError(
-                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'regrid file should not have '+
+                    f'lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -601,7 +606,8 @@ class MOM6Historical:
                 test_raw_x = ds['xh']
                 test_raw_y = ds['yh']
                 raise OSError(
-                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'regrid file should not have '+
+                    f'xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -700,6 +706,36 @@ class MOM6Static:
                 ds[var] = xr.where(ds[var],1.,np.nan)
 
         return ds
+
+    @staticmethod
+    def get_cpi_mask(
+        data_relative_dir : str
+    ) -> xr.Dataset:
+        """return the Cold Pool Index mask in the GLORYS grid.
+        
+        The mask is currently derived by Chia-Wei Hsu based 
+        solely on the avialable GLORYS data. 
+
+        The mask has three main criterias
+        1. within EPU MAB (Mid-Atlantic Bight)
+           => within (38N-41.5N,75W-68.5W) 
+           => within (<41N, <70W)
+        2. Only consider bottom temperature between 20m-200m isobath 
+        3. Long term mean (1993-2022) of annual mean (Jun-Sep) cooler than 10degC
+
+        Parameters
+        ----------
+        data_relative_dir : str
+            relative path from DATAPATH setup in config file to 
+            the actual mask data, by setting 'masks/'
+            which makes the absolute path to DATAPATH/masks/
+
+        Returns
+        -------
+        xr.Dataset
+            The Xarray Dataset object of CPI mask in GLORYS grid
+        """
+        return xr.open_dataset(os.path.join(DATA_PATH,data_relative_dir,"cpi_mask.nc"))
 
     @staticmethod
     def get_grid(
