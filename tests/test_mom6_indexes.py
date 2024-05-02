@@ -17,9 +17,7 @@ The data and static options are also implemented in conftest.py. Default file pa
 import pytest
 import numpy as np
 from mom6.mom6_module import mom6_indexes
-from mom6.mom6_module.mom6_io import MOM6Historical
-import xarray as xr
-
+from mom6.mom6_module.mom6_io import MOM6Historical,MOM6Static
 
 def test_gulf_stream_index(location):
     """testing the gulf stream index calculation
@@ -61,8 +59,8 @@ def test_gulf_stream_index(location):
     #     assert np.abs(ds_gs.gulf_stream_index.max().compute().data - 1.7084963) < 1e-6
     #     assert np.abs(ds_gs.gulf_stream_index.min().compute().data - -1.7084963) < 1e-6
 
-    
-def test_cold_pool_index(data_file,static_data_file):
+
+def test_cold_pool_index(location):
     """testing the cold pool index calculation
     
     Parameters
@@ -72,7 +70,18 @@ def test_cold_pool_index(data_file,static_data_file):
     static_data_file : str
         Static data file with depth information
     """
-    ds_test = xr.open_mfdataset([data_file,static_data_file],chunks={'time':1},parallel=True)
-    ds_test = ds_test.drop_vars('mask')
-    mom_cpi = mom6_indexes.ColdPoolIndex(ds_test,'bottomT')
-    ds_cpi_mon, ds_cpi_ann = mom_cpi.generate_index()
+    if location == 'local':
+        ds_mask = MOM6Static.get_cpi_mask('masks/')
+        ds_data = MOM6Historical('tob','hist_run/','static/','raw',location).get_all()
+
+        da_cpi_ann = mom6_indexes.ColdPoolIndex(
+            ds_data,
+            ds_mask,
+            bottom_temp_name='tob',
+            mask_name='CPI_mask'
+        ).generate_index()
+
+        # whole dataset examination
+        assert np.abs(np.abs(da_cpi_ann).sum().data - 18.92449004) < 1e-5
+        assert np.abs(da_cpi_ann.max().data - 1.47584972) < 1e-6
+        assert np.abs(da_cpi_ann.min().data - -1.82282283) < 1e-6
