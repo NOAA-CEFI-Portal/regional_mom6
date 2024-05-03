@@ -1,6 +1,6 @@
 """
 This script is designed to calculate the tercile value based on the
-REGRIDDED forecast/hindcast data. 
+REGRIDDED forecast/forecast data. 
 
 ----
 future improvement
@@ -16,7 +16,7 @@ import xarray as xr
 from dask.distributed import Client
 from mom6 import DATA_PATH
 from mom6.mom6_module.mom6_io import MOM6Misc
-# from mom6_regrid import mom6_hindcast,mom6_encoding_attr
+# from mom6_regrid import mom6_forecast,mom6_encoding_attr
 warnings.simplefilter("ignore")
 
 # %%
@@ -36,10 +36,10 @@ if __name__=="__main__":
 
     # data locations
     if grid == 'raw':
-        mom6_dir = os.path.join(DATA_PATH,"hindcast/")
+        mom6_dir = os.path.join(DATA_PATH,"forecast/")
         mom6_tercile_dir = os.path.join(DATA_PATH,"tercile_calculation/")
     elif grid == 'regrid':
-        mom6_dir = os.path.join(DATA_PATH,"hindcast/regrid/")
+        mom6_dir = os.path.join(DATA_PATH,"forecast/regrid/")
         mom6_tercile_dir = os.path.join(DATA_PATH,"tercile_calculation/regrid/")
     else:
         print("Usage: python mom6_tercile.py VARNAME GRIDTYPE")

@@ -42,7 +42,7 @@ def test_MOM6Forecast(location):
         source of the data 'opendap' or 'local', by default 'opendap'
     """
     if location == 'local':
-        forecast_subdir = 'hindcast'
+        forecast_subdir = 'forecast'
         static_subdir = 'static'
         tercile_subdir = 'tercile_calculation'
 
