@@ -36,7 +36,7 @@ if __name__=="__main__":
 
     # data locations
     if grid == 'raw':
-        MOM6_DIR = os.path.join(DATA_PATH,"hindcast/")
+        MOM6_DIR = os.path.join(DATA_PATH,"forecast/")
         MOM6_TERCILE_DIR = os.path.join(DATA_PATH,"tercile_calculation/")
     else:
         print("Usage: python mom6_tercile_regional.py VARNAME GRIDTYPE")

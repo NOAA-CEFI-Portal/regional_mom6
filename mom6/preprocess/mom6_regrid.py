@@ -49,8 +49,8 @@ if __name__=="__main__":
         mom6_dir = os.path.join(DATA_PATH,"hist_run/")
         file_list = glob.glob(f'{mom6_dir}/*.nc')
     elif sys.argv[1] == 'fcst':
-        # mom6_dir = "/Datasets.private/regional_mom6/hindcast/"
-        mom6_dir = os.path.join(DATA_PATH,"hindcast/")
+        # mom6_dir = "/Datasets.private/regional_mom6/forecast/"
+        mom6_dir = os.path.join(DATA_PATH,"forecast/")
         file_list = glob.glob(f'{mom6_dir}/*.nc')
 
     # %%
