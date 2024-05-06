@@ -6,12 +6,8 @@ Testing the module mom6_indexes
 For local testing:
 `pytest --location=local`
 
-For coldpool testing:
-`pytest --data=<GLORYS data file> --static=<GLORYS static file>
-
 
 The location option is implemented due to the conftest.py
-The data and static options are also implemented in conftest.py. Default file path needed
 
 """
 import pytest
@@ -65,10 +61,13 @@ def test_cold_pool_index(location):
     
     Parameters
     ----------
-    data_file : str
-        Data file used to test cold pool index
-    static_data_file : str
-        Static data file with depth information
+    location : str
+        The location of where the data is extracted.
+
+    Raises
+    ------
+    ValueError
+        The location input in string does not exist.
     """
     if location == 'local':
         ds_mask = MOM6Static.get_cpi_mask('masks/')
