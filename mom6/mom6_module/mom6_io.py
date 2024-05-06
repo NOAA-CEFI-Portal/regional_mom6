@@ -195,21 +195,24 @@ class MOM6Forecast:
                     raise OSError('for raw grid please input the path to grid file')
                 else:
                     ds_static = MOM6Static.get_grid(self.static_relative_dir)
+                # setup chuck
+                io_chunk = {}
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 for file in file_list:
                     var_flag = 'static' in file
                     if var_flag :
                         ds_static = xr.open_dataset(file)
+                io_chunk = {'init': 4,'member':1,'lead':-1}
 
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'{self.var}_' in file]
 
             # merge the static field with the variables
             ds = xr.open_mfdataset(
                 file_read,
                 combine='nested',
                 concat_dim='init',
-                chunks={'init': 4,'member':1,'lead':-1}
+                chunks=io_chunk
             ).sortby('init')
             ds = xr.merge([ds_static,ds])
             # ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
@@ -219,7 +222,8 @@ class MOM6Forecast:
                 test_regrid_lon = ds['lon']
                 test_regrid_lat = ds['lat']
                 raise OSError(
-                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'regrid file should not have '+
+                    f'lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -232,14 +236,16 @@ class MOM6Forecast:
                 else:
                     mom6_dir = os.path.join(DATA_PATH,self.data_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
+                io_chunk = {}
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
+                io_chunk = {'init': 1,'member':1,'lead':-1}
 
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'{self.var}_' in file]
             ds = xr.open_mfdataset(
                 file_read,combine='nested',
                 concat_dim='init',
-                chunks={'init': 1,'member':1,'lead':1}
+                chunks=io_chunk
             ).sortby('init')
 
             # test if accident read raw file
@@ -247,7 +253,8 @@ class MOM6Forecast:
                 test_raw_x = ds['xh']
                 test_raw_y = ds['yh']
                 raise OSError(
-                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'regrid file should not have '+
+                    f'xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -288,15 +295,17 @@ class MOM6Forecast:
                     raise OSError('for raw grid please input the path to grid file')
                 else:
                     ds_static = MOM6Static.get_grid(self.static_relative_dir)
+                io_chunk = {}
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 for file in file_list:
                     var_flag = 'static' in file
                     if var_flag :
                         ds_static = xr.open_dataset(file)
+                io_chunk = {'init': 4,'member':1,'lead':-1}
 
             # refine based on var name
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'{self.var}_' in file]
             # refine based on region
             if average_type == 'grid':
                 file_read = [file for file in file_read if '.region.' not in file]
@@ -308,7 +317,7 @@ class MOM6Forecast:
                 file_read,
                 combine='nested',
                 concat_dim='init',
-                chunks={'init': 4,'member':1,'lead':-1}
+                chunks=io_chunk
             ).sortby('init')
             ds = xr.merge([ds_static,ds])
             # ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
@@ -318,7 +327,8 @@ class MOM6Forecast:
                 test_regrid_lon = ds['lon']
                 test_regrid_lat = ds['lat']
                 raise OSError(
-                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'regrid file should not have '+
+                    f'lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -331,10 +341,12 @@ class MOM6Forecast:
                 else:
                     mom6_dir = os.path.join(DATA_PATH,self.tercile_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
+                io_chunk = {}
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
+                io_chunk = {'init': 4,'member':1,'lead':-1}
 
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'{self.var}_' in file]
 
             # refine based on region
             if average_type == 'grid':
@@ -345,7 +357,7 @@ class MOM6Forecast:
             ds = xr.open_mfdataset(
                 file_read,combine='nested',
                 concat_dim='init',
-                chunks={'init': 1,'member':1,'lead':1}
+                chunks=io_chunk
             ).sortby('init')
 
             # test if accident read raw file
@@ -353,7 +365,8 @@ class MOM6Forecast:
                 test_raw_x = ds['xh']
                 test_raw_y = ds['yh']
                 raise OSError(
-                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'regrid file should not have '+
+                    f'xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -538,20 +551,22 @@ class MOM6Historical:
                     raise IOError('for raw grid please input the path to grid file')
                 else:
                     ds_static = MOM6Static.get_grid(self.static_relative_dir)
+                io_chunk = {}
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
                 for file in file_list:
                     var_flag = 'static' in file
                     if var_flag :
                         ds_static = xr.open_dataset(file)
+                io_chunk = {'time': 100}
 
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'.{self.var}.' in file]
 
             # merge the static field with the variables
             ds = xr.open_mfdataset(
                 file_read,combine='nested',
                 concat_dim='time',
-                chunks={'time': 100}
+                chunks=io_chunk
             ).sortby('time')
             ds = xr.merge([ds_static,ds])
             ds = ds.isel(time=slice(1,None))  # exclude the 1980 empty field due to merge
@@ -561,7 +576,8 @@ class MOM6Historical:
                 test_regrid_lon = ds['lon']
                 test_regrid_lat = ds['lat']
                 raise OSError(
-                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'regrid file should not have '+
+                    f'lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -577,7 +593,7 @@ class MOM6Historical:
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
 
-            file_read = [file for file in file_list if self.var in file]
+            file_read = [file for file in file_list if f'.{self.var}.' in file]
             ds = xr.open_mfdataset(
                 file_read,
                 combine='nested',
@@ -590,7 +606,8 @@ class MOM6Historical:
                 test_raw_x = ds['xh']
                 test_raw_y = ds['yh']
                 raise OSError(
-                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'regrid file should not have '+
+                    f'xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -689,6 +706,36 @@ class MOM6Static:
                 ds[var] = xr.where(ds[var],1.,np.nan)
 
         return ds
+
+    @staticmethod
+    def get_cpi_mask(
+        data_relative_dir : str
+    ) -> xr.Dataset:
+        """return the Cold Pool Index mask in the GLORYS grid.
+        
+        The mask is currently derived by Chia-Wei Hsu based 
+        solely on the avialable GLORYS data. 
+
+        The mask has three main criterias
+        1. within EPU MAB (Mid-Atlantic Bight)
+           => within (38N-41.5N,75W-68.5W) 
+           => within (<41N, <70W)
+        2. Only consider bottom temperature between 20m-200m isobath 
+        3. Long term mean (1993-2022) of annual mean (Jun-Sep) cooler than 10degC
+
+        Parameters
+        ----------
+        data_relative_dir : str
+            relative path from DATAPATH setup in config file to 
+            the actual mask data, by setting 'masks/'
+            which makes the absolute path to DATAPATH/masks/
+
+        Returns
+        -------
+        xr.Dataset
+            The Xarray Dataset object of CPI mask in GLORYS grid
+        """
+        return xr.open_dataset(os.path.join(DATA_PATH,data_relative_dir,"cpi_mask.nc"))
 
     @staticmethod
     def get_grid(
