@@ -12,7 +12,7 @@ def test_OpenDapStore():
     """Test OpenDap Connection
     """
 
-    opendap_raw = mom6_io.OpenDapStore('raw','historical')
+    opendap_raw = mom6_io.OpenDapStore(grid='raw',data_type='historical',region='northwest_atlantic')
     test_url = opendap_raw.get_catalog()[0]
     try:
         ds = xr.open_dataset(test_url)
@@ -21,7 +21,7 @@ def test_OpenDapStore():
         pytest.fail('OSError is raised OPeNDAP url not working')
 
 
-    opendap_regrid = mom6_io.OpenDapStore('regrid','historical')
+    opendap_regrid = mom6_io.OpenDapStore(grid='regrid',data_type='historical',region='northwest_atlantic')
     test_url = opendap_regrid.get_catalog()[0]
     try:
         ds = xr.open_dataset(test_url)
@@ -34,7 +34,7 @@ def test_OpenDapStore():
 def test_MOM6Forecast(location):
     """Test the forecast IO
 
-    only available local
+    currently only available local
 
     Parameters
     ----------
