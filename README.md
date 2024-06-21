@@ -48,5 +48,5 @@ To use the module in the package at this stage
     }
     ```
 
-    current setup assuming the data directory structure is fixed (flexibility need to be considered)
+    current setup assuming the data directory structure is fixed (i.e. the historical run or forecast data subdirectory (ex: hist_run and forecast) need to be under this data_path )
 

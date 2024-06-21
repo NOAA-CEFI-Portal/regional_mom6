@@ -1,4 +1,4 @@
-name: regional_mom6
+name: regional-mom6
 channels:
   - conda-forge
 dependencies:
