@@ -23,7 +23,6 @@ import os
 import sys
 import glob
 import warnings
-import numpy as np
 import xarray as xr
 from mom6 import DATA_PATH
 from mom6.mom6_module.mom6_io import MOM6Static,MOM6Misc
@@ -52,6 +51,7 @@ if __name__=="__main__":
         # mom6_dir = "/Datasets.private/regional_mom6/forecast/"
         mom6_dir = os.path.join(DATA_PATH,"forecast/")
         file_list = glob.glob(f'{mom6_dir}/*.nc')
+        file_list = [f'{mom6_dir}/tos_forecast_i200903.nc']
 
     # %%
     # static field
@@ -61,17 +61,25 @@ if __name__=="__main__":
     ds_static = ds_static.rename({'geolon':'lon','geolat':'lat'})
 
     # %%
-    # Create longitude and latitude arrays (e.g., 1D arrays)
-    x = np.linspace(
-        ds_static.lon.min(),
-        ds_static.lon.max(),
-        len(ds_static.xh)-1
-    )    # Example longitude values
-    y = np.linspace(
-        ds_static.lat.min(),
-        ds_static.lat.max(),
-        len(ds_static.yh)-1
-    )    # Example latitude values
+    # read the longitude and latitude arrays from IHESP data
+    ds_ihesp = xr.open_dataset(
+        '/Projects/iHESP/picontrol/ocean/sst/sst.mon.mean.B1850C5.025001-025912.nc',
+        chunks={}
+    )
+    da_ihesp_lon = ds_ihesp.lon
+    da_ihesp_lat = ds_ihesp.lat
+
+    x = da_ihesp_lon.where(
+        (da_ihesp_lon>=ds_static.lon.min())& 
+        (da_ihesp_lon<=ds_static.lon.max()),
+        drop=True
+    ).data
+
+    y = da_ihesp_lat.where(
+        (da_ihesp_lat>=ds_static.lat.min())& 
+        (da_ihesp_lat<=ds_static.lat.max()),
+        drop=True
+    ).data
 
     # Create a dummy data variable (optional, can be empty)
     ds = xr.open_dataset(file_list[0],chunks={})
@@ -85,7 +93,7 @@ if __name__=="__main__":
         data = xr.DataArray(
             data=None,
             coords={'lon': x, 'lat': y, "member": ds.member, "init": ds.init, "lead": ds.lead},
-            dims=('lon', 'lat', 'member', 'init', 'lead')
+            dims=('lon', 'lat', 'member', 'lead')
         )
 
     # Create an xarray dataset with empty dataarray
@@ -121,8 +129,11 @@ if __name__=="__main__":
             ds_regrid[varname] = regridder(ds[varname])
             ds_regrid[f"{varname}_anom"] = regridder(ds[f"{varname}_anom"])
 
+        # important to keep the init right (due to the remove init from dim)
+        ds_regrid['init'] = ds['init']
+
         # output the netcdf file
-        print(f'output {mom6_dir}/regrid/{file[len(mom6_dir):]}')
+        print(f'output /Projects/iHESP/regional_MOM6//{file[len(mom6_dir):]}')
         MOM6Misc.mom6_encoding_attr(
                 ds,
                 ds_regrid,
@@ -130,6 +141,6 @@ if __name__=="__main__":
                 dataset_name='regional mom6 regrid'
             )
         try:
-            ds_regrid.to_netcdf(f'{mom6_dir}/regrid/{file[len(mom6_dir):]}',mode='w')
+            ds_regrid.to_netcdf(f'/Projects/iHESP/regional_MOM6/{file[len(mom6_dir):]}',mode='w')
         except PermissionError:
-            print(f'{mom6_dir}/regrid/{file[len(mom6_dir):]} is used by other scripts' )
+            print(f'/Projects/iHESP/regional_MOM6/{file[len(mom6_dir):]} is used by other scripts' )

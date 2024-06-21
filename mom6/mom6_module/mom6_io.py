@@ -78,7 +78,7 @@ class OpenDapStore:
         if self.data_type == 'historical' :
             datatype = 'hist_run'
         elif self.data_type == 'forecast' :
-            datatype = 'hindcast'
+            datatype = 'forecast'
         # print(datatype)
 
         if self.grid == 'raw' :
@@ -120,9 +120,9 @@ class OpenDapStore:
 
 class MOM6Forecast:
     """
-    Class for getting various mom6 hindcast/forecast
-    - get the mom6 files from hindcast/forecast
-    - get the mom6 tercile from hindcast/forecast
+    Class for getting various mom6 reforecast/forecast
+    - get the mom6 files from reforecast/forecast
+    - get the mom6 tercile from reforecast/forecast
     - get forecast time stamp
     ...
     """
@@ -142,17 +142,17 @@ class MOM6Forecast:
             variable name one want to exetract from the data
         data_relative_dir : str
             relative path from DATAPATH setup in config file to 
-            the actual forecast/hindcast data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/
+            the actual forecast/reforecast data, by setting 'forecast/'
+            which makes the absolute path to DATAPATH/forecast/
         static_relative_dir : str 
             relative path from DATAPATH setup in config file to 
-            the actual static file (grid info) data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/.
+            the actual static file (grid info) data, by setting 'forecast/'
+            which makes the absolute path to DATAPATH/forecast/.
             This is needed when setting grid to `raw`
         tercile_relative_dir : str 
             relative path from DATAPATH setup in config file to 
-            the actual tercile related file, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/.
+            the actual tercile related file, by setting 'forecast/'
+            which makes the absolute path to DATAPATH/forecast/.
             This is needed when using get_tercile method
         grid : Literal[&#39;raw&#39;,&#39;regrid&#39;], optional
             The data extracted should be the regridded result or 
@@ -171,7 +171,7 @@ class MOM6Forecast:
 
     def get_all(self) -> xr.Dataset:
         """
-        Return the mom6 all rawgrid/regridded hindcast/forecast field
+        Return the mom6 all rawgrid/regridded reforecast/forecast field
         with the static field combined and setting the
         lon lat related variables to coordinate 
 
@@ -184,7 +184,7 @@ class MOM6Forecast:
         """
         if self.grid == 'raw' :
             if self.source == 'local':
-                # getting the forecast/hindcast data
+                # getting the forecast/reforecast data
                 if self.data_relative_dir is None :
                     raise OSError('for local source please input the path to data file')
                 else:
@@ -222,14 +222,15 @@ class MOM6Forecast:
                 test_regrid_lon = ds['lon']
                 test_regrid_lat = ds['lat']
                 raise OSError(
-                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'regrid file should not have '+
+                    f'lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
 
         elif self.grid == 'regrid':
             if self.source == 'local':
-                # getting the forecast/hindcast data
+                # getting the forecast/reforecast data
                 if self.data_relative_dir is None :
                     raise OSError('for local source please input the path to data file')
                 else:
@@ -252,7 +253,8 @@ class MOM6Forecast:
                 test_raw_x = ds['xh']
                 test_raw_y = ds['yh']
                 raise OSError(
-                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'regrid file should not have '+
+                    f'xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -282,7 +284,7 @@ class MOM6Forecast:
         """
         if self.grid == 'raw' :
             if self.source == 'local':
-                # getting the forecast/hindcast data
+                # getting the forecast/reforecast data
                 if self.tercile_relative_dir is None :
                     raise OSError('for local source please input the path to tercile file')
                 else:
@@ -325,14 +327,15 @@ class MOM6Forecast:
                 test_regrid_lon = ds['lon']
                 test_regrid_lat = ds['lat']
                 raise OSError(
-                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'regrid file should not have '+
+                    f'lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
 
         elif self.grid == 'regrid':
             if self.source == 'local':
-                # getting the forecast/hindcast data
+                # getting the forecast/reforecast data
                 if self.tercile_relative_dir is None :
                     raise OSError('for local source please input the path to data file')
                 else:
@@ -362,7 +365,8 @@ class MOM6Forecast:
                 test_raw_x = ds['xh']
                 test_raw_y = ds['yh']
                 raise OSError(
-                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'regrid file should not have '+
+                    f'xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -375,7 +379,7 @@ class MOM6Forecast:
         imonth : int = 3,
     ) -> xr.Dataset:
         """
-        Return the mom6 rawgrid/regridded hindcast/forecast field
+        Return the mom6 rawgrid/regridded reforecast/forecast field
         with the static field combined and setting the
         lon lat related variables to coordinate 
 
@@ -572,7 +576,8 @@ class MOM6Historical:
                 test_regrid_lon = ds['lon']
                 test_regrid_lat = ds['lat']
                 raise OSError(
-                    f'regrid file should not have lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
+                    'regrid file should not have '+
+                    f'lon({len(test_regrid_lon)}) lat({len(test_regrid_lat)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -601,7 +606,8 @@ class MOM6Historical:
                 test_raw_x = ds['xh']
                 test_raw_y = ds['yh']
                 raise OSError(
-                    f'regrid file should not have xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
+                    'regrid file should not have '+
+                    f'xh({len(test_raw_x)}) yh({len(test_raw_y)}) dim. '+
                     'Check data directory path or grid setting!')
             except KeyError:
                 pass
@@ -684,8 +690,8 @@ class MOM6Static:
         ----------
         data_relative_dir : str
             relative path from DATAPATH setup in config file to 
-            the actual forecast/hindcast data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/
+            the actual forecast/reforecast data, by setting 'forecast/'
+            which makes the absolute path to DATAPATH/forecast/
 
         Returns
         -------
@@ -702,6 +708,36 @@ class MOM6Static:
         return ds
 
     @staticmethod
+    def get_cpi_mask(
+        data_relative_dir : str
+    ) -> xr.Dataset:
+        """return the Cold Pool Index mask in the GLORYS grid.
+        
+        The mask is currently derived by Chia-Wei Hsu based 
+        solely on the avialable GLORYS data. 
+
+        The mask has three main criterias
+        1. within EPU MAB (Mid-Atlantic Bight)
+           => within (38N-41.5N,75W-68.5W) 
+           => within (<41N, <70W)
+        2. Only consider bottom temperature between 20m-200m isobath 
+        3. Long term mean (1993-2022) of annual mean (Jun-Sep) cooler than 10degC
+
+        Parameters
+        ----------
+        data_relative_dir : str
+            relative path from DATAPATH setup in config file to 
+            the actual mask data, by setting 'masks/'
+            which makes the absolute path to DATAPATH/masks/
+
+        Returns
+        -------
+        xr.Dataset
+            The Xarray Dataset object of CPI mask in GLORYS grid
+        """
+        return xr.open_dataset(os.path.join(DATA_PATH,data_relative_dir,"cpi_mask.nc"))
+
+    @staticmethod
     def get_grid(
         data_relative_dir : str
     ) -> xr.Dataset:
@@ -711,8 +747,8 @@ class MOM6Static:
         ----------
         data_relative_dir : str
             relative path from DATAPATH setup in config file to 
-            the actual forecast/hindcast data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/
+            the actual forecast/reforecast data, by setting 'forecast/'
+            which makes the absolute path to DATAPATH/forecast/
 
         Returns
         -------
@@ -739,8 +775,8 @@ class MOM6Static:
         ----------
         data_relative_dir : str
             relative path from DATAPATH setup in config file to 
-            the actual forecast/hindcast data, by setting 'hindcast/'
-            which makes the absolute path to DATAPATH/hindcast/
+            the actual forecast/reforecast data, by setting 'forecast/'
+            which makes the absolute path to DATAPATH/forecast/
 
         mask : str
             The mask name based on the variable name in the ocean_static.nc file.
@@ -819,8 +855,8 @@ class MOM6Misc:
         return all_file_list
 
     @staticmethod
-    def mom6_hindcast(
-        hindcast_dir : str
+    def mom6_forecast(
+        forecast_dir : str
     ) -> List[str]:
         """
         Create list of files to be able to be opened 
@@ -828,19 +864,23 @@ class MOM6Misc:
 
         Parameters
         ----------
-        hindcast_dir : str
-            directory path in string to the forecast/hindcast
+        forecast_dir : str
+            directory path in string to the forecast/reforecast
 
         Returns
         -------
         List 
             A list of all data name including directory path 
-            for the hindcast/forecast data
+            for the reforecast/forecast data
            
         """
         # input of array of different variable forecast
-        tob_files = [f"tob_forecasts_i{mon:02d}.nc" for mon in range(3,13,3)]
-        tos_files = [f"tos_forecasts_i{mon:02d}.nc" for mon in range(3,13,3)]
+        tob_files = []
+        tos_files = []
+        for year in range(1993,2022+1):
+            for month in range(3,13,3):
+                tob_files.append(f"tob_forecasts_i{year:04d}{month:02d}.nc")
+                tob_files.append(f"tos_forecasts_i{year:04d}{month:02d}.nc")
 
         # h point list
         hpoint_file_list = (
@@ -848,7 +888,7 @@ class MOM6Misc:
             tos_files
         )
 
-        hpoint_file_list = [f"{hindcast_dir}{file}" for file in hpoint_file_list]
+        hpoint_file_list = [f"{forecast_dir}{file}" for file in hpoint_file_list]
 
         all_file_list = hpoint_file_list
 
