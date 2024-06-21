@@ -37,6 +37,7 @@ class OpenDapStore:
     """
     def __init__(
             self,
+            region : Literal['northwest_atlantic'] = 'northwest_atlantic',
             grid : Literal['raw','regrid'] = 'raw',
             data_type : Literal['forecast','historical'] = 'historical'
     ) -> None:
@@ -53,6 +54,7 @@ class OpenDapStore:
             to calculate the indexes, by default 'historical'
 
         """
+        self.region = region
         self.grid = grid
         self.data_type = data_type
 
@@ -86,13 +88,15 @@ class OpenDapStore:
         elif self.grid == 'regrid' :
             gridtype = 'regrid/'
 
+        regiontype = self.region
+
         catalog_url = (
             'https://psl.noaa.gov/thredds/catalog/'+
-            f'Projects/CEFI/regional_mom6/{datatype}/{gridtype}'
+            f'Projects/CEFI/regional_mom6/{regiontype}/{datatype}/{gridtype}'
         )
         opendap_url = (
             'https://psl.noaa.gov/thredds/dodsC/'+
-            f'Projects/CEFI/regional_mom6/{datatype}/{gridtype}'
+            f'Projects/CEFI/regional_mom6/{regiontype}/{datatype}/{gridtype}'
         )
 
         # Send a GET request to the URL
