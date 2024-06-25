@@ -301,7 +301,7 @@ class BottomTempAnomaly:
             ds_data: xr.Dataset,
             blnForecast: bool,
             tob_name: str = 'tob'
-    ):
+    )-> None:
         """_summary_
         
         Parameters
@@ -315,12 +315,16 @@ class BottomTempAnomaly:
             The bottom temperature variable name in the dataset
         """
         self.dataset = ds_data
+        self.forecast = blnForecast
         self.varname = tob_name
 
-    def epu_average(var, area):
+    def epu_average(var, area,blnForecast):
         ave = var.weighted(area).mean(['yh', 'xh']).compute()
         # Note anomalies from ecodata/SOE are supposed to be relative to a 1981--2019 climatology. 
-        anom = ave.groupby('time.month') - ave.sel(time=slice('1993', '2019')).groupby('time.month').mean('time')
+        if blnForecast:
+            anom = ave.groupby('time.month') - ave.sel(time=slice('1993','2022')).groupby('time.month').mean('time')
+        else:
+            anom = ave.groupby('time.month') - ave.sel(time=slice('1993', '2019')).groupby('time.month').mean('time')
         # Resample so data is indexed by start of month
         monthly = anom.resample(time='1MS').first()
         return monthly.to_pandas()
@@ -336,6 +340,7 @@ class BottomTempAnomaly:
         '''
         #get dataset
         ds_data = self.dataset
+        blnForecast = self.forecast
 
         ds_grid = mom6_io.MOM6Static.get_grid('')
         ds_masks = mom6_io.MOM6Static.get_regional_mask('masks/')
@@ -350,6 +355,6 @@ class BottomTempAnomaly:
 
         ds_average = xr.Dataset()
         for epu in long_names_ordered:
-            hist = self.epu_average(ds_data['tob'], masked_area[epu])
+            hist = self.epu_average(ds_data['tob'], masked_area[epu],blnForecast)
             ds_average = xr.merge(ds_average,hist)
         return ds_average
