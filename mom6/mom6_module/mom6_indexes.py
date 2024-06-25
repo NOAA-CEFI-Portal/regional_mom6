@@ -12,6 +12,7 @@ import warnings
 import numpy as np
 import xarray as xr
 import xesmf as xe
+from mom6.mom6_module import mom6_io
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -288,3 +289,67 @@ class ColdPoolIndex:
         da_cpi_ann = da_tob_ann_anom.mean(['latitude', 'longitude'])
 
         return da_cpi_ann
+class BottomTempAnomaly:
+    """
+    This class is used to create the Bottom Temperature Anomaly Index for 4 Ecological Production Units (EPUs)
+    Original sources are [Ross et al., 2023](https://gmd.copernicus.org/articles/16/6943/2023/).
+    and [GFDL CEFI github repository]
+    (https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main/diagnostics/physics/NWA12/tbot_epy.py)
+    """
+    def __init__(
+            self,
+            ds_data: xr.Dataset,
+            blnForecast: bool,
+            tob_name: str = 'tob'
+    ):
+        """_summary_
+        
+        Parameters
+        ----------
+        ds_data: xr.Dataset
+            The bottom temperature dataset used to
+            derive bottom temperature anomalies for each EPU
+        blnForecast: bool
+            Boolean to determine data source: historical run or forecast
+        tob_name: str
+            The bottom temperature variable name in the dataset
+        """
+        self.dataset = ds_data
+        self.varname = tob_name
+
+    def epu_average(var, area):
+        ave = var.weighted(area).mean(['yh', 'xh']).compute()
+        # Note anomalies from ecodata/SOE are supposed to be relative to a 1981--2019 climatology. 
+        anom = ave.groupby('time.month') - ave.sel(time=slice('1993', '2019')).groupby('time.month').mean('time')
+        # Resample so data is indexed by start of month
+        monthly = anom.resample(time='1MS').first()
+        return monthly.to_pandas()
+
+    def generate_index(self):
+        '''
+        Generate bottom temperature anomaly index
+        
+        Returns
+        -------
+        xr.Dataset
+            dataset containing bottom temperature data for each EPU
+        '''
+        #get dataset
+        ds_data = self.dataset
+
+        ds_grid = mom6_io.MOM6Static.get_grid('')
+        ds_masks = mom6_io.MOM6Static.get_regional_mask('masks/')
+        masked_area = ds_grid['areacello'].where(ds_masks).fillna(0)
+
+        long_names_ordered = {
+            'SS': 'Scotian Shelf',
+            'GOM': 'Gulf of Maine',
+            'GB': 'Georges Bank',
+            'MAB': 'Mid-Atlantic Bight'
+        }
+
+        ds_average = xr.Dataset()
+        for epu in long_names_ordered:
+            hist = self.epu_average(ds_data['tob'], masked_area[epu])
+            ds_average = xr.merge(ds_average,hist)
+        return ds_average
