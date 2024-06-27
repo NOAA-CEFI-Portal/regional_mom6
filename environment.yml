@@ -10,3 +10,4 @@ dependencies:
   - xesmf
   - pytest
   - beautifulsoup4
+  - matplotlib
