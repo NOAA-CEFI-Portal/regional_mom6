@@ -219,7 +219,7 @@ class MOM6Forecast:
                 chunks=io_chunk
             ).sortby('init')
             ds = xr.merge([ds_static,ds])
-            # ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
+            ds = ds.drop_vars(['time'])         # a result of merge of ds_static
 
             # test if accident read regrid file
             try:
@@ -324,7 +324,7 @@ class MOM6Forecast:
                 chunks=io_chunk
             ).sortby('init')
             ds = xr.merge([ds_static,ds])
-            # ds = ds.isel(init=slice(1,None))  # exclude the 1980 empty field due to merge
+            ds = ds.drop_vars(['time'])         # a result of merge of ds_static
 
             # test if accident read regrid file
             try:
