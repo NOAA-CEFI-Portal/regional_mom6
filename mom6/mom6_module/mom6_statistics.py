@@ -168,7 +168,7 @@ class ForecastClimatology:
         )
 
         # test if the da_data crop period exist
-        if not da_data[self.init].data:
+        if len(da_data[self.init].data) == 0:
             raise ValueError(
                 "The data array is empty based on the kwarg"+
                 "climo_start_year & climo_end_year"
@@ -395,7 +395,7 @@ class ForecastQuantile:
         )
 
         # test if the da_data crop period exist
-        if not da_data[self.init].data:
+        if len(da_data[self.init].data) == 0:
             raise ValueError(
                 "The data array is empty based on the kwarg"+
                 "quantile_start_year & quantile_end_year"
