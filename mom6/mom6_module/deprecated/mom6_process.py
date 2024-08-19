@@ -23,17 +23,10 @@ import pandas as pd
 import xarray as xr
 from scipy.stats import norm as normal
 from mom6 import DATA_PATH
+from mom6.mom6_module.mom6_types import RegionalOptions
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
-
-
-# typing
-RegionalOptions = Literal[
-    'MAB','GOM','SS','GB','SS_LME','NEUS_LME','SEUS_LME',
-    'GOMEX','GSL','NGOMEX','SGOMEX','Antilles','Floridian'
-]
-
 
 
 class OpenDapStore:
