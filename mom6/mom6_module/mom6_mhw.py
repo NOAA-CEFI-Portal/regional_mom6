@@ -152,7 +152,8 @@ class MarineHeatwaveForecast:
         ds_mhw = xr.Dataset()
         ds_mhw[f'{self.varname}_threshold{quantile_threshold:02d}'] = da_threshold
         ds_mhw[f'mhw_prob{quantile_threshold:02d}'] = da_prob
-        ds_mhw['mhw_magnitude'] = da_mhw_mag_ave
+        ds_mhw['ssta_avg'] = da_mhw_mag_ave
+        ds_mhw['mhw_magnitude_indentified_ens'] = da_mhw_mag
         ds_mhw.attrs['period_of_quantile'] = da_threshold.attrs['period_of_quantile']
         ds_mhw.attrs['period_of_climatology'] = da_threshold.attrs['period_of_climatology']
 
@@ -170,11 +171,11 @@ class MarineHeatwaveForecast:
         Parameters
         ----------
         init_time : str, optional
-            _description_, by default '2022-03'
+            the signal initialization time in the format of YYYY-MM, by default '2022-03'
         da_climo : xr.DataArray, optional
-            _description_, by default None
+            the dataarray containing the climatology data, by default None
         da_threshold : xr.DataArray, optional
-            _description_, by default None
+            the dataarray containing the threshold data, by default None
 
         Returns
         -------
@@ -188,10 +189,10 @@ class MarineHeatwaveForecast:
         ).load()
 
         # test if the da_data crop period exist
-        if not da_data[self.init].data:
+        if len(da_data[self.init].data) == 0:
             raise ValueError(
                 "The data array is empty based on the kwarg"+
-                "anom_start_year & anom_end_year"
+                "init_time"
             )
 
         # calculate anomaly based on climatology
@@ -221,7 +222,7 @@ class MarineHeatwaveForecast:
         ds_mhw = xr.Dataset()
         try:
             ds_mhw.attrs['period_of_quantile'] = da_threshold.attrs['period_of_quantile']
-            ds_mhw.attrs['period_of_climatology'] = da_threshold.attrs['period_of_climatology']
+            ds_mhw.attrs['period_of_climatology'] = da_climo.attrs['period_of_climatology']
             quantile_threshold = int(da_threshold.attrs['period_of_quantile'].split()[1])
         except KeyError as e:
             raise AttributeError(
@@ -229,10 +230,11 @@ class MarineHeatwaveForecast:
             ) from e
         except ValueError as e:
             raise ValueError(
-                'The "quantile_threshold"....'
+                'The "quantile_threshold" dataarray.... does not have period_of_quantile attrs'
             ) from e
 
         ds_mhw[f'mhw_prob{quantile_threshold:02d}'] = da_prob
-        ds_mhw['mhw_magnitude'] = da_mhw_mag_ave
+        ds_mhw['ssta_avg'] = da_mhw_mag_ave
+        ds_mhw['mhw_mag_indentified_ens'] = da_mhw_mag
 
         return ds_mhw
