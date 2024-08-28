@@ -23,7 +23,7 @@ import pandas as pd
 import xarray as xr
 from scipy.stats import norm as normal
 from mom6 import DATA_PATH
-from mom6.mom6_module.mom6_types import RegionalOptions
+from mom6.mom6_module.mom6_types import RegionalOptions,GridOptions,DataTypeOptions,DataSourceOptions
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -34,8 +34,8 @@ class OpenDapStore:
     """
     def __init__(
             self,
-            grid : Literal['raw','regrid'] = 'raw',
-            data_type : Literal['forecast','historical'] = 'historical'
+            grid : GridOptions = 'raw',
+            data_type : DataTypeOptions = 'historical'
     ) -> None:
         """
         input for the class to get the opendap data
@@ -129,8 +129,8 @@ class MOM6Forecast:
         iyear : int,
         imonth : int,
         var : str,
-        grid : Literal['raw','regrid'] = 'raw',
-        source : Literal['local','opendap'] = 'local'
+        grid : GridOptions = 'raw',
+        source : DataSourceOptions = 'local'
     ) -> None:
         """
         input for the class to get the individual forecast
@@ -215,8 +215,8 @@ class MOM6Forecast:
     @staticmethod
     def get_mom6_all(
         var : str,
-        grid : Literal['raw','regrid'] = 'raw',
-        source : Literal['local','opendap'] = 'local'
+        grid : GridOptions = 'raw',
+        source : DataSourceOptions = 'local'
     ) -> xr.Dataset:
         """
         Return the mom6 all rawgrid/regridded hindcast/forecast field
@@ -579,8 +579,8 @@ class MOM6Historical:
         year : int,
         month : int,
         day : int = 1,
-        grid : Literal['raw','regrid'] = 'raw',
-        source : Literal['local','opendap'] = 'local'
+        grid : GridOptions = 'raw',
+        source : DataSourceOptions = 'local'
     ) -> None:
         """
         input for getting the historical run data
@@ -665,8 +665,8 @@ class MOM6Historical:
     @staticmethod
     def get_mom6_all(
         var : str,
-        grid : Literal['raw','regrid'] = 'raw',
-        source : Literal['local','opendap'] = 'local'
+        grid : GridOptions = 'raw',
+        source : DataSourceOptions = 'local'
     ) -> xr.Dataset:
         """
         Return the mom6 all rawgrid/regridded historical run field
@@ -767,7 +767,7 @@ class MOM6Static:
     @staticmethod
     def get_mom6_mask(
         mask : Literal['wet','wet_c','wet_u','wet_v'] = 'wet',
-        grid : Literal['raw','regrid'] = 'raw'
+        grid : GridOptions = 'raw'
     ) -> xr.DataArray:
         """
         The function is designed to export the various mask provided
