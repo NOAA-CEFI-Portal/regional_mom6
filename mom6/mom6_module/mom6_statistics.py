@@ -170,7 +170,7 @@ class ForecastClimatology:
         # test if the da_data crop period exist
         if len(da_data[self.init].data) == 0:
             raise ValueError(
-                "The data array is empty based on the kwarg"+
+                "The data array is empty based on the kwarg "+
                 "climo_start_year & climo_end_year"
             )
 
@@ -264,10 +264,10 @@ class ForecastClimatology:
         if precompute_climo:
             try:
                 period_string = da_climo.attrs['period_of_climatology']
-            except ValueError as e:
+            except KeyError as e:
                 raise ValueError(
-                    'input climatology dataarray does not have'+
-                    'attribute name "period_of_climatology" in'+
+                    'input climatology dataarray does not have '+
+                    'attribute name "period_of_climatology" in '+
                     'the format of year "climo_start_year" to "climo_end_year"'
                 ) from e
 
@@ -296,7 +296,7 @@ class ForecastClimatology:
         # test if the da_data crop period exist
         if len(da_data[self.init].data)==0:
             raise ValueError(
-                "The data array is empty based on the kwarg"+
+                "The data array is empty based on the kwarg "+
                 "anom_start_year & anom_end_year"
             )
 
@@ -355,7 +355,8 @@ class ForecastQuantile:
         self,
         quantile_start_year : int = 1993,
         quantile_end_year : int = 2020,
-        quantile_threshold : float = 90.
+        quantile_threshold : float = 90.,
+        dask_obj : bool = True
     ) -> xr.DataArray:
         """Generate the quantile based on the input 
         dataset covered period. The output will be 
@@ -369,6 +370,8 @@ class ForecastQuantile:
             end year for the period of determining the quantile, by default 2020
         quantile_threshold : float, optional
             quantile value that define the threshold, by default 90.
+        dask_obj : bool, optional
+            if the input dataset is a dask object or not
 
         Returns
         -------
@@ -397,7 +400,7 @@ class ForecastQuantile:
         # test if the da_data crop period exist
         if len(da_data[self.init].data) == 0:
             raise ValueError(
-                "The data array is empty based on the kwarg"+
+                "The data array is empty based on the kwarg "+
                 "quantile_start_year & quantile_end_year"
             )
 
@@ -407,25 +410,41 @@ class ForecastQuantile:
         )
 
         result_list = []
-        for init in init_freq:
-            result_list.append(
-                da_data
-                .where(
-                    da_data[f'{self.init}.{self.tfreq}'] == init,
-                    drop=True
+        if dask_obj:
+            for init in init_freq:
+                result_list.append(
+                    da_data
+                    .where(
+                        da_data[f'{self.init}.{self.tfreq}'] == init,
+                        drop=True
+                    )
+                    .stack(allens=(self.init,self.mem))
+                    .chunk({"allens":-1})
+                    .quantile(
+                        quantile_threshold*0.01,
+                        dim = 'allens',
+                        method = 'linear',
+                        skipna = True
+                    )
                 )
-                .stack(allens=(self.init,self.mem))
-                .chunk({"allens":-1})
-                .quantile(
-                    quantile_threshold*0.01,
-                    dim = 'allens',
-                    method = 'linear',
-                    skipna = True
+            da_threshold_list = dask.compute(*result_list)
+        else:
+            for init in init_freq:
+                result_list.append(
+                    da_data
+                    .where(
+                        da_data[f'{self.init}.{self.tfreq}'] == init,
+                        drop=True
+                    )
+                    .stack(allens=(self.init,self.mem))
+                    .quantile(
+                        quantile_threshold*0.01,
+                        dim = 'allens',
+                        method = 'linear',
+                        skipna = True
+                    )
                 )
-            )
-
-
-        da_threshold_list = dask.compute(*result_list)
+            da_threshold_list = result_list
         da_threshold = xr.concat(da_threshold_list, dim=self.tfreq)
         da_threshold[self.tfreq] = init_freq
 
