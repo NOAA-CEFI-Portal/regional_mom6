@@ -191,7 +191,7 @@ class MarineHeatwaveForecast:
         # test if the da_data crop period exist
         if len(da_data[self.init].data) == 0:
             raise ValueError(
-                "The data array is empty based on the kwarg"+
+                "The data array is empty based on the kwarg "+
                 "init_time"
             )
 
