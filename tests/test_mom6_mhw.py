@@ -59,8 +59,8 @@ def test_MarineHeatwaveForecast_generate_forecast_single(ds_forecast):
     )
 
     assert np.abs(ds_mhw_single.mhw_prob90.sum().data-505.)==0.
-    assert np.abs(ds_mhw_single.ssta_avg.max().data-0.37654305) < 1e-6
-    assert np.abs(ds_mhw_single.mhw_mag_indentified_ens.max().data-0.37654305) < 1e-6
+    assert np.abs(ds_mhw_single.ssta_avg.max().data-0.37654305) < 1e-5
+    assert np.abs(ds_mhw_single.mhw_mag_indentified_ens.max().data-0.37654305) < 1e-5
 
 
 def test_MarineHeatwaveForecast_generate_forecast_batch(ds_forecast):

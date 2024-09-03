@@ -109,6 +109,8 @@ class MarineHeatwaveForecast:
         # anomaly used for the threshold
         ds_anom = xr.Dataset()
         ds_anom[f'{self.varname}_anom'] = dict_anom['anomaly']
+        ds_anom['lon'] = self.dataset['lon']
+        ds_anom['lat'] = self.dataset['lat']
 
         # calculate threshold
         class_forecast_quantile = ForecastQuantile(ds_anom,f'{self.varname}_anom')
