@@ -18,7 +18,7 @@ def test_OpenDapStore():
         ds = xr.open_dataset(test_url)
         print(ds)
     except OSError :
-        pytest.fail('OSError is raised OPeNDAP url not working')
+        pytest.fail('OSError is raised OPeNDAP url not working for NWA historical raw' )
 
 
     opendap_regrid = mom6_io.OpenDapStore(grid='regrid',data_type='historical',region='northwest_atlantic')
@@ -27,7 +27,24 @@ def test_OpenDapStore():
         ds = xr.open_dataset(test_url)
         print(ds)
     except OSError :
-        pytest.fail('OSError is raised OPeNDAP url not working')
+        pytest.fail('OSError is raised OPeNDAP url not working for NWA historical regrid')
+
+    opendap_raw_fcast = mom6_io.OpenDapStore(grid='raw',data_type='forecast',region='northwest_atlantic')
+    test_url = opendap_raw_fcast.get_catalog()[0]
+    try:
+        ds = xr.open_dataset(test_url)
+        print(ds)
+    except OSError :
+        pytest.fail('OSError is raised OPeNDAP url not working for NWA forecast raw')
+
+
+    opendap_regrid_fcast = mom6_io.OpenDapStore(grid='regrid',data_type='forecast',region='northwest_atlantic')
+    test_url = opendap_regrid_fcast.get_catalog()[0]
+    try:
+        ds = xr.open_dataset(test_url)
+        print(ds)
+    except OSError :
+        pytest.fail('OSError is raised OPeNDAP url not working for NWA forecast raw')
 
 
 # TEST FORECAST IO local
