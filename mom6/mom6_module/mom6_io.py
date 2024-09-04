@@ -19,7 +19,9 @@ import cftime
 import numpy as np
 import xarray as xr
 from mom6 import DATA_PATH
-from mom6.mom6_module.mom6_types import ModelRegionOptions,GridOptions,DataTypeOptions,DataSourceOptions
+from mom6.mom6_module.mom6_types import (
+    ModelRegionOptions,GridOptions,DataTypeOptions,DataSourceOptions
+)
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -760,7 +762,7 @@ class MOM6Static:
             'geolon_u','geolat_u',
             'geolon_v','geolat_v']
         )
-    
+
     @staticmethod
     def get_rotate(
         data_relative_dir : str
@@ -784,6 +786,8 @@ class MOM6Static:
         ds_rotate = xr.open_dataset(
             os.path.join(DATA_PATH,data_relative_dir,'ice_monthly.static.nc')
         )
+
+        # prepare the rotation matrix to regular coord names
         ds_rotate = ds_rotate.rename({
             'yT':'yh',
             'xT':'xh',
