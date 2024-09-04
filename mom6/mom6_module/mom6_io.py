@@ -760,6 +760,43 @@ class MOM6Static:
             'geolon_u','geolat_u',
             'geolon_v','geolat_v']
         )
+    
+    @staticmethod
+    def get_rotate(
+        data_relative_dir : str
+    ) -> xr.Dataset:
+        """return the original mom6 grid rotation information
+
+        The information is store in the ice_month.static.nc file
+
+        Parameters
+        ----------
+        data_relative_dir : str
+            relative path from DATAPATH setup in config file to 
+            the actual forecast/reforecast data, by setting 'forecast/'
+            which makes the absolute path to DATAPATH/forecast/
+
+        Returns
+        -------
+        xr.Dataset
+            The Xarray Dataset object of mom6's grid lon lat
+        """
+        ds_rotate = xr.open_dataset(
+            os.path.join(DATA_PATH,data_relative_dir,'ice_monthly.static.nc')
+        )
+        ds_rotate = ds_rotate.rename({
+            'yT':'yh',
+            'xT':'xh',
+            'GEOLON':'geolon',
+            'GEOLAT':'geolat',
+            'COSROT':'cosrot',
+            'SINROT':'sinrot'
+        })
+
+        return ds_rotate.set_coords(
+            ['geolon','geolat']
+        )
+
     @staticmethod
     def get_mask(
         data_relative_dir : str,
