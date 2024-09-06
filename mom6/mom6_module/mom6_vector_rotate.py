@@ -141,6 +141,6 @@ class VectorRotation:
         
 
         return {
-            'u': da_u_true.drop_vars(['geolon','geolat']),
-            'v': da_v_true.drop_vars(['geolon','geolat'])
+            'u': da_u_true.drop_vars(['geolon','geolat']).compute(),
+            'v': da_v_true.drop_vars(['geolon','geolat']).compute()
         }
