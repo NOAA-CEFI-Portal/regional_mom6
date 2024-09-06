@@ -40,7 +40,7 @@ if __name__=="__main__":
 
     # check argument exist
     if len(sys.argv) < 2:
-        print("Usage: python mom6_regrid.py hist/fcst")
+        print("Usage: python mom6_regrid_batch.py hist/fcst")
         sys.exit(1)
     # %%
     if sys.argv[1] == 'hist':
