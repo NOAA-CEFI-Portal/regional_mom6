@@ -7,6 +7,59 @@ import pytest
 import xarray as xr
 from mom6.mom6_module import mom6_io
 
+# Test staticmethod in MOM6Historical
+def test_MOM6Historical_freq_find():
+    """test the freq find to pin point the needed file
+    """
+
+    test_freq = ['annual','monthly','daily','annualy']
+
+    test_list1 = [
+        '/data/path/exp.YYYYMMDD-YYYYMMDD.var.nc',
+        '/data/path/exp.YYYYMM-YYYYMM.var.nc',
+        '/data/path/exp.YYYY-YYYY.var.nc'
+    ]
+    # correct annual file capture
+    out_list = mom6_io.MOM6Historical.freq_find(test_list1,test_freq[0])
+    assert out_list[0] == test_list1[2]
+    # correct monthly file capture
+    out_list = mom6_io.MOM6Historical.freq_find(test_list1,test_freq[1])
+    assert out_list[0] == test_list1[1]
+    # correct daily file capture
+    out_list = mom6_io.MOM6Historical.freq_find(test_list1,test_freq[2])
+    assert out_list[0] == test_list1[0]
+    # error raise when missing frequency string input
+    with pytest.raises(ValueError):
+        mom6_io.MOM6Historical.freq_find(test_list1)
+    # error raise when wrong frequency string input
+    with pytest.raises(ValueError):
+        mom6_io.MOM6Historical.freq_find(test_list1,test_freq[3])
+
+
+    test_list2 = [
+        '/data/path/exp.YYYYMM-YYYYMM.var.nc',
+    ]
+    # correct one file response for different freq input (disregards)
+    out_list = mom6_io.MOM6Historical.freq_find(test_list2,test_freq[0])
+    assert out_list[0] == test_list2[0]
+    out_list = mom6_io.MOM6Historical.freq_find(test_list2,test_freq[1])
+    assert out_list[0] == test_list2[0]
+    out_list = mom6_io.MOM6Historical.freq_find(test_list2,test_freq[2])
+    assert out_list[0] == test_list2[0]
+    out_list = mom6_io.MOM6Historical.freq_find(test_list2,test_freq[3])
+    assert out_list[0] == test_list2[0]
+    out_list = mom6_io.MOM6Historical.freq_find(test_list2,None)
+    assert out_list[0] == test_list2[0]
+
+    test_list3 = [
+        '/data/path/exp.YYYYMMDD-YYYYMMDD.var.nc',
+        '/data/path/exp.YYYYMM-YYYYMM.var.nc'
+    ]
+    # error raise for error freq input when that freq is not in the file list
+    with pytest.raises(ValueError):
+        mom6_io.MOM6Historical.freq_find(test_list3,test_freq[0])
+
+
 # TEST OPENDAP
 def test_OpenDapStore():
     """Test OpenDap Connection
