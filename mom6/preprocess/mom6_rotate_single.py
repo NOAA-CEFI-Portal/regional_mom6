@@ -28,7 +28,7 @@ if __name__=="__main__":
 
     # check argument exist
     if len(sys.argv) < 2:
-        print("Usage: python mom6_rotate_batch.py <hist/fcst> <u varnames> <v varnames>")
+        print("Usage: python mom6_rotate_single.py <hist/fcst> <u varnames> <v varnames>")
         sys.exit(1)
 
     # dictionary for input argument to dir name
@@ -51,7 +51,7 @@ if __name__=="__main__":
 
     # for historical run
     if sys.argv[1] == 'hist':
-        class_u = MOM6Historical(
+        ClassU = MOM6Historical(
             var=u_name,
             data_relative_dir=dict_dir[sys.argv[1]],
             static_relative_dir='static/',
@@ -59,9 +59,9 @@ if __name__=="__main__":
             source='local',
             chunks={'time':100,'xq':-1,'yh':-1}
         )
-        ds_u = class_u.get_all()
+        ds_u = ClassU.get_all()
 
-        class_v = MOM6Historical(
+        ClassV = MOM6Historical(
             var=v_name,
             data_relative_dir=dict_dir[sys.argv[1]],
             static_relative_dir='static/',
@@ -69,7 +69,7 @@ if __name__=="__main__":
             source='local',
             chunks={'time':100,'xh':-1,'yq':-1}
         )
-        ds_v = class_v.get_all()
+        ds_v = ClassV.get_all()
 
         # get source file location
         file_loc_u = ds_u[u_name].encoding['source']
@@ -88,14 +88,14 @@ if __name__=="__main__":
             parent_data_path = parent_data_path_u
 
     # for rotation matrix
-    class_rotate = MOM6Static
-    ds_rotate = class_rotate.get_rotate(data_relative_dir='static/')
+    ClassRotate = MOM6Static
+    ds_rotate = ClassRotate.get_rotate(data_relative_dir='static/')
 
     # setup the rotation class
-    class_rotate = VectorRotation(ds_u,'ssu',ds_v,'ssv',ds_rotate)
+    ClassRotate = VectorRotation(ds_u,u_name,ds_v,v_name,ds_rotate)
 
     # perform lazy rotate
-    dict_uv = class_rotate.generate_true_uv()
+    dict_uv = ClassRotate.generate_true_uv()
 
     ds_u_true = xr.Dataset()
     ds_v_true = xr.Dataset()
@@ -129,7 +129,7 @@ if __name__=="__main__":
             raise PermissionError(
                 f'{parent_data_path}{ufilename[:-3]}_rotate.nc is used by other scripts'
             ) from e
-        
+
         print(f'output {parent_data_path}{vfilename[:-3]}_rotate.nc')
         try:
             ds_v_true.to_netcdf(f'{parent_data_path}{vfilename[:-3]}_rotate.nc',mode='w')
