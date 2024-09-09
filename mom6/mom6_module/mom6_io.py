@@ -674,15 +674,18 @@ class MOM6Historical:
                 else:
                     mom6_dir = os.path.join(DATA_PATH,self.data_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
+                io_chunk = self.chunks
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
+                io_chunk = {'time':100}
 
             file_read = [file for file in file_list if f'.{self.var}.' in file]
+            file_read = self.freq_find(file_read,freq)
             ds = xr.open_mfdataset(
                 file_read,
                 combine='nested',
                 concat_dim='time',
-                chunks={'time': 100}
+                chunks=io_chunk
             ).sortby('time')
 
             # test if accident read raw file
