@@ -305,16 +305,19 @@ def test_MOM6Historical(location):
     try:
         ds = histrun_raw_local.get_single(
             year=2006,
-            month=6)
+            month=6,
+            freq='monthly'
+        )
         if ds['time.year'] != 2006 or ds['time.month'] != 6  :
             pytest.fail('Picked time not the same as output time')
         ds = histrun_regrid_local.get_single(
             year=2012,
-            month=9)
+            month=9,
+            freq='monthly')
         if ds['time.year'] != 2012 or ds['time.month'] != 9  :
             pytest.fail('Picked time not the same as output time')
-        ds = histrun_raw_local.get_all()
-        ds = histrun_regrid_local.get_all()
+        ds = histrun_raw_local.get_all(freq='monthly')
+        ds = histrun_regrid_local.get_all(freq='monthly')
     except OSError :
         pytest.fail('OSError is raised with correct function input')
 
@@ -329,9 +332,9 @@ def test_MOM6Historical(location):
     )
     if location == 'local':
         with pytest.raises(OSError):
-            ds = histrun_raw_local_nostaticdir.get_single()
+            ds = histrun_raw_local_nostaticdir.get_single(freq='monthly')
         with pytest.raises(OSError):
-            ds = histrun_raw_local_nostaticdir.get_single()
+            ds = histrun_raw_local_nostaticdir.get_single(freq='monthly')
 
 
     # create local regrid instance (regrid dir location error expect error)
@@ -345,8 +348,8 @@ def test_MOM6Historical(location):
 
     if location == 'local':
         with pytest.raises(OSError):
-            ds = histrun_regrid_local_errorloc.get_single()
-            histrun_regrid_local_errorloc.get_all()
+            ds = histrun_regrid_local_errorloc.get_single(freq='monthly')
+            histrun_regrid_local_errorloc.get_all(freq='monthly')
 
     # create local regrid instance (raw dir location error expect error)
     histrun_regrid_local_errorgrid = mom6_io.MOM6Historical(
@@ -358,8 +361,8 @@ def test_MOM6Historical(location):
     )
     if location == 'local':
         with pytest.raises(OSError):
-            histrun_regrid_local_errorgrid.get_single()
-            histrun_regrid_local_errorgrid.get_all()
+            histrun_regrid_local_errorgrid.get_single(freq='monthly')
+            histrun_regrid_local_errorgrid.get_all(freq='monthly')
 
 
     # create local raw instance (error iyear and imonth input for method get_single expect error)
@@ -371,15 +374,15 @@ def test_MOM6Historical(location):
         source=location
     )
     with pytest.raises(IndexError):
-        histrun_regrid_local_erroryear.get_single(year=2024,month=12)
-        histrun_regrid_local_erroryear.get_single(year=2024,month=8)
+        histrun_regrid_local_erroryear.get_single(year=2024,month=12,freq='monthly')
+        histrun_regrid_local_erroryear.get_single(year=2024,month=8,freq='monthly')
 
     # (first and last iyear and imonth input for method get_single expect NO error)
     try:
-        ds = histrun_regrid_local_erroryear.get_single(year=1993,month=1)
+        ds = histrun_regrid_local_erroryear.get_single(year=1993,month=1,freq='monthly')
         if ds['time.year'] != 1993 or ds['time.month'] != 1  :
             pytest.fail('Picked time not the same as output time')
-        ds = histrun_regrid_local_erroryear.get_single(year=2019,month=12)
+        ds = histrun_regrid_local_erroryear.get_single(year=2019,month=12,freq='monthly')
         if ds['time.year'] != 2019 or ds['time.month'] != 12  :
             pytest.fail('Picked time not the same as output time')
     except OSError :
@@ -395,4 +398,4 @@ def test_MOM6Historical(location):
     )
     if location == 'local':
         with pytest.raises(OSError):
-            histrun_raw_local_nodatadir.get_single()
+            histrun_raw_local_nodatadir.get_single(freq='monthly')
