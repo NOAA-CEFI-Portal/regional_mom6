@@ -170,11 +170,11 @@ class MarineHeatwaveForecast:
         )
         ds_mhw['ssta_avg'].attrs['units'] = 'degC'
 
-        ds_mhw['mhw_magnitude_indentified_ens'] = da_mhw_mag
-        ds_mhw['mhw_magnitude_indentified_ens'].attrs['long_name'] = (
+        ds_mhw['mhw_mag_indentified_ens'] = da_mhw_mag
+        ds_mhw['mhw_mag_indentified_ens'].attrs['long_name'] = (
             'marine heatwave magnitude in each ensemble'
         )
-        ds_mhw['mhw_magnitude_indentified_ens'].attrs['units'] = 'degC'
+        ds_mhw['mhw_mag_indentified_ens'].attrs['units'] = 'degC'
 
         ds_mhw.attrs['period_of_quantile'] = da_threshold.attrs['period_of_quantile']
         ds_mhw.attrs['period_of_climatology'] = da_threshold.attrs['period_of_climatology']
@@ -263,15 +263,15 @@ class MarineHeatwaveForecast:
             f'marine heatwave probability (threshold{quantile_threshold:02d})'
         )
         ds_mhw[f'mhw_prob{quantile_threshold:02d}'].attrs['units'] = 'unitless'
-        
+
         ds_mhw['ssta_avg'].attrs['long_name'] = (
             'anomalous sea surface temperature ensemble mean'
         )
         ds_mhw['ssta_avg'].attrs['units'] = 'degC'
-        
-        ds_mhw['mhw_magnitude_indentified_ens'].attrs['long_name'] = (
+
+        ds_mhw['mhw_mag_indentified_ens'].attrs['long_name'] = (
             'marine heatwave magnitude in each ensemble'
         )
-        ds_mhw['mhw_magnitude_indentified_ens'].attrs['units'] = 'degC'
+        ds_mhw['mhw_mag_indentified_ens'].attrs['units'] = 'degC'
 
         return ds_mhw
