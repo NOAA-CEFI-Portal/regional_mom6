@@ -44,7 +44,7 @@ def ds_forecast(location)->xr.Dataset:
     return ds
 
 @pytest.fixture
-def ds_histrun(location)->xr.Dataset:
+def ds_histrun_daily(location)->xr.Dataset:
     """load data for testing
 
     Returns
@@ -61,6 +61,6 @@ def ds_histrun(location)->xr.Dataset:
         source=location
     )
 
-    ds = ClassHistrun.get_all(freq='monthly')
+    ds = ClassHistrun.get_all(freq='daily')
 
     return ds

@@ -549,6 +549,7 @@ class HistoricalClimatology:
                 "climo_start_year & climo_end_year"
             )
 
+        # monthly and daily implementation
         if self.tfreq != 'dayofyear':
             da_climo = (
                 da_data
@@ -668,6 +669,7 @@ class HistoricalClimatology:
                 dask_option='compute'
             )
 
+        # suitbale for monthly and daily implementation
         da_data = (
             ds_data[self.varname]
             .sel({self.timename :
