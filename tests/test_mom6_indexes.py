@@ -29,11 +29,14 @@ def test_gulf_stream_index(location):
         The location input in string does not exist.
     """
     if location == 'local':
-        ds_test = MOM6Historical('ssh','hist_run/','static/','raw',location).get_all()
+        ds_test = (
+            MOM6Historical('ssh','hist_run/','static/','raw',location)
+            .get_all(freq='monthly')
+        )
         ds_test = ds_test.rename({'geolon':'lon','geolat':'lat'})
     elif location == 'opendap':
         try:
-            ds_test = MOM6Historical(var='ssh',source=location).get_all()
+            ds_test = MOM6Historical(var='ssh',source=location).get_all(freq='monthly')
         except OSError :
             pytest.fail('OSError is raised when access OPeNDAP data')
     else :
@@ -71,7 +74,7 @@ def test_cold_pool_index(location):
     """
     if location == 'local':
         ds_mask = MOM6Static.get_cpi_mask('masks/')
-        ds_data = MOM6Historical('tob','hist_run/','static/','raw',location).get_all()
+        ds_data = MOM6Historical('tob','hist_run/','static/','raw',location).get_all(freq='monthly')
 
         da_cpi_ann = mom6_indexes.ColdPoolIndex(
             ds_data,

@@ -31,7 +31,7 @@ def ds_forecast(location)->xr.Dataset:
         The loaded data in dataset
     """
     # loading the forecast
-    forecast_io_class = mom6_io.MOM6Forecast(
+    ClassForecast = mom6_io.MOM6Forecast(
         var='tos',
         data_relative_dir='forecast/',
         static_relative_dir='static/',
@@ -39,6 +39,28 @@ def ds_forecast(location)->xr.Dataset:
         source=location
     )
 
-    ds = forecast_io_class.get_all()
+    ds = ClassForecast.get_all()
+
+    return ds
+
+@pytest.fixture
+def ds_histrun_daily(location)->xr.Dataset:
+    """load data for testing
+
+    Returns
+    -------
+    xr.Dataset
+        The loaded data in dataset
+    """
+    # loading the forecast
+    ClassHistrun = mom6_io.MOM6Historical(
+        var='tos',
+        data_relative_dir='hist_run/',
+        static_relative_dir='static/',
+        grid='raw',
+        source=location
+    )
+
+    ds = ClassHistrun.get_all(freq='daily')
 
     return ds
