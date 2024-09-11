@@ -46,7 +46,7 @@ def test_HistoricalClimatology_generate_anom_batch(ds_histrun_daily):
         ds_histrun_daily
         .rename({'geolon':'lon','geolat':'lat'})
         .isel(time=slice(0,100),xh=slice(200,220),yh=slice(200,220))
-    )
+    ).load()
 
     # call class
     class_historical_climo = mom6_statistics.HistoricalClimatology(
