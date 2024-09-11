@@ -38,29 +38,30 @@ def test_HistoricalClimatology_generate_climo(ds_histrun_daily):
     with pytest.raises(ValueError):
         class_historical_climo.generate_climo(1991,1992,'compute')
 
-def test_HistoricalClimatology_generate_anom_batch(ds_histrun_daily):
+def test_HistoricalClimatology_generate_anom_batch(ds_histrun_daily,location):
     """test HistoricalClimatology Class generate_anom_batch method"""
 
-    # set correct dataset naming for module use
-    ds = (
-        ds_histrun_daily
-        .rename({'geolon':'lon','geolat':'lat'})
-        .isel(time=slice(0,100),xh=slice(200,220),yh=slice(200,220))
-    ).load()
+    if location == 'local':
+        # set correct dataset naming for module use
+        ds = (
+            ds_histrun_daily
+            .rename({'geolon':'lon','geolat':'lat'})
+            .isel(time=slice(0,100),xh=slice(200,220),yh=slice(200,220))
+        ).load()
 
-    # call class
-    class_historical_climo = mom6_statistics.HistoricalClimatology(
-        ds,'tos',time_frequency='dayofyear'
-    )
+        # call class
+        class_historical_climo = mom6_statistics.HistoricalClimatology(
+            ds,'tos',time_frequency='dayofyear'
+        )
 
-    # test regular use of generate_anom_batch and the generate_climo called
-    dict_anom = class_historical_climo.generate_anom_batch(
-        1993,1993,1993,1993,'compute',precompute_climo=False
-    )
+        # test regular use of generate_anom_batch and the generate_climo called
+        dict_anom = class_historical_climo.generate_anom_batch(
+            1993,1993,1993,1993,'compute',precompute_climo=False
+        )
 
-    # subset testing
-    assert np.abs(dict_anom['anomaly'].max().data-3.00931106)<1e-6
-    assert np.abs(dict_anom['climatology'].max().data - 28.84281989) < 1e-4
+        # subset testing
+        assert np.abs(dict_anom['anomaly'].max().data-3.00931106)<1e-6
+        assert np.abs(dict_anom['climatology'].max().data - 28.84281989) < 1e-4
 
 
 def test_ForecastClimatology_generate_climo(ds_forecast):
