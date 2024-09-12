@@ -31,4 +31,3 @@ for ndir, indir in enumerate(indirs):
                 ds.to_netcdf(f'{outdirs[ndir]}{filename}')
         except ValueError:
             print('No time dimension')
-            pass

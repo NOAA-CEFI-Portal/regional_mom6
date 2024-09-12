@@ -19,7 +19,11 @@ import cftime
 import numpy as np
 import xarray as xr
 from mom6 import DATA_PATH
-from mom6.mom6_module.mom6_types import ModelRegionOptions,GridOptions,DataTypeOptions,DataSourceOptions
+from mom6.mom6_module.mom6_types import (
+    ModelRegionOptions,GridOptions,
+    DataTypeOptions,DataSourceOptions,
+    DataFreqOptions
+)
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -132,6 +136,7 @@ class MOM6Forecast:
         tercile_relative_dir : str = None,
         grid : GridOptions = 'raw',
         source : DataSourceOptions = 'local',
+        chunks : dict = None
     ) -> None:
         """
         input for the class to get the forecast data
@@ -165,7 +170,10 @@ class MOM6Forecast:
         self.data_relative_dir = data_relative_dir
         self.static_relative_dir = static_relative_dir
         self.tercile_relative_dir = tercile_relative_dir
-
+        if chunks is None:
+            self.chunks = {}
+        else :
+            self.chunks = chunks
 
     def get_all(self) -> xr.Dataset:
         """
@@ -194,7 +202,7 @@ class MOM6Forecast:
                 else:
                     ds_static = MOM6Static.get_grid(self.static_relative_dir)
                 # setup chuck
-                io_chunk = {}
+                io_chunk = self.chunks
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 for file in file_list:
@@ -234,7 +242,7 @@ class MOM6Forecast:
                 else:
                     mom6_dir = os.path.join(DATA_PATH,self.data_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
-                io_chunk = {}
+                io_chunk = self.chunks
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 io_chunk = {'init': 1,'member':1,'lead':-1}
@@ -293,7 +301,7 @@ class MOM6Forecast:
                     raise OSError('for raw grid please input the path to grid file')
                 else:
                     ds_static = MOM6Static.get_grid(self.static_relative_dir)
-                io_chunk = {}
+                io_chunk = self.chunks
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 for file in file_list:
@@ -339,7 +347,7 @@ class MOM6Forecast:
                 else:
                     mom6_dir = os.path.join(DATA_PATH,self.tercile_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
-                io_chunk = {}
+                io_chunk = self.chunks
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='forecast').get_catalog()
                 io_chunk = {'init': 4,'member':1,'lead':-1}
@@ -493,6 +501,7 @@ class MOM6Historical:
         static_relative_dir  : str = None,
         grid : GridOptions = 'raw',
         source : DataSourceOptions = 'local',
+        chunks : dict = None
     ) -> None:
         """
         input for getting the historical run data
@@ -522,13 +531,88 @@ class MOM6Historical:
         self.source = source
         self.data_relative_dir = data_relative_dir
         self.static_relative_dir = static_relative_dir
+        if chunks is None:
+            self.chunks = {}
+        else :
+            self.chunks = chunks
 
-    def get_all(self) -> xr.Dataset:
+    @staticmethod
+    def freq_find(
+        file_list : list[str],
+        freq : DataFreqOptions = None):
+        """finding the correct data based on input frequency
+
+        Parameters
+        ----------
+        file_list : list
+            a list of files with dir path
+        freq : str
+            frequency of the data. Default is None. 
+
+        Returns
+        -------
+        list
+            a list with only one element which contain the file need 
+            to be read
+
+        Raises
+        ------
+        ValueError
+            if multiple file present in the `file_list` but no freq is provided
+            an error message is shown in stdout
+        """
+        # differen frequency file exists resulting in multi files
+        if len(file_list)>1 and freq is not None :
+            if freq not in ['annual','monthly','daily']:
+                raise ValueError(
+                    'freq kwarg need to be given due to multiple files exist '+
+                    'with the same variable with different frequency.'
+                )
+            filtered_file_list = None
+            for file in file_list:
+                filename_split = file.split('/')[-1].split('.')
+
+                # 0 : exp, 1 : time span, 2: varname, 3:file format
+                freq_span = len(filename_split[1])
+                if freq_span == int(4+4+1) and freq == 'annual':
+                    filtered_file_list = [file]
+                elif freq_span == int(6+6+1) and freq == 'monthly':
+                    filtered_file_list = [file]
+                elif freq_span == int(8+8+1) and freq == 'daily':
+                    filtered_file_list = [file]
+                else :
+                    pass
+            if filtered_file_list is None:
+                raise ValueError(
+                    'freq kwarg need to be given due to multiple files exist '+
+                    'with the same variable with different frequency.'
+                )
+
+        elif len(file_list)>1 and freq is None :
+            raise ValueError(
+                'freq kwarg need to be given due to multiple files exist '+
+                'with the same variable with different frequency.'
+            )
+
+        else:
+            filtered_file_list = file_list
+
+        return filtered_file_list
+
+    def get_all(
+            self,
+            freq : DataFreqOptions = None
+        ) -> xr.Dataset:
         """
         Return the mom6 all rawgrid/regridded historical run field
         with the static field combined and setting the
         lon lat related variables to coordinate 
 
+        Parameters
+        ----------
+        freq : str
+            frequency of the data. Default is None.
+        
         Returns
         -------
         xr.Dataset
@@ -549,7 +633,7 @@ class MOM6Historical:
                     raise IOError('for raw grid please input the path to grid file')
                 else:
                     ds_static = MOM6Static.get_grid(self.static_relative_dir)
-                io_chunk = {}
+                io_chunk = self.chunks
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
                 for file in file_list:
@@ -559,6 +643,8 @@ class MOM6Historical:
                 io_chunk = {'time': 100}
 
             file_read = [file for file in file_list if f'.{self.var}.' in file]
+
+            file_read = self.freq_find(file_read,freq)
 
             # merge the static field with the variables
             ds = xr.open_mfdataset(
@@ -588,15 +674,18 @@ class MOM6Historical:
                 else:
                     mom6_dir = os.path.join(DATA_PATH,self.data_relative_dir)
                 file_list = glob.glob(f'{mom6_dir}/*.nc')
+                io_chunk = self.chunks
             elif self.source == 'opendap':
                 file_list = OpenDapStore(grid=self.grid,data_type='historical').get_catalog()
+                io_chunk = {'time':100}
 
             file_read = [file for file in file_list if f'.{self.var}.' in file]
+            file_read = self.freq_find(file_read,freq)
             ds = xr.open_mfdataset(
                 file_read,
                 combine='nested',
                 concat_dim='time',
-                chunks={'time': 100}
+                chunks=io_chunk
             ).sortby('time')
 
             # test if accident read raw file
@@ -617,6 +706,7 @@ class MOM6Historical:
         year : int = 1993,
         month : int = 1,
         day : int = 1,
+        freq : DataFreqOptions = None
     ) -> xr.Dataset:
         """
         Return the mom6 rawgrid/regridded historical run field
@@ -631,6 +721,8 @@ class MOM6Historical:
             month of the historical run
         day : int
             day in month of the historical run
+        freq : str
+            frequency of the data. Default is None.
 
         Returns
         -------
@@ -639,7 +731,7 @@ class MOM6Historical:
             all forecast field include in the `file_list`. The
             Dataset object is lazily-loaded.
         """
-        ds = self.get_all()
+        ds = self.get_all(freq=freq)
 
         min_year = ds['time.year'].min().data
         max_year = ds['time.year'].max().data
@@ -760,6 +852,45 @@ class MOM6Static:
             'geolon_u','geolat_u',
             'geolon_v','geolat_v']
         )
+
+    @staticmethod
+    def get_rotate(
+        data_relative_dir : str
+    ) -> xr.Dataset:
+        """return the original mom6 grid rotation information
+
+        The information is store in the ice_month.static.nc file
+
+        Parameters
+        ----------
+        data_relative_dir : str
+            relative path from DATAPATH setup in config file to 
+            the actual forecast/reforecast data, by setting 'forecast/'
+            which makes the absolute path to DATAPATH/forecast/
+
+        Returns
+        -------
+        xr.Dataset
+            The Xarray Dataset object of mom6's grid lon lat
+        """
+        ds_rotate = xr.open_dataset(
+            os.path.join(DATA_PATH,data_relative_dir,'ice_monthly.static.nc')
+        )
+
+        # prepare the rotation matrix to regular coord names
+        ds_rotate = ds_rotate.rename({
+            'yT':'yh',
+            'xT':'xh',
+            'GEOLON':'geolon',
+            'GEOLAT':'geolat',
+            'COSROT':'cosrot',
+            'SINROT':'sinrot'
+        })
+
+        return ds_rotate.set_coords(
+            ['geolon','geolat']
+        )
+
     @staticmethod
     def get_mask(
         data_relative_dir : str,
