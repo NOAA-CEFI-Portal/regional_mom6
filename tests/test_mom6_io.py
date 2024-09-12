@@ -7,6 +7,59 @@ import pytest
 import xarray as xr
 from mom6.mom6_module import mom6_io
 
+# Test staticmethod in MOM6Historical
+def test_MOM6Historical_freq_find():
+    """test the freq find to pin point the needed file
+    """
+
+    test_freq = ['annual','monthly','daily','annualy']
+
+    test_list1 = [
+        '/data/path/exp.YYYYMMDD-YYYYMMDD.var.nc',
+        '/data/path/exp.YYYYMM-YYYYMM.var.nc',
+        '/data/path/exp.YYYY-YYYY.var.nc'
+    ]
+    # correct annual file capture
+    out_list = mom6_io.MOM6Historical.freq_find(test_list1,test_freq[0])
+    assert out_list[0] == test_list1[2]
+    # correct monthly file capture
+    out_list = mom6_io.MOM6Historical.freq_find(test_list1,test_freq[1])
+    assert out_list[0] == test_list1[1]
+    # correct daily file capture
+    out_list = mom6_io.MOM6Historical.freq_find(test_list1,test_freq[2])
+    assert out_list[0] == test_list1[0]
+    # error raise when missing frequency string input
+    with pytest.raises(ValueError):
+        mom6_io.MOM6Historical.freq_find(test_list1)
+    # error raise when wrong frequency string input
+    with pytest.raises(ValueError):
+        mom6_io.MOM6Historical.freq_find(test_list1,test_freq[3])
+
+
+    test_list2 = [
+        '/data/path/exp.YYYYMM-YYYYMM.var.nc',
+    ]
+    # correct one file response for different freq input (disregards)
+    out_list = mom6_io.MOM6Historical.freq_find(test_list2,test_freq[0])
+    assert out_list[0] == test_list2[0]
+    out_list = mom6_io.MOM6Historical.freq_find(test_list2,test_freq[1])
+    assert out_list[0] == test_list2[0]
+    out_list = mom6_io.MOM6Historical.freq_find(test_list2,test_freq[2])
+    assert out_list[0] == test_list2[0]
+    out_list = mom6_io.MOM6Historical.freq_find(test_list2,test_freq[3])
+    assert out_list[0] == test_list2[0]
+    out_list = mom6_io.MOM6Historical.freq_find(test_list2,None)
+    assert out_list[0] == test_list2[0]
+
+    test_list3 = [
+        '/data/path/exp.YYYYMMDD-YYYYMMDD.var.nc',
+        '/data/path/exp.YYYYMM-YYYYMM.var.nc'
+    ]
+    # error raise for error freq input when that freq is not in the file list
+    with pytest.raises(ValueError):
+        mom6_io.MOM6Historical.freq_find(test_list3,test_freq[0])
+
+
 # TEST OPENDAP
 def test_OpenDapStore():
     """Test OpenDap Connection
@@ -252,16 +305,19 @@ def test_MOM6Historical(location):
     try:
         ds = histrun_raw_local.get_single(
             year=2006,
-            month=6)
+            month=6,
+            freq='monthly'
+        )
         if ds['time.year'] != 2006 or ds['time.month'] != 6  :
             pytest.fail('Picked time not the same as output time')
         ds = histrun_regrid_local.get_single(
             year=2012,
-            month=9)
+            month=9,
+            freq='monthly')
         if ds['time.year'] != 2012 or ds['time.month'] != 9  :
             pytest.fail('Picked time not the same as output time')
-        ds = histrun_raw_local.get_all()
-        ds = histrun_regrid_local.get_all()
+        ds = histrun_raw_local.get_all(freq='monthly')
+        ds = histrun_regrid_local.get_all(freq='monthly')
     except OSError :
         pytest.fail('OSError is raised with correct function input')
 
@@ -276,9 +332,9 @@ def test_MOM6Historical(location):
     )
     if location == 'local':
         with pytest.raises(OSError):
-            ds = histrun_raw_local_nostaticdir.get_single()
+            ds = histrun_raw_local_nostaticdir.get_single(freq='monthly')
         with pytest.raises(OSError):
-            ds = histrun_raw_local_nostaticdir.get_single()
+            ds = histrun_raw_local_nostaticdir.get_single(freq='monthly')
 
 
     # create local regrid instance (regrid dir location error expect error)
@@ -292,8 +348,8 @@ def test_MOM6Historical(location):
 
     if location == 'local':
         with pytest.raises(OSError):
-            ds = histrun_regrid_local_errorloc.get_single()
-            histrun_regrid_local_errorloc.get_all()
+            ds = histrun_regrid_local_errorloc.get_single(freq='monthly')
+            histrun_regrid_local_errorloc.get_all(freq='monthly')
 
     # create local regrid instance (raw dir location error expect error)
     histrun_regrid_local_errorgrid = mom6_io.MOM6Historical(
@@ -305,8 +361,8 @@ def test_MOM6Historical(location):
     )
     if location == 'local':
         with pytest.raises(OSError):
-            histrun_regrid_local_errorgrid.get_single()
-            histrun_regrid_local_errorgrid.get_all()
+            histrun_regrid_local_errorgrid.get_single(freq='monthly')
+            histrun_regrid_local_errorgrid.get_all(freq='monthly')
 
 
     # create local raw instance (error iyear and imonth input for method get_single expect error)
@@ -318,15 +374,15 @@ def test_MOM6Historical(location):
         source=location
     )
     with pytest.raises(IndexError):
-        histrun_regrid_local_erroryear.get_single(year=2024,month=12)
-        histrun_regrid_local_erroryear.get_single(year=2024,month=8)
+        histrun_regrid_local_erroryear.get_single(year=2024,month=12,freq='monthly')
+        histrun_regrid_local_erroryear.get_single(year=2024,month=8,freq='monthly')
 
     # (first and last iyear and imonth input for method get_single expect NO error)
     try:
-        ds = histrun_regrid_local_erroryear.get_single(year=1993,month=1)
+        ds = histrun_regrid_local_erroryear.get_single(year=1993,month=1,freq='monthly')
         if ds['time.year'] != 1993 or ds['time.month'] != 1  :
             pytest.fail('Picked time not the same as output time')
-        ds = histrun_regrid_local_erroryear.get_single(year=2019,month=12)
+        ds = histrun_regrid_local_erroryear.get_single(year=2019,month=12,freq='monthly')
         if ds['time.year'] != 2019 or ds['time.month'] != 12  :
             pytest.fail('Picked time not the same as output time')
     except OSError :
@@ -342,4 +398,4 @@ def test_MOM6Historical(location):
     )
     if location == 'local':
         with pytest.raises(OSError):
-            histrun_raw_local_nodatadir.get_single()
+            histrun_raw_local_nodatadir.get_single(freq='monthly')
