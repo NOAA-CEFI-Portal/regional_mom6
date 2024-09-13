@@ -8,8 +8,8 @@ import sys
 import warnings
 import xarray as xr
 from dask.distributed import Client
-from mom6.mom6_module.mom6_io import MOM6Misc, MOM6Historical
-from mom6.mom6_module.mom6_statistics import HistoricalClimatology
+from mom6.mom6_module.mom6_io import MOM6Misc, MOM6Historical, MOM6Forecast
+from mom6.mom6_module.mom6_statistics import HistoricalClimatology, ForecastClimatology
 
 warnings.simplefilter("ignore")
 
@@ -69,12 +69,38 @@ if __name__=="__main__":
             time_name=time_name,
             time_frequency=GROUPBY_FREQ)
 
-    # calculate climatology
-    da_climo = class_climo.generate_climo(
-        climo_start_year=1993,
-        climo_end_year=2019,
-        dask_option='compute'
-    )
+        # calculate climatology fixed climatology for historical run
+        da_climo = class_climo.generate_climo(
+            climo_start_year=1993,
+            climo_end_year=2019,
+            dask_option='compute'
+        )
+
+    # for forecast run
+    if data_type == 'fcst':
+        class_forecast=MOM6Forecast(
+            var=variable,
+            data_relative_dir=dict_dir[f'{data_type}_{grid_type}'][0],
+            static_relative_dir=dict_dir[f'{data_type}_{grid_type}'][1],
+            grid=grid_type,
+            source='local',
+            chunks=dict_dir[f'{data_type}_{grid_type}'][2]
+        )
+        ds = class_forecast.get_all()
+
+        # create climatology class
+        time_name = list(dict_dir[f'{data_type}_{grid_type}'][2].keys())[0]
+        class_climo = ForecastClimatology(
+            ds_data=ds,
+            var_name=variable,
+            time_frequency=GROUPBY_FREQ)
+
+        # calculate climatology fixed climatology for forecast
+        da_climo = class_climo.generate_climo(
+            climo_start_year=1993,
+            climo_end_year=2022,
+            dask_option='compute'
+        )
 
     # create output dataset
     ds_climo = xr.Dataset()
