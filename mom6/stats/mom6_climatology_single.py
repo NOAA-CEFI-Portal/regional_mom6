@@ -13,6 +13,23 @@ from mom6.mom6_module.mom6_statistics import HistoricalClimatology, ForecastClim
 
 warnings.simplefilter("ignore")
 
+
+def get_dir_dict()->dict:
+    """different type of data
+
+    Returns
+    -------
+    dict
+        dictionary of different data location
+    """
+    return {
+        'hist_raw': ['hist_run/','static/',{'time':-1,'geolon':50,'geolat':50}],
+        'fcst_raw': ['forecast/','static/',{'init':1,'geolon':-1,'geolat':-1}],
+        'hist_regrid': ['hist_run/regrid/','',{'time':-1,'lon':50,'lat':50}],
+        'fcst_regrid': ['forecast/regrid/','',{'init':1,'lon':-1,'lat':-1}]
+    }
+
+
 # %%
 if __name__=="__main__":
 
@@ -42,12 +59,7 @@ if __name__=="__main__":
         raise NameError('the frequency options is only <monthly/daily>')
 
     # dictionary for input argument to dir name
-    dict_dir = {
-        'hist_raw': ['hist_run/','static/',{'time':-1}],
-        'fcst_raw': ['forecast/','static/',{'init':-1}],
-        'hist_regrid': ['hist_run/regrid/','',{'time':-1}],
-        'fcst_regrid': ['forecast/regrid/','',{'init':-1}]
-    }
+    dict_dir = get_dir_dict()
 
     # for historical run
     if data_type == 'hist':
@@ -60,6 +72,11 @@ if __name__=="__main__":
             chunks=dict_dir[f'{data_type}_{grid_type}'][2]
         )
         ds = class_histrun.get_all(freq=freq)
+
+        try :
+            ds = ds.rename({'geolon':'lon','geolat':'lat'})
+        except ValueError:
+            pass
 
         # create climatology class
         time_name = list(dict_dir[f'{data_type}_{grid_type}'][2].keys())[0]
@@ -77,7 +94,7 @@ if __name__=="__main__":
         )
 
     # for forecast run
-    if data_type == 'fcst':
+    elif data_type == 'fcst':
         class_forecast=MOM6Forecast(
             var=variable,
             data_relative_dir=dict_dir[f'{data_type}_{grid_type}'][0],
@@ -87,6 +104,11 @@ if __name__=="__main__":
             chunks=dict_dir[f'{data_type}_{grid_type}'][2]
         )
         ds = class_forecast.get_all()
+
+        try :
+            ds = ds.rename({'geolon':'lon','geolat':'lat'})
+        except ValueError:
+            pass
 
         # create climatology class
         time_name = list(dict_dir[f'{data_type}_{grid_type}'][2].keys())[0]
@@ -110,13 +132,19 @@ if __name__=="__main__":
     file_loc_list = file_loc.split('/')
     parent_dir = f'/{os.path.join(*file_loc_list[:-1])}/'
     filename = file_loc_list[-1]
-
-    # output the netcdf file
-    print(f'output {parent_dir}climo/{filename[:-3]}.climo.nc')
+    
     ds_climo = MOM6Misc.mom6_encoding_attr(
-            ds,
-            ds_climo,
-            var_names=[variable],
-            dataset_name='regional mom6 regridded climatology'
-        )
-    ds_climo.to_netcdf(f'{parent_dir}climo/{filename[:-3]}.climo.nc')
+        ds,
+        ds_climo,
+        var_names=[variable],
+        dataset_name='regional mom6 regridded climatology'
+    )    
+
+    if data_type == 'hist':
+        # output the netcdf file
+        print(f'output {parent_dir}climo/{filename[:-3]}.climo.nc')
+        ds_climo.to_netcdf(f'{parent_dir}climo/{filename[:-3]}.climo.nc')
+    elif data_type == 'fcst':
+        # output the netcdf file
+        print(f'output {parent_dir}climo/{filename[:-11]}.climo.nc')
+        ds_climo.to_netcdf(f'{parent_dir}climo/{filename[:-11]}.climo.nc')
