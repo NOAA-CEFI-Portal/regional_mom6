@@ -700,6 +700,42 @@ class HistoricalClimatology:
         elif dask_option == 'compute':
             return {'anomaly':da_anom.compute(),'climatology':da_climo}
 
+
+class HistoricalQuantile:
+    """
+    Class for calculating the quantile of historical
+
+    The method should be able to accomadate the 
+    raw and regridded format
+    """
+    def __init__(
+        self,
+        ds_data : xr.Dataset,
+        var_name : str,
+        time_name : str = 'time',
+        time_frequency : TimeGroupByOptions = 'month'
+    ) -> None:
+        """
+        Parameters
+        ----------
+        ds_data : xr.Dataset
+            The dataset one want to use to 
+            derived the histiorical run statistics.
+        var_name : str
+            The variable name in the dataset 
+        initialization_name : str, optional
+            initialization dimension name, by default 'init'
+        member_name : str, optional
+            ensemble member dimension name, by default 'member'
+        time_frequency : TimeGroupByOptions, optional
+            name in time frequency to do the time group, by default 'month'
+            'year', 'month', 'dayofyear' are the available options.
+        """
+        self.dataset = CoordinateWrangle(ds_data).to_360()
+        self.varname = var_name
+        self.timename = time_name
+        self.tfreq = time_frequency
+
     def generate_quantile(
         self,
         quantile_start_year : int = 1993,
