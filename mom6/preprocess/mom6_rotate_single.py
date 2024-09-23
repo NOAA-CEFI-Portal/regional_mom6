@@ -26,6 +26,8 @@ if __name__=="__main__":
     print(client)
     print(client.cluster.dashboard_link)
 
+    chunk_time = 50
+
     # check argument exist
     if len(sys.argv) < 2:
         print("Usage: python mom6_rotate_single.py <hist/fcst> <u varnames> <v varnames>")
@@ -109,6 +111,20 @@ if __name__=="__main__":
         dataset_name='regional mom6 vector rotate'
     )
     ds_u_true = ds_u_true.drop_vars(['lon','lat'])
+    ori_long_name =  ds_u[u_name].attrs['long_name']
+    ds_u_true[u_name].attrs['long_name'] = f"Rotated {ori_long_name}"
+    ds_u_true[u_name].encoding = {
+        'zlib': True,
+        'szip': False,
+        'zstd': False,
+        'bzip2': False,
+        'blosc': False,
+        'shuffle': True,
+        'complevel': 3,
+        'fletcher32': False,
+        'contiguous': False,
+        'chunksizes': {"time": chunk_time}
+    }
     ds_u_true = ds_u_true.rename({u_name : f'{u_name}_rotate'})
 
     MOM6Misc.mom6_encoding_attr(
@@ -118,6 +134,20 @@ if __name__=="__main__":
         dataset_name='regional mom6 vector rotate'
     )
     ds_v_true = ds_v_true.drop_vars(['lon','lat'])
+    ori_long_name =  ds_v[v_name].attrs['long_name']
+    ds_v_true[v_name].attrs['long_name'] = f"Rotated {ori_long_name}"
+    ds_v_true[v_name].encoding = {
+        'zlib': True,
+        'szip': False,
+        'zstd': False,
+        'bzip2': False,
+        'blosc': False,
+        'shuffle': True,
+        'complevel': 3,
+        'fletcher32': False,
+        'contiguous': False,
+        'chunksizes': {"time": chunk_time}
+    }
     ds_v_true = ds_v_true.rename({v_name : f'{v_name}_rotate'})
 
     # output the netcdf file
