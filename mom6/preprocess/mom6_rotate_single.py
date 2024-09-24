@@ -123,7 +123,7 @@ if __name__=="__main__":
         'complevel': 3,
         'fletcher32': False,
         'contiguous': False,
-        'chunksizes': {"time": chunk_time}
+        'chunksizes': [chunk_time,1000,1000]
     }
     ds_u_true = ds_u_true.rename({u_name : f'{u_name}_rotate'})
 
@@ -146,7 +146,7 @@ if __name__=="__main__":
         'complevel': 3,
         'fletcher32': False,
         'contiguous': False,
-        'chunksizes': {"time": chunk_time}
+        'chunksizes': [chunk_time,1000,1000]
     }
     ds_v_true = ds_v_true.rename({v_name : f'{v_name}_rotate'})
 
