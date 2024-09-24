@@ -1029,7 +1029,7 @@ class MOM6Misc:
         ds_data_ori : xr.Dataset,
         ds_data : xr.Dataset,
         dataset_name : str,
-        var_names : List[str] = None
+        var_names : List[str] = None,
     ):
         """
         This function is designed for creating attribute and netCDF encoding
@@ -1132,17 +1132,27 @@ class MOM6Misc:
         # copy original attrs and encoding for dims
         for dim in misc_dims_list:
             try:
-                ds_data[dim].attrs = ds_data_ori[dim].attrs
-                ds_data[dim].encoding = ds_data_ori[dim].encoding
-                ds_data[dim].encoding['complevel'] = 2
+                if ds_data[dim].attrs == {}:
+                    ds_data[dim].attrs = ds_data_ori[dim].attrs
+                    ds_data[dim].encoding = ds_data_ori[dim].encoding
+                    ds_data[dim].encoding['complevel'] = 2
             except KeyError:
                 print(f'no {dim} dimension')
 
         # copy original attrs and encoding for variables
         for var_name in var_names:
             try:
-                ds_data[var_name].attrs = ds_data_ori[var_name].attrs
-                ds_data[var_name].encoding = ds_data_ori[var_name].encoding
+                if ds_data[var_name].attrs == {}:
+                    ds_data[var_name].attrs = ds_data_ori[var_name].attrs
+                    ds_data[var_name].encoding = ds_data_ori[var_name].encoding
+                else:
+                    ds_data[var_name].encoding = ds_data_ori[var_name].encoding
+                    new_attrs = list(ds_data[var_name].attrs.keys())
+                    ori_attrs = list(ds_data_ori[var_name].attrs.keys())
+                    for attr in ori_attrs:
+                        if attr not in new_attrs:
+                            ds_data[var_name].attrs[attr] = ds_data_ori[var_name].attrs[attr]
+
             except KeyError:
                 print(f'new variable name {var_name}')
                 ds_data[var_name].encoding['complevel'] = 2
