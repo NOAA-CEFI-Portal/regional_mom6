@@ -59,8 +59,6 @@ def chunk_info()->dict:
 
     return dict_info
 
-
-
 if __name__=="__main__":
 
     data_dir = os.getenv('DATASETSPRIVATE')
