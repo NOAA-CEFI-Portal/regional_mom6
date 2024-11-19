@@ -58,12 +58,12 @@ We welcome external contribution to the package. Please feel free to submit issu
    current setup assuming the data directory structure is fixed (i.e. the historical run or forecast data subdirectory (ex: hist_run and forecast) need to be under this data_path )
 
 ## Syncing with the NOAA-CEFI-Portal version
-3. Create a remote `upstream` to track the changes that is on NOAA-CEFI-Portal
+1. Create a remote `upstream` to track the changes that is on NOAA-CEFI-Portal
 
    ```
    git remote add upstream git@github.com:NOAA-CEFI-Portal/regional_mom6.git   
    ```
-4. Create a feature branch to make code changes
+2. Create a feature branch to make code changes
 
    ```
    git branch <feature-branch-name>
@@ -71,16 +71,23 @@ We welcome external contribution to the package. Please feel free to submit issu
    ```
    This prevents making direct changes to the `main` branch in your local repository.
 
-5. Sync your local repository with the upstream changes regularly
+3. Sync your local repository with the upstream changes regularly
 
    ```
    git fetch upstream
    git checkout main
    git merge upstream/main
    ```
-   This updates your local `main` branch with the latest changes from the upstream repository. Remember to merge `main` into your local `<feature-branch-name>` branch to keep it up to date.
+   This updates your local `main` branch with the latest changes from the upstream repository. 
+   
+3. Merge updated local `main` branch into your local `<feature-branch-name>` branch to keep it up to date.
 
-5. Push your changes to your forked version on GitHub
+   ```
+   git checkout <feature-branch-name>
+   git merge main
+   ```
+
+4. Push your changes to your forked version on GitHub
 
    ```
    git push origin <feature-branch-name>
