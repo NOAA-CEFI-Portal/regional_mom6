@@ -18,6 +18,7 @@ from mom6.mom6_module.mom6_statistics import (
 from mom6.mom6_module.mom6_types import (
     TimeGroupByOptions
 )
+from mom6.mom6_module.mom6_detrend import ForecastDetrend
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -73,7 +74,8 @@ class MarineHeatwaveForecast:
         climo_end_year : int = 2020,
         anom_start_year : int = 1993,
         anom_end_year : int = 2020,
-        quantile_threshold : float = 90.
+        quantile_threshold : float = 90.,
+        detrend : bool = False
     ) -> xr.Dataset:
         """generate the MHW statistics and identify MHW
 
@@ -89,6 +91,8 @@ class MarineHeatwaveForecast:
             end year of anomaly that need to identify MHW, by default 2020
         quantile_threshold : float, optional
             quantile value that define the threshold, by default 90.
+        detrend : bool, optional
+            flag for whether the MHW is based on detrended ssta or not.
 
         Returns
         -------
@@ -98,7 +102,7 @@ class MarineHeatwaveForecast:
 
         # calculate anomaly based on climatology
         class_forecast_climo = ForecastClimatology(self.dataset,self.varname)
-        dict_anom = class_forecast_climo.generate_anom_batch(
+        dict_anom_thres = class_forecast_climo.generate_anom_batch(
             climo_start_year,
             climo_end_year,
             climo_start_year, # force the anom start year for threshold be the same as climo period
@@ -106,19 +110,41 @@ class MarineHeatwaveForecast:
             'persist'
         )
 
+        # detrend or not
+        if detrend:
+            class_detrend_thres = ForecastDetrend(dict_anom_thres['anomaly'])
+            dict_anom_thres['anomaly'], ds_p = class_detrend_thres.detrend_linear(
+                precompute_coeff=False,
+                in_place_memory_replace=True
+            )
+
         # anomaly used for the threshold
-        ds_anom = xr.Dataset()
-        ds_anom[f'{self.varname}_anom'] = dict_anom['anomaly']
-        ds_anom['lon'] = self.dataset['lon']
-        ds_anom['lat'] = self.dataset['lat']
+        ds_anom_thres = xr.Dataset()
+        ds_anom_thres[f'{self.varname}_anom'] = dict_anom_thres['anomaly']
+        ds_anom_thres['lon'] = self.dataset['lon']
+        ds_anom_thres['lat'] = self.dataset['lat']
 
         # calculate threshold
-        class_forecast_quantile = ForecastQuantile(ds_anom,f'{self.varname}_anom')
+        # if detrend:
+        #     ### in memery result when creating the class
+        #     class_forecast_quantile = ForecastQuantile(
+        #         ds_anom_thres.compute(),
+        #         f'{self.varname}_anom'
+        #     )
+        #     da_threshold = class_forecast_quantile.generate_quantile(
+        #         climo_start_year,
+        #         climo_end_year,
+        #         quantile_threshold,
+        #         dask_obj=False
+        #     )
+        # else:
+        class_forecast_quantile = ForecastQuantile(ds_anom_thres,f'{self.varname}_anom')
         ### in memery result not lazy-loaded (same as climo period)
         da_threshold = class_forecast_quantile.generate_quantile(
             climo_start_year,
             climo_end_year,
-            quantile_threshold
+            quantile_threshold,
+            dask_obj=True
         )
 
         # anomaly that need to find MHW
@@ -129,9 +155,17 @@ class MarineHeatwaveForecast:
             anom_end_year,
             'persist',
             precompute_climo = True,
-            da_climo = dict_anom['climatology']
+            da_climo = dict_anom_thres['climatology']
         )
         da_anom = dict_anom['anomaly']
+
+        if detrend:
+            class_detrend = ForecastDetrend(da_anom)
+            da_anom,_ = class_detrend.detrend_linear(
+                precompute_coeff=True,
+                ds_coeff=ds_p,
+                in_place_memory_replace=True
+            )
 
         # calculate average mhw magnitude
         da_mhw_mag = da_anom.where(da_anom.groupby(f'{self.init}.{self.tfreq}')>=da_threshold)
@@ -152,11 +186,20 @@ class MarineHeatwaveForecast:
 
         # output dataset
         ds_mhw = xr.Dataset()
+        if detrend :
+            ds_mhw['polyfit_coefficients'] = ds_p['polyfit_coefficients']
+
         ds_mhw[f'{self.varname}_threshold{quantile_threshold:02d}'] = da_threshold
         ds_mhw[f'{self.varname}_threshold{quantile_threshold:02d}'].attrs['long_name'] = (
-            f'{self.varname} threshold{quantile_threshold:02d})'
+            f'{self.varname} threshold{quantile_threshold:02d}'
         )
         ds_mhw[f'{self.varname}_threshold{quantile_threshold:02d}'].attrs['units'] = 'degC'
+
+        ds_mhw[f'{self.varname}_climo'] = dict_anom_thres['climatology']
+        ds_mhw[f'{self.varname}_climo'].attrs['long_name'] = (
+            f'{self.varname} climatology'
+        )
+        ds_mhw[f'{self.varname}_climo'].attrs['units'] = 'degC'
 
         ds_mhw[f'mhw_prob{quantile_threshold:02d}'] = da_prob
         ds_mhw[f'mhw_prob{quantile_threshold:02d}'].attrs['long_name'] = (
@@ -170,11 +213,11 @@ class MarineHeatwaveForecast:
         )
         ds_mhw['ssta_avg'].attrs['units'] = 'degC'
 
-        ds_mhw['mhw_mag_indentified_ens'] = da_mhw_mag
-        ds_mhw['mhw_mag_indentified_ens'].attrs['long_name'] = (
-            'marine heatwave magnitude in each ensemble'
+        ds_mhw['ssta'] = da_anom
+        ds_mhw['ssta'].attrs['long_name'] = (
+            'anomalous sea surface temperature'
         )
-        ds_mhw['mhw_mag_indentified_ens'].attrs['units'] = 'degC'
+        ds_mhw['ssta'].attrs['units'] = 'degC'
 
         ds_mhw.attrs['period_of_quantile'] = da_threshold.attrs['period_of_quantile']
         ds_mhw.attrs['period_of_climatology'] = da_threshold.attrs['period_of_climatology']

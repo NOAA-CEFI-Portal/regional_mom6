@@ -219,28 +219,6 @@ class ForecastClimatology:
             start year to calculation the climatology, by default 1993
         climo_end_year : int, optional
             end year to calculation the climatology, by default 2020
-        dask_option : DaskOptions, optional
-            flag to determine one want the return result
-            to be 'compute', 'persist' or keep 'lazy' in anomaly, by default 'lazy'
-
-        Returns
-        -------
-        dict
-            anomaly: dataarray which represent the anomaly,
-            climatology: dataarray which represent the climatology
-        
-        Raises
-        ------
-        ValueError
-            when the kwarg anom_start_year & anom_end_year result in 
-            empty array crop
-
-        Parameters
-        ----------
-        climo_start_year : int, optional
-            start year to calculation the climatology, by default 1993
-        climo_end_year : int, optional
-            end year to calculation the climatology, by default 2020
         anom_start_year : int, optional
             start year to calculation the anomaly, by default 1993
         anom_end_year : int, optional
