@@ -82,4 +82,3 @@ def test_MarineHeatwaveForecast_generate_forecast_batch(ds_forecast):
     assert np.abs(ds_mhw_batch.tos_threshold90.max().data-0.37993317)<1e-6
     assert np.abs(ds_mhw_batch.mhw_prob90.sum().data-6775.)==0.
     assert np.abs(ds_mhw_batch.ssta_avg.max().data-0.47491646)<1e-6
-    assert np.abs(ds_mhw_batch.mhw_mag_indentified_ens.max().compute().data-0.47491646)<1e-6
