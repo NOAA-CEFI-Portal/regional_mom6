@@ -112,7 +112,7 @@ def create_directory_structure(base_dir: str):
     ----------
     base_dir : str
         the base directory where the user wish 
-        the cefi data data struture to be located
+        the cefi data struture to be located
     """
     data_structure = DataStructure()
     # Iterate through all combinations of attributes
