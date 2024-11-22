@@ -10,6 +10,9 @@ class DataStructure:
     """Provide all level naming for the CEFI portal
     data structure
     """
+    top_directory: Tuple[str, ...] = (
+        'cefi_regional_mom6',
+    )
     region: Tuple[str, ...] = (
         'northwest_atlantic',
         'northeast_pacific',
@@ -19,7 +22,6 @@ class DataStructure:
     )
     subdomain: Tuple[str, ...] = (
         'full_domain',
-        'gomex_extra'
     )
     experiment_type: Tuple[str, ...] = (
         'historical_run',
@@ -28,7 +30,7 @@ class DataStructure:
         'long_term_projection'
     )
     version: Tuple[str, ...] = (
-        '2023-04-1'
+        'v2023-04-1',
     )
     output_frequency: Tuple[str, ...] = (
         'daily',
@@ -50,7 +52,6 @@ class FilenameStructure:
     )
     subdomain: Tuple[str, ...] = (
         'full',
-        'gomex'
     )
     experiment_type: Tuple[str, ...] = (
         'hist_run',
@@ -59,7 +60,7 @@ class FilenameStructure:
         'ltm_proj'
     )
     version: Tuple[str, ...] = (
-        'v2023-04-1'
+        'v2023-04-1',
     )
     output_frequency: Tuple[str, ...] = (
         'daily',
@@ -115,8 +116,9 @@ def create_directory_structure(base_dir: str):
         the cefi data struture to be located
     """
     data_structure = DataStructure()
-    # Iterate through all combinations of attributes
+    # Iterate through all combinations of available value in attributes
     for combination in product(
+        data_structure.top_directory,
         data_structure.region,
         data_structure.subdomain,
         data_structure.experiment_type,
@@ -125,6 +127,7 @@ def create_directory_structure(base_dir: str):
     ):
         # Build the directory path
         dir_path = os.path.join(base_dir, *combination)
+        print(f"create {dir_path}")
         # Create the directory (creates intermediate dirs if they don't exist)
         os.makedirs(dir_path, exist_ok=True)
 
@@ -155,6 +158,7 @@ class DataPath:
     def cefi_dir(self) -> str:
         """construct the directory path based on attributes"""
         return (
+            f"{DataStructure().top_directory[0]}"
             f"{self.region}/{self.subdomain}/"+
             f"{self.experiment_type}/{self.version}/"+
             f"{self.output_frequency}/"
@@ -168,10 +172,10 @@ class HistrunFilename:
     variable: str
     region: str
     subdomain: str
-    experiment_type: str = 'hist_run'
     output_frequency: str
     version: str
     date_range: str
+    experiment_type: str = 'hist_run'
 
     def __post_init__(self):
         # Access the shared FilenameStructure instance
@@ -180,7 +184,7 @@ class HistrunFilename:
         # Validate each attribute
         validate_attribute(self.region, filename_structure.region, "region")
         validate_attribute(self.subdomain, filename_structure.subdomain, "subdomain")
-        if self.experiment_type is not 'hist_run':
+        if self.experiment_type != 'hist_run':
             raise ValueError(
                 f"Invalid experiment_type: {self.experiment_type}. Must be 'hist_run'."
             )
@@ -262,13 +266,13 @@ class ProjectionFilename:
     """constructing cefi filename for projection run
     """
     variable: str
-    region: Tuple[str, ...]
-    subdomain: Tuple[str, ...]
-    experiment_type: str = 'ltm_proj'
-    output_frequency: Tuple[str, ...]
-    version: Tuple[str, ...]
-    forcing: Tuple[str, ...]
+    region: str
+    subdomain: str
+    output_frequency: str
+    version: str
+    forcing: str
     date_range: str
+    experiment_type: str = 'ltm_proj'
 
     def __post_init__(self):
         # Access the shared FilenameStructure instance
@@ -277,7 +281,7 @@ class ProjectionFilename:
         # Validate each attribute
         validate_attribute(self.region, filename_structure.region, "region")
         validate_attribute(self.subdomain, filename_structure.subdomain, "subdomain")
-        if self.experiment_type is not 'ltm_proj':
+        if self.experiment_type != 'ltm_proj':
             raise ValueError(
                 f"Invalid experiment_type: {self.experiment_type}. "+
                 "Must be 'ltm_proj'."
