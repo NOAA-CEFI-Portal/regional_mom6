@@ -37,6 +37,10 @@ class DataStructure:
         'monthly',
         'yearly'
     )
+    grid_type: Tuple[str, ...] = (
+        'raw',
+        'regrid'
+    )
 
 @dataclass(frozen=True)
 class FilenameStructure:
@@ -76,6 +80,42 @@ class FilenameStructure:
         'historical',
         'proj_ssp126'
     )
+    grid_type: Tuple[str, ...] = (
+        'raw',
+        'regrid'
+    )
+
+
+@dataclass(frozen=True)
+class FileChunking:
+    """Setup the chunking size
+    
+    current setting is around 500MB per chunk
+    """
+    vertical: int = 10
+    horizontal: int = 200
+    time: int = 100
+    lead: int = 12
+    member: int = 10
+
+@dataclass(frozen=True)
+class GlobalAttrs:
+    """ global attribute to be in all cefi files"""
+
+    cefi_rel_path:str = 'N/A'
+    cefi_filename:str = 'N/A'
+    cefi_ori_filename:str = 'N/A'
+    cefi_region:str = 'N/A'
+    cefi_subdomain:str = 'N/A'
+    cefi_experiment_type:str = 'N/A'
+    cefi_version:str = 'N/A'
+    cefi_output_frequency:str = 'N/A'
+    cefi_grid_type:str = 'N/A'
+    cefi_date_range:str = 'N/A'
+    cefi_init_date:str = 'N/A'
+    cefi_ensemble_info:str = 'N/A'
+    cefi_forcing:str = 'N/A'
+    cefi_aux:str = 'N/A'
 
 
 def validate_attribute(
@@ -105,7 +145,7 @@ def validate_attribute(
             f"Must be one of {attr_options}."
         )
 
-def create_directory_structure(base_dir: str):
+def create_directory_structure(base_dir:str):
     """Generate the data structure needed for
     storing the cefi data locally
 
@@ -124,6 +164,7 @@ def create_directory_structure(base_dir: str):
         data_structure.experiment_type,
         data_structure.version,
         data_structure.output_frequency,
+        data_structure.grid_type
     ):
         # Build the directory path
         dir_path = os.path.join(base_dir, *combination)
@@ -141,6 +182,7 @@ class DataPath:
     experiment_type: str
     version: str
     output_frequency: str
+    grid_type: str
 
     def __post_init__(self):
         data_structure = DataStructure()  # Store a single instance
@@ -153,15 +195,20 @@ class DataPath:
         validate_attribute(
             self.output_frequency, data_structure.output_frequency, "output_frequency"
         )
-
+        validate_attribute(
+            self.grid_type, data_structure.grid_type, "grid_type"
+        )
     @property
     def cefi_dir(self) -> str:
         """construct the directory path based on attributes"""
-        return (
-            f"{DataStructure().top_directory[0]}"
-            f"{self.region}/{self.subdomain}/"+
-            f"{self.experiment_type}/{self.version}/"+
-            f"{self.output_frequency}/"
+        return os.path.join(
+            f"{DataStructure().top_directory[0]}",
+            f"{self.region}",
+            f"{self.subdomain}",
+            f"{self.experiment_type}",
+            f"{self.version}",
+            f"{self.output_frequency}",
+            f"{self.grid_type}"
         )
 
 
@@ -175,6 +222,7 @@ class HistrunFilename:
     output_frequency: str
     version: str
     date_range: str
+    grid_type: str
     experiment_type: str = 'hist_run'
 
     def __post_init__(self):
@@ -201,12 +249,18 @@ class HistrunFilename:
 
     @property
     def filename(self) -> str:
-        """construct the filename based on attributes"""
+        """construct the filename based on attributes
+        format :
+        <variable>.<region>.<subdomain>.<experiment_type>
+        .<version>.<output_frequency>.<grid_type>.<YYYY0M-YYYY0M>.nc
+
+        """
         return (
-            f"{self.variable}"+
+            f"{self.variable}."+
             f"{self.region}.{self.subdomain}."+
             f"{self.experiment_type}.{self.version}."+
-            f"{self.output_frequency}"+
+            f"{self.output_frequency}."+
+            f"{self.grid_type}."+
             f"{self.date_range}.nc"
         )
 
@@ -220,6 +274,7 @@ class ForecastFilename:
     experiment_type: str
     output_frequency: str
     version: str
+    grid_type: str
     initial_date: str
     ensemble_info: str
 
@@ -236,6 +291,7 @@ class ForecastFilename:
                 "Must be one of ['ssforcast','dcforecast']."
             )
         validate_attribute(self.version, filename_structure.version, "version")
+        validate_attribute(self.grid_type, filename_structure.grid_type, "grid_type")
         validate_attribute(
             self.output_frequency, filename_structure.output_frequency, "output_frequency"
         )
@@ -253,11 +309,12 @@ class ForecastFilename:
     def filename(self) -> str:
         """construct the filename based on attributes"""
         return (
-            f"{self.variable}"+
+            f"{self.variable}."+
             f"{self.region}.{self.subdomain}."+
             f"{self.experiment_type}.{self.version}."+
-            f"{self.output_frequency}"+
-            f"{self.ensemble_info}"+
+            f"{self.output_frequency}."+
+            f"{self.grid_type}."+
+            f"{self.ensemble_info}."+
             f"{self.initial_date}.nc"
         )
 
@@ -270,6 +327,7 @@ class ProjectionFilename:
     subdomain: str
     output_frequency: str
     version: str
+    grid_type: str
     forcing: str
     date_range: str
     experiment_type: str = 'ltm_proj'
@@ -287,6 +345,7 @@ class ProjectionFilename:
                 "Must be 'ltm_proj'."
             )
         validate_attribute(self.version, filename_structure.version, "version")
+        validate_attribute(self.grid_type, filename_structure.grid_type, "grid_type")
         validate_attribute(
             self.output_frequency, filename_structure.output_frequency, "output_frequency"
         )
@@ -294,7 +353,6 @@ class ProjectionFilename:
             self.forcing, filename_structure.ensemble_info, "ensemble_info"
         )
 
-        # Regular expression to match the required format
         # Regular expression to match the required format
         if not re.match(r"^\d{6}-\d{6}$", self.date_range):
             raise ValueError(
@@ -305,10 +363,11 @@ class ProjectionFilename:
     def filename(self) -> str:
         """construct the filename based on attributes"""
         return (
-            f"{self.variable}"+
+            f"{self.variable}."+
             f"{self.region}.{self.subdomain}."+
             f"{self.experiment_type}.{self.version}."+
-            f"{self.output_frequency}"+
-            f"{self.forcing}"+
+            f"{self.output_frequency}."+
+            f"{self.grid_type}."+
+            f"{self.forcing}."+
             f"{self.date_range}.nc"
         )
