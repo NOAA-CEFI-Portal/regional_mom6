@@ -12,7 +12,11 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",  # Support for NumPy/Google-style docstrings
     "sphinx.ext.viewcode",  # Link to source code
+    "sphinx.ext.autosummary",  # For autosummary
 ]
+
+# For generating autosummary files
+autosummary_generate = True  # Enable autosummary to generate .rst files
 
 # autodoc settings
 autodoc_default_options = {

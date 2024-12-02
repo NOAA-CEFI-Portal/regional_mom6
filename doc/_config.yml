@@ -24,6 +24,8 @@ sphinx:
   extra_extensions:
     - sphinx.ext.autodoc
     - sphinx.ext.napoleon
+    - sphinx.ext.viewcode
+    - sphinx.ext.autosummary
     - sphinx_autodoc_typehints
 
 # Information about where the book exists on the web

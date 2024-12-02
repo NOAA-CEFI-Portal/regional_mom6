@@ -2,7 +2,7 @@
 config.json
 *.nc
 .vscode/
-
+doc/_build/
 
 
 # Byte-compiled / optimized / DLL files
