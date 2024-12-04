@@ -30,7 +30,8 @@ ori_path = os.path.join(DATA_BASE,'northwest_atlantic/hist_run')
 path_leng = len(ori_path)+1
 
 # new cefi data path setting
-release_date = 'r20230401'
+cefi_portal_base = '/Projects/CEFI/regional_mom6/'
+release_date = 'r20230519'
 archive_version = '/archive/acr/fre/NWA/2023_04/NWA12_COBALT_2023_04_kpo4-coastatten-physics/gfdl.ncrc5-intel22-prod/'
 region_dir = 'northwest_atlantic'
 region_file = 'nwa'
@@ -38,6 +39,9 @@ subdomain_dir = 'full_domain'
 subdomain_file = 'full'
 grid_type = 'raw'
 experiment_type = 'hindcast'
+experiment_name = 'nwa12_cobalt'
+data_doi = '10.5281/zenodo.7893386'
+paper_doi = '10.5194/gmd-16-6943-2023'
 
 
 
@@ -70,7 +74,15 @@ for file in glob.glob(f'{ori_path}/*.nc'):
             grid_type=grid_type,
             release=release_date
         ).cefi_dir
-        new_dir = os.path.join(DATA_BASE,cefi_rel_path)
+        new_dir = os.path.join(cefi_portal_base,cefi_rel_path)
+
+        # Check if the release directory already exists
+        if not os.path.exists(new_dir):
+            print(f"Creating release folder in last level: {new_dir}")
+            # Create the directory
+            os.makedirs(new_dir, exist_ok=True)
+        else:
+            print(f"release folder already exists: {new_dir}")
 
 
         # rename to the new format
@@ -93,10 +105,13 @@ for file in glob.glob(f'{ori_path}/*.nc'):
             cefi_region = region_file,
             cefi_subdomain = subdomain_file,
             cefi_experiment_type = experiment_type,
+            cefi_experiment_name = experiment_name,
             cefi_release = release_date,
             cefi_output_frequency = OUTPUT_FREQ,
             cefi_grid_type = grid_type,
-            cefi_date_range = date_range
+            cefi_date_range = date_range,
+            cefi_data_doi = data_doi,
+            cefi_paper_doi = paper_doi
         )
         # new file location and name
         new_file = os.path.join(new_dir,filename)
@@ -105,6 +120,7 @@ for file in glob.glob(f'{ori_path}/*.nc'):
             print(f"{new_file}: already exists.")
         else:
             # find the variable dimension info (for chunking)
+            print(f"processing {new_file}")
             ds = xr.open_dataset(file,chunks={})
             dims = list(ds[variable].dims)
 
