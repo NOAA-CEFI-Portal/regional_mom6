@@ -1,6 +1,5 @@
 import re
 import os
-from itertools import product
 from dataclasses import dataclass
 from typing import Tuple
 
@@ -24,13 +23,12 @@ class DataStructure:
         'full_domain',
     )
     experiment_type: Tuple[str, ...] = (
-        'historical_run',
+        'hindcast',
         'seasonal_forecast',
+        'seasonal_reforecast',
+        'seasonal_forecast_initialization',
         'decadal_forecast',
         'long_term_projection'
-    )
-    version: Tuple[str, ...] = (
-        'v2023-04-1',
     )
     output_frequency: Tuple[str, ...] = (
         'daily',
@@ -58,13 +56,12 @@ class FilenameStructure:
         'full',
     )
     experiment_type: Tuple[str, ...] = (
-        'hist_run',
-        'ssforecast',
-        'dcforecast',
+        'hcast',
+        'ss_fcast',
+        'ss_refcast',
+        'ss_fcast_init',
+        'dc_forecast',
         'ltm_proj'
-    )
-    version: Tuple[str, ...] = (
-        'v2023-04-1',
     )
     output_frequency: Tuple[str, ...] = (
         'daily',
@@ -78,13 +75,13 @@ class FilenameStructure:
     forcing_info: Tuple[str, ...] = (
         'picontrol',
         'historical',
-        'proj_ssp126'
+        'proj_ssp370',
+        'proj_ssp585'
     )
     grid_type: Tuple[str, ...] = (
         'raw',
         'regrid'
     )
-
 
 @dataclass(frozen=True)
 class FileChunking:
@@ -105,10 +102,12 @@ class GlobalAttrs:
     cefi_rel_path:str = 'N/A'
     cefi_filename:str = 'N/A'
     cefi_ori_filename:str = 'N/A'
+    cefi_archive_version:str = 'N/A'
+    cefi_run_xml:str = 'N/A'
     cefi_region:str = 'N/A'
     cefi_subdomain:str = 'N/A'
     cefi_experiment_type:str = 'N/A'
-    cefi_version:str = 'N/A'
+    cefi_release:str = 'N/A'
     cefi_output_frequency:str = 'N/A'
     cefi_grid_type:str = 'N/A'
     cefi_date_range:str = 'N/A'
@@ -145,33 +144,22 @@ def validate_attribute(
             f"Must be one of {attr_options}."
         )
 
-def create_directory_structure(base_dir:str):
-    """Generate the data structure needed for
-    storing the cefi data locally
+def validate_release(release_date:str):
+    """Regular expression to match the release date format
 
     Parameters
     ----------
-    base_dir : str
-        the base directory where the user wish 
-        the cefi data struture to be located
-    """
-    data_structure = DataStructure()
-    # Iterate through all combinations of available value in attributes
-    for combination in product(
-        data_structure.top_directory,
-        data_structure.region,
-        data_structure.subdomain,
-        data_structure.experiment_type,
-        data_structure.version,
-        data_structure.output_frequency,
-        data_structure.grid_type
-    ):
-        # Build the directory path
-        dir_path = os.path.join(base_dir, *combination)
-        print(f"create {dir_path}")
-        # Create the directory (creates intermediate dirs if they don't exist)
-        os.makedirs(dir_path, exist_ok=True)
+    release_date : str
+        release_date must be in the format 'rYYYYMMDD', e.g., 'r20160902'"
 
+    Raises
+    ------
+    ValueError
+        when release_date not in the format 'rYYYYMMDD', e.g., 'r20160902'"
+    """
+
+    if not re.match(r"^r\d{8}$", release_date):
+        raise ValueError("release_date must be in the format 'rYYYYMMDD', e.g., 'r20160902'")
 
 @dataclass
 class DataPath:
@@ -180,7 +168,7 @@ class DataPath:
     region: str
     subdomain: str
     experiment_type: str
-    version: str
+    release: str
     output_frequency: str
     grid_type: str
 
@@ -191,13 +179,15 @@ class DataPath:
         validate_attribute(self.region, data_structure.region, "region")
         validate_attribute(self.subdomain, data_structure.subdomain, "subdomain")
         validate_attribute(self.experiment_type, data_structure.experiment_type, "experiment_type")
-        validate_attribute(self.version, data_structure.version, "version")
         validate_attribute(
             self.output_frequency, data_structure.output_frequency, "output_frequency"
         )
         validate_attribute(
             self.grid_type, data_structure.grid_type, "grid_type"
         )
+
+        validate_release(self.release)
+
     @property
     def cefi_dir(self) -> str:
         """construct the directory path based on attributes"""
@@ -206,24 +196,24 @@ class DataPath:
             f"{self.region}",
             f"{self.subdomain}",
             f"{self.experiment_type}",
-            f"{self.version}",
             f"{self.output_frequency}",
-            f"{self.grid_type}"
+            f"{self.grid_type}",
+            f"{self.release}"
         )
 
 
 @dataclass
-class HistrunFilename:
-    """constructing cefi filename for historical run
+class HindcastFilename:
+    """constructing cefi filename for hindcast
     """
     variable: str
     region: str
     subdomain: str
     output_frequency: str
-    version: str
+    release: str
     date_range: str
     grid_type: str
-    experiment_type: str = 'hist_run'
+    experiment_type: str = 'hcast'
 
     def __post_init__(self):
         # Access the shared FilenameStructure instance
@@ -232,14 +222,14 @@ class HistrunFilename:
         # Validate each attribute
         validate_attribute(self.region, filename_structure.region, "region")
         validate_attribute(self.subdomain, filename_structure.subdomain, "subdomain")
-        if self.experiment_type != 'hist_run':
+        if self.experiment_type != 'hcast':
             raise ValueError(
-                f"Invalid experiment_type: {self.experiment_type}. Must be 'hist_run'."
+                f"Invalid experiment_type: {self.experiment_type}. Must be 'hcast'."
             )
-        validate_attribute(self.version, filename_structure.version, "version")
         validate_attribute(
             self.output_frequency, filename_structure.output_frequency, "output_frequency"
         )
+        validate_release(self.release)
 
         # Regular expression to match the required format
         if not re.match(r"^\d{6}-\d{6}$", self.date_range):
@@ -252,20 +242,21 @@ class HistrunFilename:
         """construct the filename based on attributes
         format :
         <variable>.<region>.<subdomain>.<experiment_type>
-        .<version>.<output_frequency>.<grid_type>.<YYYY0M-YYYY0M>.nc
+        .<output_frequency>.<grid_type>.<release>.<YYYY0M-YYYY0M>.nc
 
         """
         return (
             f"{self.variable}."+
             f"{self.region}.{self.subdomain}."+
-            f"{self.experiment_type}.{self.version}."+
+            f"{self.experiment_type}."+
             f"{self.output_frequency}."+
             f"{self.grid_type}."+
+            f"{self.release}."+
             f"{self.date_range}.nc"
         )
 
 @dataclass
-class ForecastFilename:
+class SeasonalForecastFilename:
     """constructing cefi filename for forecast
     """
     variable: str
@@ -273,7 +264,7 @@ class ForecastFilename:
     subdomain: str
     experiment_type: str
     output_frequency: str
-    version: str
+    release: str
     grid_type: str
     initial_date: str
     ensemble_info: str
@@ -285,12 +276,11 @@ class ForecastFilename:
         # Validate each attribute
         validate_attribute(self.region, filename_structure.region, "region")
         validate_attribute(self.subdomain, filename_structure.subdomain, "subdomain")
-        if self.experiment_type not in ['ssforcast','dcforecast']:
+        if self.experiment_type not in ['ss_fcast','ss_refcast']:
             raise ValueError(
                 f"Invalid experiment_type: {self.experiment_type}. "+
-                "Must be one of ['ssforcast','dcforecast']."
+                "Must be one of ['ss_fcast','ss_refcast']."
             )
-        validate_attribute(self.version, filename_structure.version, "version")
         validate_attribute(self.grid_type, filename_structure.grid_type, "grid_type")
         validate_attribute(
             self.output_frequency, filename_structure.output_frequency, "output_frequency"
@@ -298,6 +288,8 @@ class ForecastFilename:
         validate_attribute(
             self.ensemble_info, filename_structure.ensemble_info, "ensemble_info"
         )
+
+        validate_release(self.release)
 
         # Regular expression to match the required format
         if not re.match(r"^i\d{6}$", self.initial_date):
@@ -311,9 +303,10 @@ class ForecastFilename:
         return (
             f"{self.variable}."+
             f"{self.region}.{self.subdomain}."+
-            f"{self.experiment_type}.{self.version}."+
+            f"{self.experiment_type}."+
             f"{self.output_frequency}."+
             f"{self.grid_type}."+
+            f"{self.release}."+
             f"{self.ensemble_info}."+
             f"{self.initial_date}.nc"
         )
@@ -326,7 +319,7 @@ class ProjectionFilename:
     region: str
     subdomain: str
     output_frequency: str
-    version: str
+    release: str
     grid_type: str
     forcing: str
     date_range: str
@@ -344,7 +337,6 @@ class ProjectionFilename:
                 f"Invalid experiment_type: {self.experiment_type}. "+
                 "Must be 'ltm_proj'."
             )
-        validate_attribute(self.version, filename_structure.version, "version")
         validate_attribute(self.grid_type, filename_structure.grid_type, "grid_type")
         validate_attribute(
             self.output_frequency, filename_structure.output_frequency, "output_frequency"
@@ -352,6 +344,7 @@ class ProjectionFilename:
         validate_attribute(
             self.forcing, filename_structure.ensemble_info, "ensemble_info"
         )
+        validate_release(self.release)
 
         # Regular expression to match the required format
         if not re.match(r"^\d{6}-\d{6}$", self.date_range):
@@ -365,9 +358,10 @@ class ProjectionFilename:
         return (
             f"{self.variable}."+
             f"{self.region}.{self.subdomain}."+
-            f"{self.experiment_type}.{self.version}."+
+            f"{self.experiment_type}."+
             f"{self.output_frequency}."+
             f"{self.grid_type}."+
+            f"{self.release}."+
             f"{self.forcing}."+
             f"{self.date_range}.nc"
         )

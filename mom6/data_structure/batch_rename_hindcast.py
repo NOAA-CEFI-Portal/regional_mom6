@@ -1,6 +1,6 @@
 """
 The script do batch rename from 
-original historical run to cefi format
+original hindcast to cefi format
 
 orignal naming format:
 ocean_cobalt_daily_2d.19930101-20191231.btm_o2.nc
@@ -30,13 +30,14 @@ ori_path = os.path.join(DATA_BASE,'northwest_atlantic/hist_run')
 path_leng = len(ori_path)+1
 
 # new cefi data path setting
+archive_version = '/archive/acr/fre/NWA/2023_04/NWA12_COBALT_2023_04_kpo4-coastatten-physics/gfdl.ncrc5-intel22-prod/'
 region_dir = 'northwest_atlantic'
 region_file = 'nwa'
 version = 'v2023-04-1'
 subdomain_dir = 'full_domain'
 subdomain_file = 'full'
 grid_type = 'raw'
-experiment_type = 'historical_run'
+experiment_type = 'hindcast'
 
 
 
@@ -73,7 +74,7 @@ for file in glob.glob(f'{ori_path}/*.nc'):
 
 
         # rename to the new format
-        filename = portal_data.HistrunFilename(
+        filename = portal_data.HindcastFilename(
             variable=variable,
             region=region_file,
             subdomain=subdomain_file,
@@ -88,6 +89,7 @@ for file in glob.glob(f'{ori_path}/*.nc'):
             cefi_rel_path = cefi_rel_path,
             cefi_filename = filename,
             cefi_ori_filename = file.split('/')[-1],
+            cefi_archive_version = archive_version,
             cefi_region = region_file,
             cefi_subdomain = subdomain_file,
             cefi_experiment_type = experiment_type,
@@ -150,6 +152,7 @@ for file in glob.glob(f'{ori_path}/*.nc'):
                 except subprocess.CalledProcessError as e:
                     print(f'Error executing NCO command: {e}')
 
+            # remove nco history
             nco_command = [
                 'ncatted', '-O', '-h', '-a', 'history,global,d,c,""',
                 new_file, new_file
