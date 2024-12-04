@@ -10,7 +10,7 @@ class DataStructure:
     data structure
     """
     top_directory: Tuple[str, ...] = (
-        'cefi_regional_mom6',
+        'cefi_portal',
     )
     region: Tuple[str, ...] = (
         'northwest_atlantic',
@@ -107,6 +107,7 @@ class GlobalAttrs:
     cefi_region:str = 'N/A'
     cefi_subdomain:str = 'N/A'
     cefi_experiment_type:str = 'N/A'
+    cefi_experiment_name:str = 'N/A'
     cefi_release:str = 'N/A'
     cefi_output_frequency:str = 'N/A'
     cefi_grid_type:str = 'N/A'
@@ -114,6 +115,8 @@ class GlobalAttrs:
     cefi_init_date:str = 'N/A'
     cefi_ensemble_info:str = 'N/A'
     cefi_forcing:str = 'N/A'
+    cefi_data_doi:str = 'N/A'
+    cefi_paper_doi:str = 'N/A'
     cefi_aux:str = 'N/A'
 
 
