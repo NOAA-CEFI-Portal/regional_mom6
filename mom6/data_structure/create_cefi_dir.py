@@ -1,6 +1,6 @@
 """
 This script run the function to 
-create cefi data directories structure
+create cefi data directories structure till before release_date
 
 The base directory => DATA_BASE
 is setup in the config file
@@ -29,7 +29,6 @@ def create_directory_structure(base_dir:str):
         data_structure.region,
         data_structure.subdomain,
         data_structure.experiment_type,
-        data_structure.version,
         data_structure.output_frequency,
         data_structure.grid_type
     ):

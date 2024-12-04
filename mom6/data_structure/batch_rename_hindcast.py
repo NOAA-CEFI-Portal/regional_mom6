@@ -30,10 +30,10 @@ ori_path = os.path.join(DATA_BASE,'northwest_atlantic/hist_run')
 path_leng = len(ori_path)+1
 
 # new cefi data path setting
+release_date = 'r20230401'
 archive_version = '/archive/acr/fre/NWA/2023_04/NWA12_COBALT_2023_04_kpo4-coastatten-physics/gfdl.ncrc5-intel22-prod/'
 region_dir = 'northwest_atlantic'
 region_file = 'nwa'
-version = 'v2023-04-1'
 subdomain_dir = 'full_domain'
 subdomain_file = 'full'
 grid_type = 'raw'
@@ -66,9 +66,9 @@ for file in glob.glob(f'{ori_path}/*.nc'):
             region=region_dir,
             subdomain=subdomain_dir,
             experiment_type=experiment_type,
-            version=version,
             output_frequency=OUTPUT_FREQ,
-            grid_type=grid_type
+            grid_type=grid_type,
+            release=release_date
         ).cefi_dir
         new_dir = os.path.join(DATA_BASE,cefi_rel_path)
 
@@ -79,9 +79,9 @@ for file in glob.glob(f'{ori_path}/*.nc'):
             region=region_file,
             subdomain=subdomain_file,
             output_frequency=OUTPUT_FREQ,
-            version=version,
             date_range=date_range,
-            grid_type=grid_type
+            grid_type=grid_type,
+            release=release_date
         ).filename
 
         # define new global attribute
@@ -93,7 +93,7 @@ for file in glob.glob(f'{ori_path}/*.nc'):
             cefi_region = region_file,
             cefi_subdomain = subdomain_file,
             cefi_experiment_type = experiment_type,
-            cefi_version = version,
+            cefi_release = release_date,
             cefi_output_frequency = OUTPUT_FREQ,
             cefi_grid_type = grid_type,
             cefi_date_range = date_range
