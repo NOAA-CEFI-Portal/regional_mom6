@@ -1,13 +1,13 @@
 """
 This script run the function to 
 create cefi data directories structure till before release_date
+used for first creation if the structure has big changes
 
 The base directory => DATA_BASE
 is setup in the config file
 """
 import os
 from itertools import product
-from mom6 import DATA_BASE
 from mom6.data_structure.portal_data import (
     DataStructure
 )
@@ -34,8 +34,6 @@ def create_directory_structure(base_dir:str):
     ):
         # Build the directory path
         dir_path = os.path.join(base_dir, *combination)
-        # Create the directory (creates intermediate dirs if they don't exist)
-        os.makedirs(dir_path, exist_ok=True)
 
         # Check if the directory already exists
         if not os.path.exists(dir_path):
@@ -48,4 +46,4 @@ def create_directory_structure(base_dir:str):
 if __name__=="__main__":
     # create the CEFI data structure hierarchy to store the data
     # DATA_BASE is set in the config file for local storage
-    create_directory_structure(base_dir=DATA_BASE)
+    create_directory_structure(base_dir='/Projects/CEFI/regional_mom6/')

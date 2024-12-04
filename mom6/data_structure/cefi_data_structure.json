@@ -1,0 +1,443 @@
+{
+    ".": {},
+    "great_lakes": {
+        "full_domain": {
+            "hindcast": {
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                }
+            },
+            "long_term_projection": {
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_forecast_initialization": {
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                }
+            },
+            "decadal_forecast": {
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_reforecast": {
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_forecast": {
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            }
+        }
+    },
+    "pacific_islands": {
+        "full_domain": {
+            "seasonal_forecast_initialization": {
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "long_term_projection": {
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "decadal_forecast": {
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_forecast": {
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                }
+            },
+            "hindcast": {
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                }
+            },
+            "seasonal_reforecast": {
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            }
+        }
+    },
+    "northeast_pacific": {
+        "full_domain": {
+            "long_term_projection": {
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_forecast_initialization": {
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "hindcast": {
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_reforecast": {
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_forecast": {
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                }
+            },
+            "decadal_forecast": {
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            }
+        }
+    },
+    "northwest_atlantic": {
+        "full_domain": {
+            "seasonal_reforecast": {
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_forecast_initialization": {
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                }
+            },
+            "long_term_projection": {
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_forecast": {
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                }
+            },
+            "decadal_forecast": {
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "hindcast": {
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                }
+            }
+        }
+    },
+    "arctic": {
+        "full_domain": {
+            "long_term_projection": {
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                }
+            },
+            "hindcast": {
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "daily": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_reforecast": {
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_forecast": {
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "seasonal_forecast_initialization": {
+                "yearly": {
+                    "raw": {},
+                    "regrid": {}
+                },
+                "monthly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                }
+            },
+            "decadal_forecast": {
+                "daily": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "yearly": {
+                    "regrid": {},
+                    "raw": {}
+                },
+                "monthly": {
+                    "raw": {},
+                    "regrid": {}
+                }
+            }
+        }
+    }
+}
