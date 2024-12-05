@@ -260,7 +260,7 @@ class HindcastFilename:
 
 @dataclass
 class SeasonalForecastFilename:
-    """constructing cefi filename for forecast
+    """constructing cefi filename for forecast and reforecast
     """
     variable: str
     region: str
