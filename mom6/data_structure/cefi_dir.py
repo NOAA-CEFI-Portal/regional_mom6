@@ -1,10 +1,35 @@
+
+"""
+execution script to get existing data structure
+or generating data structure based on pre-generated 
+json file which created by this script
+
+
+usage: 
+    python script.py get/create
+
+-----
+when using `get` argument data structure is copied from 
+'/Projects/CEFI/regional_mom6/cefi_portal/' and a json
+file in the same directory 'cefi_data_structure.json' is 
+generated
+-----
+when using `create` argument the script get the json file
+'cefi_data_structure.json' stored in the same directory 
+to generate the data structure under the directory path
+user enter in the first prompt
+
+"""
 import os
 import sys
 import json
+from mom6.data_structure import portal_data
 
 
 def get_cefi_structure(source_root:str)->dict:
     """Generate a dictionary representing the CEFI data structure
+    under '/Projects/CEFI/regional_mom6/cefi_portal/'
+    !!!! cefi_portal/ not included in the structure !!!! 
 
     Parameters
     ----------
@@ -35,7 +60,9 @@ def get_cefi_structure(source_root:str)->dict:
 
 def create_cefi_structure(destination_root:str, source_json:str):
     """Recreate the folder structure described in a JSON file at `destination_root`.
-
+    !!!! add cefi_portal/ in destination_root 
+    as the top level to included the entire structure !!!! 
+    
     Parameters
     ----------
     destination_root : str
@@ -68,10 +95,14 @@ def create_cefi_structure(destination_root:str, source_json:str):
 if __name__=="__main__":
     if len(sys.argv) != 2:
         sys.exit('Usage: python script.py get/create')
+    
+    # find top directory name that include the entire data structure
+    top_dir_name = portal_data.DataStructure.top_directory[0]
 
     # Usage: python script.py get
     if sys.argv[1] == 'get':
-        structure = get_cefi_structure(source_root='/Projects/CEFI/regional_mom6/cefi_portal/')
+
+        structure = get_cefi_structure(source_root=f'/Projects/CEFI/regional_mom6/{top_dir_name}/')
 
         # Save the structure to a JSON file
         with open('cefi_data_structure.json', 'w', encoding='utf-8') as f:
@@ -86,7 +117,7 @@ if __name__=="__main__":
 
         if os.path.exists(dest_path):
             # make the top level dir to include all subdirs
-            dest_path = os.path.join(dest_path, 'cefi_portal')
+            dest_path = os.path.join(dest_path, top_dir_name)
 
             # Check if the directory already exists
             if not os.path.exists(dest_path):

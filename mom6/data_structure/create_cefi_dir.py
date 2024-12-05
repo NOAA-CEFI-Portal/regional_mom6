@@ -1,10 +1,14 @@
 """
-This script run the function to 
-create cefi data directories structure till before release_date
-used for first creation if the structure has big changes
+This script
+create cefi data directories structure under
+'/Projects/CEFI/regional_mom6/' till before release_date
 
-The base directory => DATA_BASE
-is setup in the config file
+the top level direcory name including the entire data structure is 
+'cefi_portal/' => setup in the portal_data.DataStructure.top_directory
+
+
+used for first creation/recreation if the structure has big changes
+
 """
 import os
 from itertools import product
@@ -45,5 +49,4 @@ def create_directory_structure(base_dir:str):
 
 if __name__=="__main__":
     # create the CEFI data structure hierarchy to store the data
-    # DATA_BASE is set in the config file for local storage
     create_directory_structure(base_dir='/Projects/CEFI/regional_mom6/')
