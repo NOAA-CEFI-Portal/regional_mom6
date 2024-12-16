@@ -41,6 +41,23 @@ class DataStructure:
     )
 
 @dataclass(frozen=True)
+class DataStructureAttrOrder:
+    """Provide all attrs in DataStructure in 
+    order of level
+    
+    need to contain all attributes in DataStructure class
+    """
+    dir_order: Tuple[str, ...] = (
+        "top_directory",
+        "region",
+        "subdomain",
+        "experiment_type",
+        "output_frequency",
+        "grid_type",
+        "release"
+    )
+
+@dataclass(frozen=True)
 class FilenameStructure:
     """Provide all information used for the naming
     the filename provided on cefi data portal
@@ -101,6 +118,7 @@ class GlobalAttrs:
 
     cefi_rel_path:str = 'N/A'
     cefi_filename:str = 'N/A'
+    cefi_variable:str = 'N/A'
     cefi_ori_filename:str = 'N/A'
     cefi_archive_version:str = 'N/A'
     cefi_run_xml:str = 'N/A'
@@ -171,9 +189,14 @@ class DataPath:
     region: str
     subdomain: str
     experiment_type: str
-    release: str
     output_frequency: str
     grid_type: str
+    release: str
+    top_directory: str = DataStructure().top_directory[0]
+
+    # calling ordered dir list
+    list_dir_order = DataStructureAttrOrder.dir_order
+
 
     def __post_init__(self):
         data_structure = DataStructure()  # Store a single instance
@@ -194,16 +217,41 @@ class DataPath:
     @property
     def cefi_dir(self) -> str:
         """construct the directory path based on attributes"""
-        return os.path.join(
-            f"{DataStructure().top_directory[0]}",
-            f"{self.region}",
-            f"{self.subdomain}",
-            f"{self.experiment_type}",
-            f"{self.output_frequency}",
-            f"{self.grid_type}",
-            f"{self.release}"
-        )
 
+        # Dynamically construct the path based on list_dir_order
+        path_parts = []
+        for attr in self.list_dir_order:
+            attr_value = getattr(self, attr)  # Get attribute by name
+            # Handle cases where an attribute is not a str
+            if not isinstance(attr_value, str):
+                raise TypeError('attribute value not str')
+            else:
+                path_parts.append(attr_value)
+
+        # Join the parts to form the path
+        return os.path.join(*path_parts)
+
+    def find_dir_level(self, attribute_name: str) -> int:
+        """find the subdirectory level based on the 
+        attribute name
+
+        Parameters
+        ----------
+        attribute_name : str
+            name of the attribute, not the actual directory name
+
+        Returns
+        -------
+        int
+            level of the attribute in the data path
+        """
+
+        # set up directory structure in the form of dict (fast search)
+        dict_dir_order = {}
+        for ndir,dirname in enumerate(self.list_dir_order):
+            dict_dir_order[dirname] = ndir
+
+        return dict_dir_order[attribute_name]
 
 @dataclass
 class HindcastFilename:
@@ -213,9 +261,9 @@ class HindcastFilename:
     region: str
     subdomain: str
     output_frequency: str
+    grid_type: str
     release: str
     date_range: str
-    grid_type: str
     experiment_type: str = 'hcast'
 
     def __post_init__(self):
