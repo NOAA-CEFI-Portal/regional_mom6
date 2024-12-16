@@ -1,7 +1,7 @@
 {
     "ori_path": "/Projects/CEFI/regional_mom6/northwest_atlantic/hist_run/regrid",
     "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
-    "release_date": "r20230519",
+    "release_date": "r20230520",
     "archive_version": "/archive/acr/fre/NWA/2023_04/NWA12_COBALT_2023_04_kpo4-coastatten-physics/gfdl.ncrc5-intel22-prod/",
     "region_dir": "northwest_atlantic",
     "region_file": "nwa",

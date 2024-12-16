@@ -1,14 +1,13 @@
 """
 The script do batch rename from 
-original hindcast to cefi format
+original reforecast to cefi format
 
 orignal naming format:
-ocean_cobalt_daily_2d.19930101-20191231.btm_o2.nc
-<model_module>.<date_range>.<variable>.nc
+tos_forecast_iYYYYMM.nc
 
 cefi naming format:
 <variable>.<region>.<subdomain>.<experiment_type>
-.<version>.<output_frequency>.<grid_type>.<YYYY0M-YYYY0M>.nc
+.<version>.<output_frequency>.<grid_type>.<iYYYY0M>.nc
 
 also perform using nco?
 - add file attribute relative data path
@@ -20,40 +19,13 @@ also perform using nco?
 """
 import os
 import sys
-import json
 import glob
 import shutil
 import subprocess
 import xarray as xr
 from mom6.data_structure import portal_data
+from mom6.data_structure.batch_preprocess_hindcast import load_json
 
-
-def load_json(json_file:str)->dict:
-    """ Load constant settings from a JSON file.
-
-    Parameters
-    ----------
-    json_file : str
-        Path to the JSON file containing settings.
-
-    Returns
-    -------
-    settings : dict
-        A dictionary of loaded settings.
-    """
-    script_location = os.path.dirname(os.path.abspath(__file__))
-    json_file_abs = os.path.join(script_location,json_file)
-    try:
-        with open(json_file_abs, 'r', encoding='utf-8') as f:
-            settings = json.load(f)
-            print("Settings loaded successfully!")
-            return settings
-    except FileNotFoundError:
-        print(f"Error: File '{json_file_abs}' not found.")
-        sys.exit(1)
-    except json.JSONDecodeError:
-        print(f"Error: Failed to parse JSON file '{json_file_abs}'.")
-        sys.exit(1)
 
 def cefi_preprocess(dict_setting:dict):
     """preprocessing the file to CEFI format
@@ -145,6 +117,7 @@ def cefi_preprocess(dict_setting:dict):
             file_global_attrs = portal_data.GlobalAttrs(
                 cefi_rel_path = cefi_rel_path,
                 cefi_filename = filename,
+                cefi_variable = variable,
                 cefi_ori_filename = file.split('/')[-1],
                 cefi_archive_version = archive_version,
                 cefi_region = region_file,
