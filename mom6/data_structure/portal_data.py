@@ -373,6 +373,7 @@ class ProjectionFilename:
     release: str
     grid_type: str
     forcing: str
+    ensemble_info: str
     date_range: str
     experiment_type: str = 'ltm_proj'
 
@@ -414,5 +415,6 @@ class ProjectionFilename:
             f"{self.grid_type}."+
             f"{self.release}."+
             f"{self.forcing}."+
+            f"{self.ensemble_info}."+
             f"{self.date_range}.nc"
         )
