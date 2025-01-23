@@ -28,7 +28,7 @@ import xarray as xr
 from mom6.data_structure import portal_data
 
 
-def load_json(json_file:str)->dict:
+def load_json(json_file:str,json_path:str=None)->dict:
     """ Load constant settings from a JSON file.
 
     Parameters
@@ -41,8 +41,12 @@ def load_json(json_file:str)->dict:
     settings : dict
         A dictionary of loaded settings.
     """
-    script_location = os.path.dirname(os.path.abspath(__file__))
-    json_file_abs = os.path.join(script_location,json_file)
+    if json_path is None:
+        script_location = os.path.dirname(os.path.abspath(__file__))
+        json_file_abs = os.path.join(script_location,json_file)
+    else :
+        json_file_abs = os.path.join(json_path,json_file)
+        
     try:
         with open(json_file_abs, 'r', encoding='utf-8') as f:
             settings = json.load(f)
