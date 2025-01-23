@@ -30,7 +30,7 @@ import numpy as np
 import xarray as xr
 import xesmf as xe
 from dask.distributed import Client
-from mom6.mom6_module.mom6_io import MOM6Misc,MOM6Historical,MOM6Forecast
+from mom6.mom6_module.deprecated.mom6_io import MOM6Misc,MOM6Historical,MOM6Forecast
 
 warnings.simplefilter("ignore")
 

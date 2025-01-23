@@ -14,8 +14,8 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from scipy.stats import norm as normal
-from mom6.mom6_module import mom6_io
-from mom6.mom6_module.mom6_types import RegionalOptions,DataSourceOptions,GridOptions
+from mom6.mom6_module.deprecated import mom6_io
+from mom6.mom6_module.mom6_types import RegionalOptions,DataSourceOptions,ModelGridTypeOptions
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -31,7 +31,7 @@ class MOM6Tercile(mom6_io.MOM6Forecast):
         static_relative_dir  : str = None,
         tercile_relative_dir  : str = None,
         regmask_relative_dir  : str = None,
-        grid : GridOptions = 'raw',
+        grid : ModelGridTypeOptions = 'raw',
         source : DataSourceOptions = 'local'
     ) -> None:
         super().__init__(

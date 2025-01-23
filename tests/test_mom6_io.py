@@ -5,7 +5,7 @@ Testing the module mom6_io
 """
 import pytest
 import xarray as xr
-from mom6.mom6_module import mom6_io
+from mom6.mom6_module.deprecated import mom6_io
 
 # Test staticmethod in MOM6Historical
 def test_MOM6Historical_freq_find():

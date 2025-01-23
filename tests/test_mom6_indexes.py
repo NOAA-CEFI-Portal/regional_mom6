@@ -13,7 +13,7 @@ The location option is implemented due to the conftest.py
 import pytest
 import numpy as np
 from mom6.mom6_module import mom6_indexes
-from mom6.mom6_module.mom6_io import MOM6Historical,MOM6Static
+from mom6.mom6_module.deprecated.mom6_io import MOM6Historical,MOM6Static
 
 def test_gulf_stream_index(location):
     """testing the gulf stream index calculation

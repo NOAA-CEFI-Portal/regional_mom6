@@ -20,8 +20,8 @@ import numpy as np
 import xarray as xr
 from mom6 import DATA_PATH
 from mom6.mom6_module.mom6_types import (
-    ModelRegionOptions,GridOptions,
-    DataTypeOptions,DataSourceOptions,
+    ModelRegionOptions,ModelGridTypeOptions,
+    ModelExperimentTypeOptions,DataSourceOptions,DataTypeOptions,
     DataFreqOptions
 )
 
@@ -36,7 +36,7 @@ class OpenDapStore:
     def __init__(
             self,
             region : ModelRegionOptions = 'northwest_atlantic',
-            grid : GridOptions = 'raw',
+            grid : ModelGridTypeOptions = 'raw',
             data_type : DataTypeOptions = 'historical'
     ) -> None:
         """
@@ -134,7 +134,7 @@ class MOM6Forecast:
         data_relative_dir : str = None,
         static_relative_dir  : str = None,
         tercile_relative_dir : str = None,
-        grid : GridOptions = 'raw',
+        grid : ModelGridTypeOptions = 'raw',
         source : DataSourceOptions = 'local',
         chunks : dict = None
     ) -> None:
@@ -499,7 +499,7 @@ class MOM6Historical:
         var : str,
         data_relative_dir : str = None,
         static_relative_dir  : str = None,
-        grid : GridOptions = 'raw',
+        grid : ModelGridTypeOptions = 'raw',
         source : DataSourceOptions = 'local',
         chunks : dict = None
     ) -> None:

@@ -26,7 +26,7 @@ import xarray as xr
 import xesmf as xe
 from dask.distributed import Client
 from mom6 import DATA_PATH
-from mom6.mom6_module.mom6_io import MOM6Misc
+from mom6.mom6_module.deprecated.mom6_io import MOM6Misc
 warnings.simplefilter("ignore")
 
 regrid_var = 'wet'

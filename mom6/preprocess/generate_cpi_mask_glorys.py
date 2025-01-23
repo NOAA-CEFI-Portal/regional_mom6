@@ -16,7 +16,7 @@ import numpy as np
 import xarray as xr
 import xesmf as xe
 from mom6 import DATA_PATH
-from mom6.mom6_module import mom6_io
+from mom6.mom6_module.deprecated import mom6_io
 
 if __name__ == '__main__':
     ### Glorys IO

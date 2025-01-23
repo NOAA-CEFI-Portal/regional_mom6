@@ -15,7 +15,7 @@ import warnings
 import xarray as xr
 from dask.distributed import Client
 from mom6 import DATA_PATH
-from mom6.mom6_module.mom6_io import MOM6Static,MOM6Misc,MOM6Historical
+from mom6.mom6_module.deprecated.mom6_io import MOM6Static,MOM6Misc,MOM6Historical
 from mom6.mom6_module.mom6_vector_rotate import VectorRotation
 
 warnings.simplefilter("ignore")

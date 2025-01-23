@@ -25,7 +25,7 @@ import glob
 import warnings
 import xarray as xr
 from mom6 import DATA_PATH
-from mom6.mom6_module.mom6_io import MOM6Static,MOM6Misc
+from mom6.mom6_module.deprecated.mom6_io import MOM6Static,MOM6Misc
 warnings.simplefilter("ignore")
 
 # %%

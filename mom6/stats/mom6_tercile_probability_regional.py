@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 import cartopy.crs as ccrs
 from scipy.stats import norm as normal
 from mom6 import DATA_PATH
-from mom6.mom6_module.mom6_io import MOM6Static,MOM6Forecast
+from mom6.mom6_module.deprecated.mom6_io import MOM6Static,MOM6Forecast
 
 
 if __name__=='__main__':

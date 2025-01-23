@@ -10,7 +10,7 @@ To do pytest on the local machine
 """
 import pytest
 import xarray as xr
-from mom6.mom6_module import mom6_io
+from mom6.mom6_module.deprecated import mom6_io
 
 def pytest_addoption(parser):
     parser.addoption("--location", action="store", default="opendap")

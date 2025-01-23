@@ -8,7 +8,7 @@ import sys
 import warnings
 import xarray as xr
 from dask.distributed import Client
-from mom6.mom6_module.mom6_io import MOM6Misc, MOM6Historical, MOM6Forecast
+from mom6.mom6_module.deprecated.mom6_io import MOM6Misc, MOM6Historical, MOM6Forecast
 from mom6.mom6_module.mom6_statistics import ForecastQuantile,HistoricalClimatology,ForecastClimatology
 from mom6_climatology_single import get_dir_dict
 from mom6 import DATA_PATH
