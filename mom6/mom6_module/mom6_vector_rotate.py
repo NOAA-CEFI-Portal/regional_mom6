@@ -2,6 +2,12 @@
 """
 The module include VectorRotation class
 for regional mom6 vector field
+
+The VectorRotation class is following the following steps:
+1. regrid from the raw u,v grid (Arakawa C grid) to tracer grid
+2. rotate the regridded u,v to true u (east) and true v (north)
+The steps are following the Ross et al 2023
+
 """
 
 import xarray as xr
@@ -104,7 +110,7 @@ class VectorRotation:
         """rotate the raw u, v to true u (east) and true v (north)
 
         Steps:
-        1. interpolate from u v point to tracer point
+        1. interpolate/regrid from u v point to tracer point
         2. linear combined rotate u v for true u v
             True east U  =  u*COSROT + v*SINROT
             True north V = -u*SINROT + v*COSROT
@@ -119,9 +125,9 @@ class VectorRotation:
         regridder_u2t = self.generate_regridder(self.u, self.rotate)
         regridder_v2t = self.generate_regridder(self.v, self.rotate)
 
-        # regrid (memory intensive if the whole dataset is big)
-        da_u_regrid = regridder_u2t(self.u[self.uname])
-        da_v_regrid = regridder_v2t(self.v[self.vname])
+        # regrid to tracer point(memory intensive if the whole dataset is big)
+        da_u_regrid = regridder_u2t(self.u[self.uname]).persist()
+        da_v_regrid = regridder_v2t(self.v[self.vname]).persist()
 
         # rotate the regridded u, v
         da_u_true = (
@@ -138,9 +144,12 @@ class VectorRotation:
         da_u_true['lat'] = self.u.geolat
         da_v_true['lon'] = self.v.geolon
         da_v_true['lat'] = self.v.geolat
-        
+
+        # drop lon lat from the dataset
+        da_u_true = da_u_true.drop_vars(['lon','lat'])
+        da_v_true = da_v_true.drop_vars(['lon','lat'])
 
         return {
-            'u': da_u_true.drop_vars(['geolon','geolat']).compute(),
-            'v': da_v_true.drop_vars(['geolon','geolat']).compute()
+            'u': da_u_true,
+            'v': da_v_true
         }
