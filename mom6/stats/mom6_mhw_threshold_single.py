@@ -9,7 +9,7 @@ import warnings
 import xarray as xr
 from dask.distributed import Client
 from mom6.mom6_module.deprecated.mom6_io import MOM6Misc, MOM6Historical, MOM6Forecast
-from mom6.mom6_module.mom6_statistics import ForecastQuantile,HistoricalClimatology,ForecastClimatology
+from mom6.mom6_module.mom6_statistics import ForecastQuantile,HindcastClimatology,ForecastClimatology
 from mom6_climatology_single import get_dir_dict
 from mom6 import DATA_PATH
 
@@ -66,7 +66,7 @@ if __name__=="__main__":
 
         # create climatology class
         time_name = list(dict_dir[f'{data_type}_{grid_type}'][2].keys())[0]
-        class_climo = HistoricalClimatology(
+        class_climo = HindcastClimatology(
             ds_data=ds,
             var_name=variable,
             time_name=time_name,

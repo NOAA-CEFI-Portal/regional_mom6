@@ -1,4 +1,3 @@
-
 """
 execution script to get existing data structure
 or generating data structure based on pre-generated 
@@ -95,8 +94,8 @@ def create_cefi_structure(destination_root:str, source_json:str):
 if __name__=="__main__":
     if len(sys.argv) != 2:
         sys.exit('Usage: python script.py get/create')
-    
-    # find top directory name that include the entire data structure
+
+    # setup/find top directory name that include the entire data structure
     top_dir_name = portal_data.DataStructure.top_directory[0]
 
     # Usage: python script.py get

@@ -17,8 +17,8 @@ import numpy as np
 from mom6.mom6_module import mom6_statistics
 
 
-def test_HistoricalClimatology_generate_climo(ds_histrun_daily):
-    """test HistoricalClimatology Class generate_climo method"""
+def test_HindcastClimatology_generate_climo(ds_histrun_daily):
+    """test HindcastClimatology Class generate_climo method"""
 
     # set correct dataset naming for module use
     ds = (
@@ -28,7 +28,7 @@ def test_HistoricalClimatology_generate_climo(ds_histrun_daily):
     )
 
     # call class
-    class_historical_climo = mom6_statistics.HistoricalClimatology(ds,'tos')
+    class_historical_climo = mom6_statistics.HindcastClimatology(ds,'tos')
 
     # test error use of generate_climo should have ValueError
     with pytest.raises(ValueError):
@@ -38,8 +38,8 @@ def test_HistoricalClimatology_generate_climo(ds_histrun_daily):
     with pytest.raises(ValueError):
         class_historical_climo.generate_climo(1991,1992,'compute')
 
-def test_HistoricalClimatology_generate_anom_batch(ds_histrun_daily,location):
-    """test HistoricalClimatology Class generate_anom_batch method"""
+def test_HindcastClimatology_generate_anom_batch(ds_histrun_daily,location):
+    """test HindcastClimatology Class generate_anom_batch method"""
 
     if location == 'local':
         # set correct dataset naming for module use
@@ -50,7 +50,7 @@ def test_HistoricalClimatology_generate_anom_batch(ds_histrun_daily,location):
         ).load()
 
         # call class
-        class_historical_climo = mom6_statistics.HistoricalClimatology(
+        class_historical_climo = mom6_statistics.HindcastClimatology(
             ds,'tos',time_frequency='dayofyear'
         )
 
