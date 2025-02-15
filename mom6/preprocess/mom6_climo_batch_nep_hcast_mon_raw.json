@@ -1,0 +1,18 @@
+{
+    "local_top_dir": "/Projects/CEFI/regional_mom6/",
+    "region": "northeast_pacific",
+    "subdomain": "full_domain",
+    "experiment_type": "hindcast",
+    "output_frequency": "monthly",
+    "grid_type": "raw",
+    "release": "r20241015",
+    "data_source": "local",
+    "load_data_to_memory": false,
+    "output": {
+        "climatology_start_year": 1993,
+        "climatology_end_year": 2019,
+        "_available_limatology_groupby_frequency": ["month","year","dayofyear"],
+        "climatology_groupby_frequency": "month",
+        "cefi_aux": "Postprocessed Data : calculated climatology"
+    }
+}

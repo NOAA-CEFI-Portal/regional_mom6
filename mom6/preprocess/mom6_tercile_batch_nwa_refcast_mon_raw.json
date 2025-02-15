@@ -1,0 +1,18 @@
+{
+    "local_top_dir": "/Projects/CEFI/regional_mom6/",
+    "region": "northwest_atlantic",
+    "subdomain": "full_domain",
+    "experiment_type": "seasonal_reforecast",
+    "output_frequency": "monthly",
+    "grid_type": "raw",
+    "release": "r20250212",
+    "data_source": "local",
+    "load_data_to_memory": false,
+    "output": {
+        "tercile_start_year": 1994,
+        "tercile_end_year": 2023,
+        "_available_limatology_groupby_frequency": ["month","year","dayofyear"],
+        
+        "cefi_aux": "Postprocessed Data : calculated tercile"
+    }
+}
