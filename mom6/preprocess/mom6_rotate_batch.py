@@ -46,8 +46,13 @@ def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
 
     # assign chunk size for different dim (same order as the dims)
     #  chunk size design in portal_data.py
-    varname = ds.attrs['cefi_variable']
-    dims = list(ds[varname].dims)
+    varnames = list(ds.variables)
+    dims = list(ds.dims)
+    variables = []
+    for var in varnames:
+        if var not in dims:
+            variables.append(var)
+
     chunks = []
     chunk_info = portal_data.FileChunking()
     for dim in dims:
@@ -64,18 +69,19 @@ def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
         else:
             chunks.append(chunk_info.horizontal)
 
-    ds[varname].encoding = {
-        'zlib': True,
-        'szip': False,
-        'zstd': False,
-        'bzip2': False,
-        'blosc': False,
-        'shuffle': True,
-        'complevel': 2,
-        'fletcher32': False,
-        'contiguous': False,
-        'chunksizes': chunks
-    }
+    for var in variables:
+        ds[var].encoding = {
+            'zlib': True,
+            'szip': False,
+            'zstd': False,
+            'bzip2': False,
+            'blosc': False,
+            'shuffle': True,
+            'complevel': 2,
+            'fletcher32': False,
+            'contiguous': False,
+            'chunksizes': chunks
+        }
 
     ds.compute().to_netcdf(output_file)
     print(f"Output file: {output_file}")
