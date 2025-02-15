@@ -208,12 +208,20 @@
             },
             "hindcast": {
                 "monthly": {
-                    "raw": {},
-                    "regrid": {}
+                    "raw": {
+                        "r20241015": {}
+                    },
+                    "regrid": {
+                        "r20241015": {}
+                    }
                 },
                 "daily": {
-                    "regrid": {},
-                    "raw": {}
+                    "regrid": {
+                        "r20241015": {}
+                    },
+                    "raw": {
+                        "r20241015": {}
+                    }
                 },
                 "yearly": {
                     "regrid": {},
@@ -272,8 +280,12 @@
                     "regrid": {}
                 },
                 "monthly": {
-                    "raw": {},
-                    "regrid": {}
+                    "raw": {
+                        "r20240213": {}
+                    },
+                    "regrid": {
+                        "r20240213": {}
+                    }
                 },
                 "daily": {
                     "regrid": {},
@@ -338,16 +350,24 @@
             },
             "hindcast": {
                 "daily": {
-                    "raw": {},
-                    "regrid": {}
+                    "raw": {
+                        "r20230520": {}
+                    },
+                    "regrid": {
+                        "r20230520": {}
+                    }
                 },
                 "yearly": {
                     "regrid": {},
                     "raw": {}
                 },
                 "monthly": {
-                    "raw": {},
-                    "regrid": {}
+                    "raw": {
+                        "r20230520": {}
+                    },
+                    "regrid": {
+                        "r20230520": {}
+                    }
                 }
             }
         }
