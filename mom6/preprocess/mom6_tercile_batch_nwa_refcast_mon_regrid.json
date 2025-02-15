@@ -4,7 +4,7 @@
     "subdomain": "full_domain",
     "experiment_type": "seasonal_reforecast",
     "output_frequency": "monthly",
-    "grid_type": "raw",
+    "grid_type": "regrid",
     "release": "r20250212",
     "data_source": "local",
     "load_data_to_memory": false,
