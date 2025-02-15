@@ -292,15 +292,19 @@ class LocalStore:
                 pass
             elif os.path.exists(os.path.dirname(self.cefi_local_dir)):
                 parent_dir_release = os.path.dirname(self.cefi_local_dir)
-                 # List all directories under self.cefi_local_dir
+                # List all directories under self.cefi_local_dir
+                print('--------------------------------')
+                print('Current release data is not valid. Available releases are:')
                 for release_dir in os.listdir(parent_dir_release):
-                    print('--------------------------------')
-                    print('Current release data is not valid. Available releases are:')
                     release_path = os.path.join(parent_dir_release, release_dir)
                     if os.path.isdir(release_path):
-                        print(release_dir)
-                    print('--------------------------------')
-                    raise FileNotFoundError('No files available based on release date')
+                        # prevent using the latest directory
+                        if release_dir == 'latest':
+                            pass
+                        else:
+                            print(release_dir)
+                print('--------------------------------')
+                raise FileNotFoundError('No files available based on release date')
             else:
                 raise FileNotFoundError('Data structure constructed by input does not exist')
         else :
