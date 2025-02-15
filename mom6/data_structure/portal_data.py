@@ -12,6 +12,9 @@ class DataStructure:
     top_directory: Tuple[str, ...] = (
         'cefi_portal',
     )
+    top_directory_derivative: Tuple[str, ...] = (
+        'cefi_derivative',
+    )
     region: Tuple[str, ...] = (
         'northwest_atlantic',
         'northeast_pacific',
@@ -109,6 +112,7 @@ class FileChunking:
     vertical: int = 10
     horizontal: int = 200
     time: int = 100
+    init: int = 1
     lead: int = 12
     member: int = 10
 
