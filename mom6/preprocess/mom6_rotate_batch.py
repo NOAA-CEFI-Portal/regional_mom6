@@ -59,6 +59,8 @@ def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
             chunks.append(chunk_info.lead)
         elif 'member' in dim:
             chunks.append(chunk_info.member)
+        elif 'init' in dim:
+            chunks.append(chunk_info.init)
         else:
             chunks.append(chunk_info.horizontal)
 
@@ -134,7 +136,10 @@ def rotate_batch(dict_json:dict)->tuple:
     )
 
     # prepare static data
-    ds_static = xr.open_dataset(statics[0]).drop_vars('time') # time dim not needed
+    try:
+        ds_static = xr.open_dataset(statics[0]).drop_vars('time') # time dim not needed
+    except ValueError:
+        ds_static = xr.open_dataset(statics[0])
 
     # prepare the rotation matrix to regular coord names
     ds_rotate = xr.open_dataset(rotations[0])
