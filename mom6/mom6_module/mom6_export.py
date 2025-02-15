@@ -2,7 +2,7 @@ from typing import List
 import numpy as np
 import xarray as xr
 
-def mom6_regular_grid_encode_attr(
+def mom6_encode_attr(
     ds_data_ori : xr.Dataset,
     ds_data : xr.Dataset,
     var_names : List[str] = None
@@ -71,7 +71,7 @@ def mom6_regular_grid_encode_attr(
             'original_shape': [len(ds_data['lon'].data)],
             'dtype': 'float64'}
     except KeyError:
-        print('lon dimension not duplicated')
+        print('lon dimension not in the dataset')
 
     try:
         # latitude attrs
@@ -99,7 +99,7 @@ def mom6_regular_grid_encode_attr(
             'original_shape': [len(ds_data['lon'].data)],
             'dtype': 'float64'}
     except KeyError:
-        print('lat dimension not duplicated')
+        print('lat dimension not in the dataset')
 
     # copy original attrs and encoding for dims
     for dim in dims:
@@ -115,10 +115,12 @@ def mom6_regular_grid_encode_attr(
     # copy original attrs and encoding for variables
     for var_name in var_names:
         try:
+            # no attrs in the new variable
             if ds_data[var_name].attrs == {}:
                 ds_data[var_name].attrs = ds_data_ori[var_name].attrs
                 ds_data[var_name].encoding = ds_data_ori[var_name].encoding
                 print(f'{var_name} duplicated')
+            # new variable has existing attrs duplicate missing attrs from original data attrs
             else:
                 ds_data[var_name].encoding = ds_data_ori[var_name].encoding
                 new_attrs = list(ds_data[var_name].attrs.keys())
