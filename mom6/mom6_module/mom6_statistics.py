@@ -119,7 +119,8 @@ class ForecastClimatology:
             name in time frequency to do the time group, by default 'month'
             'year', 'month', 'dayofyear' are the available options.
         """
-        self.dataset = CoordinateWrangle(ds_data).to_360()
+        # self.dataset = CoordinateWrangle(ds_data).to_360()
+        self.dataset = ds_data
         self.varname = var_name
         self.init = initialization_name
         self.mem = member_name
@@ -333,7 +334,8 @@ class ForecastQuantile:
             name in time frequency to do the time group, by default 'month'
             'year', 'month', 'dayofyear' are the available options.
         """
-        self.dataset = CoordinateWrangle(ds_data).to_360()
+        # self.dataset = CoordinateWrangle(ds_data).to_360()
+        self.dataset = ds_data
         self.varname = var_name
         self.init = initialization_name
         self.mem = member_name
@@ -444,9 +446,9 @@ class ForecastQuantile:
         return da_threshold
 
 
-class HistoricalClimatology:
+class HindcastClimatology:
     """
-    Class for calculating the climatology of historical run
+    Class for calculating the climatology of hindcast
 
     """
 
@@ -473,7 +475,8 @@ class HistoricalClimatology:
             name in time frequency to do the time group, by default 'month'
             'year', 'month', 'dayofyear' are the available options.
         """
-        self.dataset = CoordinateWrangle(ds_data).to_360()
+        # self.dataset = CoordinateWrangle(ds_data).to_360()
+        self.dataset = ds_data
         self.varname = var_name
         self.timename = time_name
         self.tfreq = time_frequency
@@ -709,7 +712,8 @@ class HistoricalQuantile:
             name in time frequency to do the time group, by default 'month'
             'year', 'month', 'dayofyear' are the available options.
         """
-        self.dataset = CoordinateWrangle(ds_data).to_360()
+        # self.dataset = CoordinateWrangle(ds_data).to_360()
+        self.dataset = ds_data
         self.varname = var_name
         self.timename = time_name
         self.tfreq = time_frequency
