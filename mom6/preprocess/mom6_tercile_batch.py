@@ -99,59 +99,68 @@ def tercile_batch(dict_json:dict,logger_object)->xr.Dataset:
             # open the file
             single_var_file_list = local_access.get(variable=var)
             ds_var = xr.open_mfdataset(single_var_file_list,combine='nested',concat_dim='init',chunks={})
-            varname = ds_var.attrs['cefi_variable']
-            new_varname = f'{varname}_tercile'
+            variable = ds_var.attrs['cefi_variable']
 
-            # create new filename based on original filename
-            filename = ds_var.attrs['cefi_filename']
-            filename_seg = filename.split('.')
-            filename_seg[0] = new_varname
-            filename_seg.pop(-2)     # remove initial time
-            new_filename = '.'.join(filename_seg)
+            # reforecast has two variables in one single file
+            for varname in [f'{variable}',f'{variable}_anom']:
+                new_varname = f'{varname}_tercile'
 
-            # find if new file name already exist
-            new_file = os.path.join(output_dir,new_filename)
-            if os.path.exists(new_file):
-                logger_object.info(f"{new_file}: already exists. skipping...")
-            else:
-                if load:
-                    ds_var = ds_var.load()
-                # find the variable dimension info (for chunking)
-                logger_object.info(f"processing {new_file}")
+                # create new filename based on original filename
+                filename = ds_var.attrs['cefi_filename']
+                filename_seg = filename.split('.')
+                filename_seg[0] = new_varname
+                filename_seg.pop(-2)     # remove initial time
+                new_filename = '.'.join(filename_seg)
 
-                # calculate climatology of reforecast
-                class_tercile = Tercile(
-                    ds_data=ds_var,
-                    var_name=varname,
-                    time_frequency='month'
-                )
+                # find if new file name already exist
+                new_file = os.path.join(output_dir,new_filename)
+                if os.path.exists(new_file):
+                    logger_object.info(f"{new_file}: already exists. skipping...")
+                else:
+                    if load:
+                        ds_var = ds_var.load()
+                    # find the variable dimension info (for chunking)
+                    logger_object.info(f"processing {new_file}")
 
-                # calculate tercile
-                ds_tercile = class_tercile.generate_tercile(
-                    start_year=dict_json['output']['tercile_start_year'],
-                    end_year=dict_json['output']['tercile_end_year']
-                )
+                    # calculate climatology of reforecast
+                    class_tercile = Tercile(
+                        ds_data=ds_var,
+                        var_name=varname,
+                        time_frequency='month'
+                    )
 
-                # copy the encoding and attributes
-                ds_tercile = mom6_encode_attr(ds_var,ds_tercile,var_names=['f_lowmid','f_midhigh'])
+                    # calculate tercile
+                    ds_tercile = class_tercile.generate_tercile(
+                        start_year=dict_json['output']['tercile_start_year'],
+                        end_year=dict_json['output']['tercile_end_year']
+                    )
 
-                # redefine new global attribute
-                # global attributes
-                ds_tercile.attrs['cefi_rel_path'] = output_dir
-                ds_tercile.attrs['cefi_filename'] = new_filename
-                ds_tercile.attrs['cefi_variable'] = f"{new_varname} - f_lowmid,f_midhigh"
-                ds_tercile.attrs['cefi_init_date'] = "entire reforecast"
-                ds_tercile.attrs['cefi_postprocess_note'] = (
-                    f"tercile based on {dict_json['output']['tercile_start_year']}"+
-                    f" to {dict_json['output']['tercile_end_year']}"
-                )
+                    # copy the encoding and attributes
+                    ds_tercile = mom6_encode_attr(ds_var,ds_tercile,var_names=['f_lowmid','f_midhigh'])
 
-                # output the processed data
-                output_processed_data(
-                    ds_tercile,
-                    top_dir=dict_json['local_top_dir'],
-                    dict_json_output=dict_json['output']
-                )
+                    # redefine new global attribute
+                    # global attributes
+                    ds_tercile.attrs['cefi_rel_path'] = output_dir
+                    ds_tercile.attrs['cefi_filename'] = new_filename
+                    ds_tercile.attrs['cefi_variable'] = f"{new_varname} - f_lowmid,f_midhigh"
+                    ds_tercile.attrs['cefi_init_date'] = "entire reforecast"
+                    ds_tercile.attrs['cefi_postprocess_note'] = (
+                        f"tercile based on {dict_json['output']['tercile_start_year']}"+
+                        f" to {dict_json['output']['tercile_end_year']}"
+                    )
+
+                    # variable attribute
+                    ds_tercile['f_lowmid'].attrs['standard_name'] = f'{new_varname}_lowmid'
+                    ds_tercile['f_lowmid'].attrs['long_name'] = f'{new_varname} value of low to mid'
+                    ds_tercile['f_midhigh'].attrs['standard_name'] = f'{new_varname}_midhigh'
+                    ds_tercile['f_midhigh'].attrs['long_name'] = f'{new_varname} value of mid to high'
+
+                    # output the processed data
+                    output_processed_data(
+                        ds_tercile,
+                        top_dir=dict_json['local_top_dir'],
+                        dict_json_output=dict_json['output']
+                    )
     else:
         raise ValueError('experiment_type must be either reforecast')
 
