@@ -150,6 +150,14 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
                 ny = len(ds_var[dims[ydimorder]])
                 # perform regridding
                 ds_regrid = class_regrid.regrid_regular(nx,ny)
+                # forecast/reforecast files has two varname in one single file
+                try:
+                    class_regrid_anom = Regridding(ds_var,varname+'_anom',xname,yname)
+                    # perform regridding
+                    ds_regrid_anom = class_regrid_anom.regrid_regular(nx,ny)
+                    ds_regrid = xr.merge([ds_regrid,ds_regrid_anom])
+                except KeyError:
+                    pass
 
                 # copy the encoding and attributes
                 ds_regrid = mom6_encode_attr(ds_var,ds_regrid,var_names=[varname])
