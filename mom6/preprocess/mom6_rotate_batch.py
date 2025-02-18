@@ -48,9 +48,10 @@ def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
     #  chunk size design in portal_data.py
     varnames = list(ds.variables)
     dims = list(ds.dims)
+    coords =list(ds.coords)
     variables = []
     for var in varnames:
-        if var not in dims:
+        if var not in dims and var not in coords:
             variables.append(var)
 
     chunks = []
@@ -70,18 +71,22 @@ def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
             chunks.append(chunk_info.horizontal)
 
     for var in variables:
-        ds[var].encoding = {
-            'zlib': True,
-            'szip': False,
-            'zstd': False,
-            'bzip2': False,
-            'blosc': False,
-            'shuffle': True,
-            'complevel': 2,
-            'fletcher32': False,
-            'contiguous': False,
-            'chunksizes': chunks
-        }
+        if len(ds[var].dims) == len(chunks):
+            # variable dimensions does not have all dimension of the dataset (tercile prob)
+            # => no chunking
+            #  TODO: need to refactor in the future
+            ds[var].encoding = {
+                'zlib': True,
+                'szip': False,
+                'zstd': False,
+                'bzip2': False,
+                'blosc': False,
+                'shuffle': True,
+                'complevel': 2,
+                'fletcher32': False,
+                'contiguous': False,
+                'chunksizes': chunks
+            }
 
     ds.compute().to_netcdf(output_file)
     print(f"Output file: {output_file}")

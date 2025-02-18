@@ -138,6 +138,8 @@ def tercile_probability_batch(dict_json:dict,logger_object)->xr.Dataset:
                         tercile_file = glob.glob(os.path.join(tercile_dir,f'{varname}_tercile.*.nc'))
                         if len(tercile_file) == 1:
                             ds_tercile = xr.open_dataset(tercile_file[0])
+                            # genearted month is not in monotonic
+                            ds_tercile = ds_tercile.sortby('month')
                         else:
                             raise ValueError('more than one tercile file for single variable')
                         # calculate tercile probability of reforecast
@@ -162,7 +164,7 @@ def tercile_probability_batch(dict_json:dict,logger_object)->xr.Dataset:
 
                         # output the processed data
                         output_processed_data(
-                            ds_tercile,
+                            ds_tercile_prob,
                             top_dir=dict_json['local_top_dir'],
                             dict_json_output=dict_json['output']
                         )

@@ -6,10 +6,7 @@ the tercile probability of the forecast
 or reforecast
 
 """
-from typing import (
-    List,
-    Union
-)
+from typing import List
 import warnings
 import numpy as np
 import pandas as pd
@@ -131,7 +128,7 @@ class Tercile:
         ds_tercile : xr.Dataset,
         lead_bins : List[int] = None,
     ) -> xr.Dataset:
-        """_use single initialization's normal distribution
+        """use single initialization's normal distribution
         and pre-determined tercile value based on the long-term 
         reforecast to find the probability of upper, middle,
         and lower tercile
