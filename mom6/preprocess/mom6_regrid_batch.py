@@ -12,6 +12,7 @@ import os
 import sys
 import warnings
 import xarray as xr
+import logging
 from dask.distributed import Client
 from mom6_rotate_batch import output_processed_data
 from mom6.data_structure import portal_data
@@ -23,8 +24,11 @@ from mom6.data_structure.portal_data import DataStructure
 
 warnings.simplefilter("ignore")
 
-def regrid_batch(dict_json:dict)->xr.Dataset:
+def regrid_batch(dict_json:dict,logger_object)->xr.Dataset:
     """perform the batch regridding of the mom6 output
+
+    TODO: dealing with the ice_month static field and 
+    also the ice_month field
 
     Parameters
     ----------
@@ -60,11 +64,11 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
 
     # Check if the release directory already exists
     if not os.path.exists(output_dir):
-        print(f"Creating release folder in last level: {output_dir}")
+        logger_object.info(f"Creating release folder in last level: {output_dir}")
         # Create the directory
         os.makedirs(output_dir, exist_ok=True)
     else:
-        print(f"release folder already exists: {output_dir}")
+        logger_object.info(f"release folder already exists: {output_dir}")
 
     # get all files in the experiment
     local_access = AccessFiles(
@@ -80,12 +84,14 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
 
     allfile_list = local_access.get()
     statics = local_access.get(variable='ocean_static')
+    ice_statics = local_access.get(variable='ice_monthly')
 
     # prepare static data
     try:
         ds_static = xr.open_dataset(statics[0]).drop_vars('time') # time dim not needed
     except ValueError:
         ds_static = xr.open_dataset(statics[0])
+    ds_static_ice = xr.open_dataset(ice_statics[0])
 
     # loop through all file in the original path
     for file in allfile_list:
@@ -105,10 +111,10 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
             # find if new file name already exist
             new_file = os.path.join(output_dir,new_filename)
             if os.path.exists(new_file):
-                print(f"{new_file}: already exists. skipping...")
+                logger_object.info(f"{new_file}: already exists. skipping...")
             else:
                 # find the variable dimension info (for chunking)
-                print(f"processing {new_file}")
+                logger_object.info(f"processing {new_file}")
 
                 # get xname and yname (need expand if there are other grids)
                 dims = list(ds_var.dims)
@@ -118,7 +124,7 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
                     xdimorder = dims.index('xq')
                     ydimorder = dims.index('yh')
                     # stop regrid due to u grid need rotation first
-                    print("Skipping file due to UGRID need rotation first")
+                    logger_object.info("Skipping file due to UGRID need rotation first")
                     continue
                 elif all(dim in dims for dim in ['xh', 'yh']):
                     # currently only support tracer grid regridding
@@ -126,23 +132,31 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
                     yname = 'geolat'
                     xdimorder = dims.index('xh')
                     ydimorder = dims.index('yh')
+                    # merge static field to include lon lat info
+                    ds_var = xr.merge([ds_var,ds_static],combine_attrs='override')
                 elif all(dim in dims for dim in ['xh', 'yq']):
                     xname = 'geolon_v'
                     yname = 'geolat_v'
                     xdimorder = dims.index('xh')
                     ydimorder = dims.index('yq')
                     # stop regrid due to v grid need rotation first
-                    print("Skipping file due to VGRID need rotation first")
+                    logger_object.info("Skipping file due to VGRID need rotation first")
                     continue
+                elif all(dim in dims for dim in ['xT', 'yT']):
+                    # ice month static field replace
+                    # currently only support ice tracer grid regridding
+                    xname = 'GEOLON'
+                    yname = 'GEOLAT'
+                    xdimorder = dims.index('xT')
+                    ydimorder = dims.index('yT')
+                    # merge static field to include lon lat info
+                    ds_var = xr.merge([ds_var,ds_static_ice],combine_attrs='override')
                 else:
                     try:
                         raise ValueError("Unknown grid (need implementations)")
                     except ValueError as e:
-                        print(f"Skipping file due to error: {e}")
+                        logger_object.info(f"Skipping file due to error: {e}")
                         continue
-
-                # merge static field to include lon lat info
-                ds_var = xr.merge([ds_var,ds_static],combine_attrs='override')
 
                 # call regridding class
                 class_regrid = Regridding(ds_var,varname,xname,yname)
@@ -174,10 +188,11 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
                     top_dir=dict_json['local_top_dir'],
                     dict_json_output=dict_json['output']
                 )
+        # regridding ocean static variables (one variable at a time)
         elif 'ocean_static.nc' in file:
             try:
                 # only regrid static field will have this variable in json file
-                print(f"output static field : {dict_json['static_variable']}")
+                logger_object.info(f"output static field : {dict_json['static_variable']}")
                 # redefine output data path for static regrid
                 output_cefi_rel_path = portal_data.DataPath(
                     top_directory=DataStructure().top_directory_derivative[0],
@@ -200,10 +215,10 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
                 # find if new file name already exist
                 new_file = os.path.join(output_dir,new_filename)
                 if os.path.exists(new_file):
-                    print(f"{new_file}: already exists. skipping...")
+                    logger_object.info(f"{new_file}: already exists. skipping...")
                 else:
                     # find the variable dimension info (for chunking)
-                    print(f"processing {new_file}")
+                    logger_object.info(f"processing {new_file}")
 
                     # get xname and yname (need expand if there are other grids)
                     dims = list(ds_var[varname].dims)
@@ -227,7 +242,7 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
                         try:
                             raise ValueError("Unknown grid (need implementations)")
                         except ValueError as e:
-                            print(f"Skipping file due to error: {e}")
+                            logger_object.info(f"Skipping file due to error: {e}")
                             continue
 
                     # call regridding class
@@ -254,7 +269,8 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
                         dict_json_output=dict_json['output']
                     )
             except KeyError:
-                # skill static file when regridding non-static fields
+                # skip static file when regridding normal variables
+                #  the error is due to missing static_variable in json file
                 pass
 
 
@@ -277,16 +293,32 @@ if __name__=="__main__":
     log_name = sys.argv[1].split('.')[0]+'.log'
     log_filename = os.path.join(current_location,log_name)
 
-    with open(log_filename, "w", encoding='utf-8') as log_file:
-        sys.stdout = log_file
-        sys.stderr = log_file
+    # with open(log_filename, "w", encoding='utf-8') as log_file:
+    #     sys.stdout = log_file
+    #     sys.stderr = log_file
 
-        # Load the settings
+    # Configure logging to write to both console and log file
+    logging.basicConfig(
+        level=logging.INFO,  # Log INFO and above
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.FileHandler(log_filename),  # Log to file
+            logging.StreamHandler()  # Log to console
+        ]
+    )
+    logger = logging.getLogger()
+    try:
+       # Load the settings
         dict_json1 = load_json(json_setting,json_path=current_location)
 
         # preprocessing the file to cefi format
-        regrid_batch(dict_json1)
+        regrid_batch(dict_json1,logger)
+    
+    except Exception as e:
+        logger.exception("An exception occurred")
 
-    # Reset to default after exiting the context manager
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+    
+
+    # # Reset to default after exiting the context manager
+    # sys.stdout = sys.__stdout__
+    # sys.stderr = sys.__stderr__
