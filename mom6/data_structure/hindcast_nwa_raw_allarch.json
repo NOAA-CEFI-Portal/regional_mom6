@@ -1,5 +1,5 @@
 {
-    "ori_path": "/Project/CEFI/private/scratch/chsu/NWA_hindcast",
+    "ori_path": "/Projects/CEFI/private/scratch/chsu/NWA_hindcast",
     "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
     "release_date": "r20230520",
     "archive_version": "/archive/acr/fre/NWA/2023_04/NWA12_COBALT_2023_04_kpo4-coastatten-physics/gfdl.ncrc5-intel22-prod/",
