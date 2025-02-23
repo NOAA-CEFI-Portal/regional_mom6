@@ -273,8 +273,6 @@ def regrid_batch(dict_json:dict,logger_object)->xr.Dataset:
                 #  the error is due to missing static_variable in json file
                 pass
 
-
-
 if __name__=="__main__":
 
     client = Client(processes=False,memory_limit='500GB',silence_logs=50)
@@ -293,10 +291,6 @@ if __name__=="__main__":
     log_name = sys.argv[1].split('.')[0]+'.log'
     log_filename = os.path.join(current_location,log_name)
 
-    # with open(log_filename, "w", encoding='utf-8') as log_file:
-    #     sys.stdout = log_file
-    #     sys.stderr = log_file
-
     # Configure logging to write to both console and log file
     logging.basicConfig(
         level=logging.INFO,  # Log INFO and above
@@ -313,12 +307,7 @@ if __name__=="__main__":
 
         # preprocessing the file to cefi format
         regrid_batch(dict_json1,logger)
-    
+
     except Exception as e:
         logger.exception("An exception occurred")
 
-    
-
-    # # Reset to default after exiting the context manager
-    # sys.stdout = sys.__stdout__
-    # sys.stderr = sys.__stderr__
