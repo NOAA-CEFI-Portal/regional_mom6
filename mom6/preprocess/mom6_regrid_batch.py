@@ -10,9 +10,9 @@ https://xesmf.readthedocs.io/en/stable/notebooks/Compare_algorithms.html
 """
 import os
 import sys
+import logging
 import warnings
 import xarray as xr
-import logging
 from dask.distributed import Client
 from mom6_rotate_batch import output_processed_data
 from mom6.data_structure import portal_data
@@ -310,4 +310,3 @@ if __name__=="__main__":
 
     except Exception as e:
         logger.exception("An exception occurred")
-
