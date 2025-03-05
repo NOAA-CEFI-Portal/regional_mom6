@@ -17,10 +17,11 @@ from mom6.mom6_module.mom6_read import AccessFiles
 from mom6.mom6_module.mom6_vector_rotate import VectorRotation
 from mom6.data_structure.batch_preprocess_hindcast import load_json
 from mom6.data_structure import portal_data
+from prefect import task
 
 warnings.simplefilter("ignore")
 
-
+@task(retries=3, retry_delay_seconds=5)
 def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
     """output the processed data to the netcdf file
 
