@@ -10,6 +10,7 @@ https://xesmf.readthedocs.io/en/stable/notebooks/Compare_algorithms.html
 """
 import os
 import sys
+import logging
 import warnings
 import xarray as xr
 from dask.distributed import Client
@@ -92,7 +93,7 @@ def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
     print(f"Output file: {output_file}")
 
 
-def rotate_batch(dict_json:dict)->tuple:
+def rotate_batch(dict_json:dict,logger_object)->tuple:
     """perform the batch rotation of the mom6 output
 
     Parameters
@@ -117,6 +118,27 @@ def rotate_batch(dict_json:dict)->tuple:
     data_source=dict_json['data_source']
     u_name = dict_json['u_name']
     v_name = dict_json['v_name']
+
+    new_file_u = os.path.join(
+        local_top_dir,
+        dict_json['output_u']['cefi_rel_path'],
+        dict_json['output_u']['cefi_filename']
+    )
+    new_file_v = os.path.join(
+        local_top_dir,
+        dict_json['output_v']['cefi_rel_path'],
+        dict_json['output_v']['cefi_filename']
+    )
+
+    if os.path.exists(new_file_u) and os.path.exists(new_file_v):
+        logger_object.info(f"{new_file_u}: already exists. skipping...")
+        logger_object.info(f"{new_file_v}: already exists. skipping...")
+    else:
+        # find the variable dimension info (for chunking)
+        logger_object.info(
+            "At least one of the vector is not present \n"+
+            f"processing {new_file_u} and {new_file_v}"
+        )
 
     local_access = AccessFiles(
         local_top_dir=local_top_dir,
@@ -234,20 +256,35 @@ if __name__=="__main__":
     log_name = sys.argv[1].split('.')[0]+'.log'
     log_filename = os.path.join(current_location,log_name)
 
-    with open(log_filename, "w", encoding='utf-8') as log_file:
-        sys.stdout = log_file
-        sys.stderr = log_file
+    # Configure logging to write to both console and log file
+    logging.basicConfig(
+        level=logging.INFO,  # Log INFO and above
+        format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.FileHandler(log_filename),  # Log to file
+            logging.StreamHandler()  # Log to console
+        ]
+    )
+    logger = logging.getLogger()
 
+    try:
         # Load the settings
         dict_json1 = load_json(json_setting,json_path=current_location)
 
         # preprocessing the file to cefi format
-        ds_u_x,ds_v_y = rotate_batch(dict_json1)
+        ds_u_x,ds_v_y = rotate_batch(dict_json1,logger)
 
         # output the processed data
-        output_processed_data(ds_u_x,top_dir=dict_json1['local_top_dir'],dict_json_output=dict_json1['output_u'])
-        output_processed_data(ds_v_y,top_dir=dict_json1['local_top_dir'],dict_json_output=dict_json1['output_v'])
-
-    # Reset to default after exiting the context manager
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+        output_processed_data(
+            ds_u_x,
+            top_dir=dict_json1['local_top_dir'],
+            dict_json_output=dict_json1['output_u']
+        )
+        output_processed_data(
+            ds_v_y,
+            top_dir=dict_json1['local_top_dir'],
+            dict_json_output=dict_json1['output_v']
+        )
+        logger.info("rotation complete cleanly")
+    except Exception as e:
+        logger.exception("An exception occurred")
