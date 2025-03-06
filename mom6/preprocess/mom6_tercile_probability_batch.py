@@ -22,7 +22,7 @@ from mom6.data_structure.portal_data import DataStructure
 from mom6.mom6_module.mom6_forecast_tercile import Tercile
 
 
-def tercile_probability_batch(dict_json:dict,logger_object)->xr.Dataset:
+def tercile_probability_batch(dict_json:dict, logger_object) -> xr.Dataset:
     """perform the batch climatology of the mom6 output
 
     Parameters
@@ -36,15 +36,15 @@ def tercile_probability_batch(dict_json:dict,logger_object)->xr.Dataset:
         regridded dataset
     """
 
-    local_top_dir=dict_json['local_top_dir']
-    region=dict_json['region']
-    subdomain=dict_json['subdomain']
-    experiment_type=dict_json['experiment_type']
-    tercile_experiment_type=dict_json['tercile_experiment_type']
-    output_frequency=dict_json['output_frequency']
-    grid_type=dict_json['grid_type']
-    release=dict_json['release']
-    data_source=dict_json['data_source']
+    local_top_dir = dict_json['local_top_dir']
+    region = dict_json['region']
+    subdomain = dict_json['subdomain']
+    experiment_type = dict_json['experiment_type']
+    tercile_experiment_type = dict_json['tercile_experiment_type']
+    output_frequency = dict_json['output_frequency']
+    grid_type = dict_json['grid_type']
+    release = dict_json['release']
+    data_source = dict_json['data_source']
     load = dict_json['load_data_to_memory']
 
     # determine the output data path
@@ -59,7 +59,7 @@ def tercile_probability_batch(dict_json:dict,logger_object)->xr.Dataset:
     ).cefi_dir
 
     # create the output directory
-    output_dir = os.path.join(local_top_dir,output_cefi_rel_path,'tercile_probability')
+    output_dir = os.path.join(local_top_dir, output_cefi_rel_path, 'tercile_probability')
 
     # Check if the release directory already exists
     if not os.path.exists(output_dir):
@@ -81,7 +81,7 @@ def tercile_probability_batch(dict_json:dict,logger_object)->xr.Dataset:
         data_source=data_source
     )
 
-    if 'forecast' in dict_json['experiment_type'] :
+    if 'forecast' in dict_json['experiment_type']:
 
         allfile_list = local_access.get()
 
@@ -101,73 +101,73 @@ def tercile_probability_batch(dict_json:dict,logger_object)->xr.Dataset:
             # open the file
             single_var_file_list = local_access.get(variable=var)
             for file in single_var_file_list:
-                ds_var = xr.open_dataset(file,chunks={})
-                variable = ds_var.attrs['cefi_variable']
-                for varname in [f'{variable}',f'{variable}_anom']:
-                    new_varname = f'{varname}_tercile_probability'
+                with xr.open_dataset(file, chunks={}) as ds_var:
+                    variable = ds_var.attrs['cefi_variable']
+                    for varname in [f'{variable}', f'{variable}_anom']:
+                        new_varname = f'{varname}_tercile_probability'
 
-                    # create new filename based on original filename
-                    filename = ds_var.attrs['cefi_filename']
-                    filename_seg = filename.split('.')
-                    filename_seg[0] = new_varname
-                    new_filename = '.'.join(filename_seg)
+                        # create new filename based on original filename
+                        filename = ds_var.attrs['cefi_filename']
+                        filename_seg = filename.split('.')
+                        filename_seg[0] = new_varname
+                        new_filename = '.'.join(filename_seg)
 
-                    # find if new file name already exist
-                    new_file = os.path.join(output_dir,new_filename)
-                    if os.path.exists(new_file):
-                        logger_object.info(f"{new_file}: already exists. skipping...")
-                    else:
-                        if load:
-                            ds_var = ds_var.load()
-                        # find the variable dimension info (for chunking)
-                        logger_object.info(f"processing {new_file}")
-
-                        # get tercile data path
-                        tercile_cefi_rel_path = portal_data.DataPath(
-                            top_directory=DataStructure().top_directory_derivative[0],
-                            region=region,
-                            subdomain=subdomain,
-                            experiment_type=tercile_experiment_type,
-                            output_frequency=output_frequency,
-                            grid_type=grid_type,
-                            release=release
-                        ).cefi_dir
-
-                        # tercile directory
-                        tercile_dir = os.path.join(local_top_dir,tercile_cefi_rel_path,'tercile')
-                        tercile_file = glob.glob(os.path.join(tercile_dir,f'{varname}_tercile.*.nc'))
-                        if len(tercile_file) == 1:
-                            ds_tercile = xr.open_dataset(tercile_file[0])
-                            # genearted month is not in monotonic
-                            ds_tercile = ds_tercile.sortby('month')
+                        # find if new file name already exist
+                        new_file = os.path.join(output_dir, new_filename)
+                        if os.path.exists(new_file):
+                            logger_object.info(f"{new_file}: already exists. skipping...")
                         else:
-                            raise ValueError('more than one tercile file for single variable')
-                        # calculate tercile probability of reforecast
-                        ds_tercile_prob = Tercile.generate_tercile_probability(
-                            ds_single_initialization = ds_var,
-                            varname = varname,
-                            ds_tercile = ds_tercile,
-                            lead_bins=None
-                        )
+                            if load:
+                                ds_var = ds_var.load()
+                            # find the variable dimension info (for chunking)
+                            logger_object.info(f"processing {new_file}")
 
-                        # copy the encoding and attributes
-                        ds_tercile_prob = mom6_encode_attr(ds_var,ds_tercile_prob,var_names=['tercile_prob','tercile_prob_max'])
+                            # get tercile data path
+                            tercile_cefi_rel_path = portal_data.DataPath(
+                                top_directory=DataStructure().top_directory_derivative[0],
+                                region=region,
+                                subdomain=subdomain,
+                                experiment_type=tercile_experiment_type,
+                                output_frequency=output_frequency,
+                                grid_type=grid_type,
+                                release=release
+                            ).cefi_dir
 
-                        # redefine new global attribute
-                        # global attributes
-                        ds_tercile_prob.attrs['cefi_rel_path'] = output_dir
-                        ds_tercile_prob.attrs['cefi_filename'] = new_filename
-                        ds_tercile_prob.attrs['cefi_variable'] = f"{new_varname} - tercile_prob,tercile_prob_max"
-                        ds_tercile_prob.attrs['cefi_postprocess_note'] = (
-                            f"tercile probability based on {os.path.join(tercile_dir,f'{varname}_tercile.*.nc')}"
-                        )
+                            # tercile directory
+                            tercile_dir = os.path.join(local_top_dir, tercile_cefi_rel_path, 'tercile')
+                            tercile_file = glob.glob(os.path.join(tercile_dir, f'{varname}_tercile.*.nc'))
+                            if len(tercile_file) == 1:
+                                with xr.open_dataset(tercile_file[0]) as ds_tercile:
+                                    # generated month is not in monotonic
+                                    ds_tercile = ds_tercile.sortby('month')
+                                    # calculate tercile probability of reforecast
+                                    ds_tercile_prob = Tercile.generate_tercile_probability(
+                                        ds_single_initialization=ds_var,
+                                        varname=varname,
+                                        ds_tercile=ds_tercile,
+                                        lead_bins=None
+                                    )
 
-                        # output the processed data
-                        output_processed_data(
-                            ds_tercile_prob,
-                            top_dir=dict_json['local_top_dir'],
-                            dict_json_output=dict_json['output']
-                        )
+                                    # copy the encoding and attributes
+                                    ds_tercile_prob = mom6_encode_attr(ds_var, ds_tercile_prob, var_names=['tercile_prob', 'tercile_prob_max'])
+
+                                    # redefine new global attribute
+                                    # global attributes
+                                    ds_tercile_prob.attrs['cefi_rel_path'] = output_dir
+                                    ds_tercile_prob.attrs['cefi_filename'] = new_filename
+                                    ds_tercile_prob.attrs['cefi_variable'] = f"{new_varname} - tercile_prob,tercile_prob_max"
+                                    ds_tercile_prob.attrs['cefi_postprocess_note'] = (
+                                        f"tercile probability based on {os.path.join(tercile_dir, f'{varname}_tercile.*.nc')}"
+                                    )
+
+                                    # output the processed data
+                                    output_processed_data(
+                                        ds_tercile_prob,
+                                        top_dir=dict_json['local_top_dir'],
+                                        dict_json_output=dict_json['output']
+                                    )
+                            else:
+                                raise ValueError('more than one tercile file for single variable')
     else:
         raise ValueError('experiment_type must be forecast')
 

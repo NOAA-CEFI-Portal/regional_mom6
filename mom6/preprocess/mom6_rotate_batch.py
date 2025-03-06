@@ -133,6 +133,8 @@ def rotate_batch(dict_json:dict,logger_object)->tuple:
     if os.path.exists(new_file_u) and os.path.exists(new_file_v):
         logger_object.info(f"{new_file_u}: already exists. skipping...")
         logger_object.info(f"{new_file_v}: already exists. skipping...")
+        logger_object.info("rotation complete cleanly")
+        sys.exit()
     else:
         # find the variable dimension info (for chunking)
         logger_object.info(
