@@ -265,3 +265,6 @@ if __name__ == "__main__":
 
     except Exception as e:
         logger.exception("An exception occurred")
+
+    finally:
+        logger.info("Climatology process finished.")
