@@ -5,8 +5,6 @@ regional mom6 output usig the new mom6_read module
 The regridding is using the xesmf package with the bilinear method
 there are other more conservative way to doing the regriddeding 
 https://xesmf.readthedocs.io/en/stable/notebooks/Compare_algorithms.html 
-
-
 """
 import os
 import sys
@@ -98,96 +96,96 @@ def regrid_batch(dict_json:dict,logger_object)->xr.Dataset:
         # try to avoid the static file
         if 'static' not in file:
             # open the file
-            ds_var = xr.open_dataset(file,chunks={})
-            varname = ds_var.attrs['cefi_variable']
+            with xr.open_dataset(file, chunks={}) as ds_var:
+                varname = ds_var.attrs['cefi_variable']
 
-            # create new filename based on original filename
-            filename = ds_var.attrs['cefi_filename']
-            filename_seg = filename.split('.')
-            grid_type_index = filename_seg.index('raw')
-            filename_seg[grid_type_index] = dict_json['output']['cefi_grid_type']
-            new_filename = '.'.join(filename_seg)
+                # create new filename based on original filename
+                filename = ds_var.attrs['cefi_filename']
+                filename_seg = filename.split('.')
+                grid_type_index = filename_seg.index('raw')
+                filename_seg[grid_type_index] = dict_json['output']['cefi_grid_type']
+                new_filename = '.'.join(filename_seg)
 
-            # find if new file name already exist
-            new_file = os.path.join(output_dir,new_filename)
-            if os.path.exists(new_file):
-                logger_object.info(f"{new_file}: already exists. skipping...")
-            else:
-                # find the variable dimension info (for chunking)
-                logger_object.info(f"processing {new_file}")
-
-                # get xname and yname (need expand if there are other grids)
-                dims = list(ds_var.dims)
-                if all(dim in dims for dim in ['xq', 'yh']):
-                    xname = 'geolon_u'
-                    yname = 'geolat_u'
-                    xdimorder = dims.index('xq')
-                    ydimorder = dims.index('yh')
-                    # stop regrid due to u grid need rotation first
-                    logger_object.info("Skipping file due to UGRID need rotation first")
-                    continue
-                elif all(dim in dims for dim in ['xh', 'yh']):
-                    # currently only support tracer grid regridding
-                    xname = 'geolon'
-                    yname = 'geolat'
-                    xdimorder = dims.index('xh')
-                    ydimorder = dims.index('yh')
-                    # merge static field to include lon lat info
-                    ds_var = xr.merge([ds_var,ds_static],combine_attrs='override')
-                elif all(dim in dims for dim in ['xh', 'yq']):
-                    xname = 'geolon_v'
-                    yname = 'geolat_v'
-                    xdimorder = dims.index('xh')
-                    ydimorder = dims.index('yq')
-                    # stop regrid due to v grid need rotation first
-                    logger_object.info("Skipping file due to VGRID need rotation first")
-                    continue
-                elif all(dim in dims for dim in ['xT', 'yT']):
-                    # ice month static field replace
-                    # currently only support ice tracer grid regridding
-                    xname = 'GEOLON'
-                    yname = 'GEOLAT'
-                    xdimorder = dims.index('xT')
-                    ydimorder = dims.index('yT')
-                    # merge static field to include lon lat info
-                    ds_var = xr.merge([ds_var,ds_static_ice],combine_attrs='override')
+                # find if new file name already exist
+                new_file = os.path.join(output_dir, new_filename)
+                if os.path.exists(new_file):
+                    logger_object.info(f"{new_file}: already exists. skipping...")
                 else:
-                    try:
-                        raise ValueError("Unknown grid (need implementations)")
-                    except ValueError as e:
-                        logger_object.info(f"Skipping file due to error: {e}")
+                    # find the variable dimension info (for chunking)
+                    logger_object.info(f"processing {new_file}")
+
+                    # get xname and yname (need expand if there are other grids)
+                    dims = list(ds_var.dims)
+                    if all(dim in dims for dim in ['xq', 'yh']):
+                        xname = 'geolon_u'
+                        yname = 'geolat_u'
+                        xdimorder = dims.index('xq')
+                        ydimorder = dims.index('yh')
+                        # stop regrid due to u grid need rotation first
+                        logger_object.info("Skipping file due to UGRID need rotation first")
                         continue
+                    elif all(dim in dims for dim in ['xh', 'yh']):
+                        # currently only support tracer grid regridding
+                        xname = 'geolon'
+                        yname = 'geolat'
+                        xdimorder = dims.index('xh')
+                        ydimorder = dims.index('yh')
+                        # merge static field to include lon lat info
+                        ds_var = xr.merge([ds_var, ds_static], combine_attrs='override')
+                    elif all(dim in dims for dim in ['xh', 'yq']):
+                        xname = 'geolon_v'
+                        yname = 'geolat_v'
+                        xdimorder = dims.index('xh')
+                        ydimorder = dims.index('yq')
+                        # stop regrid due to v grid need rotation first
+                        logger_object.info("Skipping file due to VGRID need rotation first")
+                        continue
+                    elif all(dim in dims for dim in ['xT', 'yT']):
+                        # ice month static field replace
+                        # currently only support ice tracer grid regridding
+                        xname = 'GEOLON'
+                        yname = 'GEOLAT'
+                        xdimorder = dims.index('xT')
+                        ydimorder = dims.index('yT')
+                        # merge static field to include lon lat info
+                        ds_var = xr.merge([ds_var, ds_static_ice], combine_attrs='override')
+                    else:
+                        try:
+                            raise ValueError("Unknown grid (need implementations)")
+                        except ValueError as e:
+                            logger_object.info(f"Skipping file due to error: {e}")
+                            continue
 
-                # call regridding class
-                class_regrid = Regridding(ds_var,varname,xname,yname)
-                nx = len(ds_var[dims[xdimorder]])
-                ny = len(ds_var[dims[ydimorder]])
-                # perform regridding
-                ds_regrid = class_regrid.regrid_regular(nx,ny)
-                # forecast/reforecast files has two varname in one single file
-                try:
-                    class_regrid_anom = Regridding(ds_var,varname+'_anom',xname,yname)
+                    # call regridding class
+                    class_regrid = Regridding(ds_var, varname, xname, yname)
+                    nx = len(ds_var[dims[xdimorder]])
+                    ny = len(ds_var[dims[ydimorder]])
                     # perform regridding
-                    ds_regrid_anom = class_regrid_anom.regrid_regular(nx,ny)
-                    ds_regrid = xr.merge([ds_regrid,ds_regrid_anom])
-                except KeyError:
-                    pass
+                    ds_regrid = class_regrid.regrid_regular(nx, ny)
+                    # forecast/reforecast files has two varname in one single file
+                    try:
+                        class_regrid_anom = Regridding(ds_var, varname + '_anom', xname, yname)
+                        # perform regridding
+                        ds_regrid_anom = class_regrid_anom.regrid_regular(nx, ny)
+                        ds_regrid = xr.merge([ds_regrid, ds_regrid_anom])
+                    except KeyError:
+                        pass
 
-                # copy the encoding and attributes
-                ds_regrid = mom6_encode_attr(ds_var,ds_regrid,var_names=[varname])
+                    # copy the encoding and attributes
+                    ds_regrid = mom6_encode_attr(ds_var, ds_regrid, var_names=[varname])
 
-                # redefine new global attribute
-                # global attributes
-                ds_regrid.attrs['cefi_rel_path'] = output_dir
-                ds_regrid.attrs['cefi_filename'] = new_filename
-                ds_regrid.attrs['cefi_grid_type'] = dict_json['output']['cefi_grid_type']
+                    # redefine new global attribute
+                    # global attributes
+                    ds_regrid.attrs['cefi_rel_path'] = output_dir
+                    ds_regrid.attrs['cefi_filename'] = new_filename
+                    ds_regrid.attrs['cefi_grid_type'] = dict_json['output']['cefi_grid_type']
 
-                # output the processed data
-                output_processed_data(
-                    ds_regrid,
-                    top_dir=dict_json['local_top_dir'],
-                    dict_json_output=dict_json['output']
-                )
+                    # output the processed data
+                    output_processed_data(
+                        ds_regrid,
+                        top_dir=dict_json['local_top_dir'],
+                        dict_json_output=dict_json['output']
+                    )
         # regridding ocean static variables (one variable at a time)
         elif 'ocean_static.nc' in file:
             try:
@@ -203,71 +201,71 @@ def regrid_batch(dict_json:dict,logger_object)->xr.Dataset:
                     grid_type=dict_json['output']['cefi_grid_type'],
                     release=dict_json['release']
                 ).cefi_dir
-                output_dir = os.path.join(local_top_dir,output_cefi_rel_path)
+                output_dir = os.path.join(local_top_dir, output_cefi_rel_path)
 
                 # open the file
-                ds_var = xr.open_dataset(file,chunks={})
-                varname = dict_json['static_variable']
+                with xr.open_dataset(file, chunks={}) as ds_var:
+                    varname = dict_json['static_variable']
 
-                # create new filename based on original filename
-                new_filename = f'ocean_static.{varname}.nc'
+                    # create new filename based on original filename
+                    new_filename = f'ocean_static.{varname}.nc'
 
-                # find if new file name already exist
-                new_file = os.path.join(output_dir,new_filename)
-                if os.path.exists(new_file):
-                    logger_object.info(f"{new_file}: already exists. skipping...")
-                else:
-                    # find the variable dimension info (for chunking)
-                    logger_object.info(f"processing {new_file}")
-
-                    # get xname and yname (need expand if there are other grids)
-                    dims = list(ds_var[varname].dims)
-                    if all(dim in dims for dim in ['xq', 'yh']):
-                        xname = 'geolon_u'
-                        yname = 'geolat_u'
-                        xdimorder = dims.index('xq')
-                        ydimorder = dims.index('yh')
-                    elif all(dim in dims for dim in ['xh', 'yh']):
-                        # currently only support tracer grid regridding
-                        xname = 'geolon'
-                        yname = 'geolat'
-                        xdimorder = dims.index('xh')
-                        ydimorder = dims.index('yh')
-                    elif all(dim in dims for dim in ['xh', 'yq']):
-                        xname = 'geolon_v'
-                        yname = 'geolat_v'
-                        xdimorder = dims.index('xh')
-                        ydimorder = dims.index('yq')
+                    # find if new file name already exist
+                    new_file = os.path.join(output_dir, new_filename)
+                    if os.path.exists(new_file):
+                        logger_object.info(f"{new_file}: already exists. skipping...")
                     else:
-                        try:
-                            raise ValueError("Unknown grid (need implementations)")
-                        except ValueError as e:
-                            logger_object.info(f"Skipping file due to error: {e}")
-                            continue
+                        # find the variable dimension info (for chunking)
+                        logger_object.info(f"processing {new_file}")
 
-                    # call regridding class
-                    class_regrid = Regridding(ds_var,varname,xname,yname)
-                    nx = len(ds_var[dims[xdimorder]])
-                    ny = len(ds_var[dims[ydimorder]])
-                    # perform regridding
-                    ds_regrid = class_regrid.regrid_regular(nx,ny)
+                        # get xname and yname (need expand if there are other grids)
+                        dims = list(ds_var[varname].dims)
+                        if all(dim in dims for dim in ['xq', 'yh']):
+                            xname = 'geolon_u'
+                            yname = 'geolat_u'
+                            xdimorder = dims.index('xq')
+                            ydimorder = dims.index('yh')
+                        elif all(dim in dims for dim in ['xh', 'yh']):
+                            # currently only support tracer grid regridding
+                            xname = 'geolon'
+                            yname = 'geolat'
+                            xdimorder = dims.index('xh')
+                            ydimorder = dims.index('yh')
+                        elif all(dim in dims for dim in ['xh', 'yq']):
+                            xname = 'geolon_v'
+                            yname = 'geolat_v'
+                            xdimorder = dims.index('xh')
+                            ydimorder = dims.index('yq')
+                        else:
+                            try:
+                                raise ValueError("Unknown grid (need implementations)")
+                            except ValueError as e:
+                                logger_object.info(f"Skipping file due to error: {e}")
+                                continue
 
-                    # copy the encoding and attributes
-                    ds_regrid = mom6_encode_attr(ds_var,ds_regrid,var_names=[varname])
+                        # call regridding class
+                        class_regrid = Regridding(ds_var, varname, xname, yname)
+                        nx = len(ds_var[dims[xdimorder]])
+                        ny = len(ds_var[dims[ydimorder]])
+                        # perform regridding
+                        ds_regrid = class_regrid.regrid_regular(nx, ny)
 
-                    # redefine new global attribute
-                    # global attributes
-                    ds_regrid.attrs['cefi_variable'] = varname
-                    ds_regrid.attrs['cefi_rel_path'] = output_dir
-                    ds_regrid.attrs['cefi_filename'] = new_filename
-                    ds_regrid.attrs['cefi_grid_type'] = dict_json['output']['cefi_grid_type']
+                        # copy the encoding and attributes
+                        ds_regrid = mom6_encode_attr(ds_var, ds_regrid, var_names=[varname])
 
-                    # output the processed data
-                    output_processed_data(
-                        ds_regrid,
-                        top_dir=dict_json['local_top_dir'],
-                        dict_json_output=dict_json['output']
-                    )
+                        # redefine new global attribute
+                        # global attributes
+                        ds_regrid.attrs['cefi_variable'] = varname
+                        ds_regrid.attrs['cefi_rel_path'] = output_dir
+                        ds_regrid.attrs['cefi_filename'] = new_filename
+                        ds_regrid.attrs['cefi_grid_type'] = dict_json['output']['cefi_grid_type']
+
+                        # output the processed data
+                        output_processed_data(
+                            ds_regrid,
+                            top_dir=dict_json['local_top_dir'],
+                            dict_json_output=dict_json['output']
+                        )
             except KeyError:
                 # skip static file when regridding normal variables
                 #  the error is due to missing static_variable in json file
@@ -280,7 +278,7 @@ if __name__=="__main__":
     print(client.cluster.dashboard_link)
 
     # Ensure a JSON file is provided as an argument
-    if len(sys.argv) < 1:
+    if len(sys.argv) < 2:
         print("Usage: python mom6_regrid_batch.py xxxx.json")
         sys.exit(1)
 
@@ -290,6 +288,10 @@ if __name__=="__main__":
     current_location = os.path.dirname(os.path.abspath(__file__))
     log_name = sys.argv[1].split('.')[0]+'.log'
     log_filename = os.path.join(current_location,log_name)
+
+    # remove previous log file if exists
+    if os.path.exists(log_filename):
+        os.remove(log_filename)
 
     # Configure logging to write to both console and log file
     logging.basicConfig(
@@ -310,3 +312,6 @@ if __name__=="__main__":
 
     except Exception as e:
         logger.exception("An exception occurred")
+
+    finally:
+        logger.info("Regridding process finished.")
