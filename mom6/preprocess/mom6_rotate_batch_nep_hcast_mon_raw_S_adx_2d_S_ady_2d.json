@@ -1,0 +1,26 @@
+{
+    "local_top_dir": "/Projects/CEFI/regional_mom6/",
+    "region": "northeast_pacific",
+    "subdomain": "full_domain",
+    "experiment_type": "hindcast",
+    "output_frequency": "monthly",
+    "grid_type": "raw",
+    "release": "r20241015",
+    "data_source": "local",
+    "u_name": "S_adx_2d",
+    "v_name": "S_ady_2d",
+    "output_u": {
+        "cefi_rel_path": "cefi_portal/northeast_pacific/full_domain/hindcast/monthly/raw/r20241015",
+        "cefi_filename": "S_adx_2d_rotate.nep.full.hcast.monthly.raw.r20241015.199301-201912.nc",
+        "cefi_grid_type": "regrid",
+        "cefi_variable": "S_adx_2d_rotate",
+        "cefi_aux": "Postprocessed Data : regrid to tracer points and rotate to east-west"
+    },
+    "output_v": {
+        "cefi_rel_path": "cefi_portal/northeast_pacific/full_domain/hindcast/monthly/raw/r20241015",
+        "cefi_filename": "S_ady_2d_rotate.nep.full.hcast.monthly.raw.r20241015.199301-201912.nc",
+        "cefi_grid_type": "regrid",
+        "cefi_variable": "S_ady_2d_rotate",
+        "cefi_aux": "Postprocessed Data : regrid to tracer points and rotate to north-south"
+    }
+}

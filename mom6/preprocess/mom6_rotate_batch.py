@@ -258,6 +258,10 @@ if __name__=="__main__":
     log_name = sys.argv[1].split('.')[0]+'.log'
     log_filename = os.path.join(current_location,log_name)
 
+    # remove previous log file if exists
+    if os.path.exists(log_filename):
+        os.remove(log_filename)
+
     # Configure logging to write to both console and log file
     logging.basicConfig(
         level=logging.INFO,  # Log INFO and above
@@ -276,6 +280,9 @@ if __name__=="__main__":
         # preprocessing the file to cefi format
         ds_u_x,ds_v_y = rotate_batch(dict_json1,logger)
 
+        ds_u_x = ds_u_x.compute()
+        ds_v_y = ds_v_y.compute()
+
         # output the processed data
         output_processed_data(
             ds_u_x,
@@ -290,3 +297,5 @@ if __name__=="__main__":
         logger.info("rotation complete cleanly")
     except Exception as e:
         logger.exception("An exception occurred")
+    finally:
+        logger.info("Rotate process finished.")
