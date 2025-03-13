@@ -124,6 +124,7 @@ class GlobalAttrs:
     cefi_filename:str = 'N/A'
     cefi_variable:str = 'N/A'
     cefi_ori_filename:str = 'N/A'
+    cefi_ori_category:str = 'N/A'
     cefi_archive_version:str = 'N/A'
     cefi_run_xml:str = 'N/A'
     cefi_region:str = 'N/A'
