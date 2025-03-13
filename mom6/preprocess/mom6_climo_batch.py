@@ -138,6 +138,8 @@ def climo_batch(dict_json: dict, logger_object) -> xr.Dataset:
                         ds_climo.attrs['cefi_filename'] = new_filename
                         ds_climo.attrs['cefi_variable'] = new_varname
 
+                        ds_climo = ds_climo.compute()
+
                         # output the processed data
                         output_processed_data(
                             ds_climo,
@@ -213,6 +215,8 @@ def climo_batch(dict_json: dict, logger_object) -> xr.Dataset:
                     ds_climo.attrs['cefi_variable'] = new_varname
                     ds_climo.attrs['cefi_init_date'] = "entire reforecast"
 
+                    ds_climo = ds_climo.compute()
+
                     # output the processed data
                     output_processed_data(
                         ds_climo,
@@ -221,6 +225,8 @@ def climo_batch(dict_json: dict, logger_object) -> xr.Dataset:
                     )
     else:
         raise ValueError('experiment_type must be either hindcast or reforecast')
+
+    return
 
 if __name__ == "__main__":
 
