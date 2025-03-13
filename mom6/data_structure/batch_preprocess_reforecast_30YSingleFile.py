@@ -2,8 +2,13 @@
 The script do batch rename from 
 original reforecast to cefi format
 
+!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
+original file name must follow the following pattern
+to accurately get the needed info to new file attrs
+!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
 orignal naming format:
-tos_forecast_iYYYYMM.nc
+ocean_cobalt_daily_2d.forecast_info.btm_o2.nc
+<model_module>.<forecast_info>.<variable>.nc
 
 cefi naming format:
 <variable>.<region>.<subdomain>.<experiment_type>
@@ -106,9 +111,9 @@ def cefi_preprocess(dict_setting:dict):
             # get file name
             filename = file_path_format[-1]
 
-            # each file decipher the format to make sure the file type (CEFI style naming!!!!!!)
+            # each file decipher the format to make sure the file type (original CEFI style naming!!!!!!)
             file_format_list = filename.split('.')
-            variable = file_format_list[0]
+            variable = file_format_list[-2]
             # initial_date = file_format_list[-2]
 
             # determine the data path
@@ -166,6 +171,7 @@ def cefi_preprocess(dict_setting:dict):
                     cefi_filename = filename,
                     cefi_variable = variable,
                     cefi_ori_filename = file.split('/')[-1],
+                    cefi_ori_category = file.split('/')[-1].split('.')[0],
                     cefi_archive_version = archive_version,
                     cefi_region = region_file,
                     cefi_subdomain = subdomain_file,

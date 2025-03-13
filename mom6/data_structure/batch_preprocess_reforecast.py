@@ -2,8 +2,12 @@
 The script do batch rename from 
 original reforecast to cefi format
 
-orignal naming format:
-tos_forecast_iYYYYMM.nc
+
+!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
+old naming format is used based on first gen Andrew forecast
+only work in tos_forecast_iYYYYMM.nc
+!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
+
 
 cefi naming format:
 <variable>.<region>.<subdomain>.<experiment_type>
@@ -74,8 +78,8 @@ def cefi_preprocess(dict_setting:dict):
 
             # each file decipher the format to make sure the file type
             file_format_list = filename.split('_')
-            variable = file_format_list[0]
-            initial_date = file_format_list[2].split('.')[0]
+            variable = file_format_list[-2]
+            initial_date = file_format_list[-3].split('.')[0]
 
             # determine the data path
             cefi_rel_path = portal_data.DataPath(
@@ -119,6 +123,7 @@ def cefi_preprocess(dict_setting:dict):
                 cefi_filename = filename,
                 cefi_variable = variable,
                 cefi_ori_filename = file.split('/')[-1],
+                cefi_ori_category = file.split('/')[-1].split('.')[0],
                 cefi_archive_version = archive_version,
                 cefi_region = region_file,
                 cefi_subdomain = subdomain_file,

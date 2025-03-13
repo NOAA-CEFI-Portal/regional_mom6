@@ -2,6 +2,10 @@
 The script do batch rename from 
 original hindcast to cefi format
 
+!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
+original file name must follow the following pattern
+to accurately get the needed info to new file attrs
+!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
 orignal naming format:
 ocean_cobalt_daily_2d.19930101-20191231.btm_o2.nc
 <model_module>.<date_range>.<variable>.nc
@@ -157,6 +161,7 @@ def cefi_preprocess(dict_setting:dict):
                 cefi_filename = filename,
                 cefi_variable = variable,
                 cefi_ori_filename = file.split('/')[-1],
+                cefi_ori_category = file.split('/')[-1].split('.')[0],
                 cefi_archive_version = archive_version,
                 cefi_region = region_file,
                 cefi_subdomain = subdomain_file,
