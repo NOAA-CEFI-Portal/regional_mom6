@@ -176,7 +176,19 @@ def regrid_batch(dict_json:dict,logger_object)->xr.Dataset:
 
                     # redefine new global attribute
                     # global attributes
-                    ds_regrid.attrs['cefi_rel_path'] = output_dir
+
+                    # create new cefi_rel_path based on original cefi_rel_path
+                    filepath = ds_var.attrs['cefi_rel_path']
+                    filepath_seg = filepath.split('.')
+
+                    # Change 'raw' to 'regrid'
+                    for i, element in enumerate(filepath_seg):
+                        if element == 'raw':
+                            filepath_seg[i] = dict_json['output']['cefi_grid_type']
+
+                    new_cefi_rel_path = '.'.join(filepath_seg)
+
+                    ds_regrid.attrs['cefi_rel_path'] = new_cefi_rel_path
                     ds_regrid.attrs['cefi_filename'] = new_filename
                     ds_regrid.attrs['cefi_grid_type'] = dict_json['output']['cefi_grid_type']
 
