@@ -9,7 +9,19 @@ import xarray as xr
 import xesmf as xe
 
 class Regridding:
-    """class to handle vector rotation due to the grid design"""
+    """class to handle regridding 
+
+    Examples
+    -------
+    ds_var = xr.merge([ds_var, ds_static], combine_attrs='override')
+
+    # call regridding class
+    class_regrid = Regridding(ds_var, 'tob', 'geolon', 'geolat')
+
+    # perform regridding for 900x800 regular spacing grid
+    ds_regrid = class_regrid.regrid_regular(900, 800)
+    
+    """
     def  __init__(
         self,
         ori_dataset : xr.Dataset,
@@ -34,6 +46,7 @@ class Regridding:
 
         Raises
         ------
+
 
         """
         # prepare dataset for interpolation
