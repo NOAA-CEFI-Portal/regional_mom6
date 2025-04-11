@@ -21,6 +21,8 @@ class Regridding:
     # perform regridding for 900x800 regular spacing grid
     ds_regrid = class_regrid.regrid_regular(900, 800)
     
+    # perform regridding to a specific grid used in ds_specific
+    ds_regrid = class_regrid.regrid_specific(ds_specific)
     """
     def  __init__(
         self,
@@ -65,6 +67,7 @@ class Regridding:
         ds_regrid :xr.Dataset
     )->xe.Regridder:
         """create regridder for interpolation
+        fixed to bilinear interpolation at the moment
 
         Parameters
         ----------
@@ -135,6 +138,32 @@ class Regridding:
 
         # generate regridder
         regridder = self.generate_regridder(self.ori_dataset, ds_regrid)
+
+        # regrid to tracer point(memory intensive if the whole dataset is big)
+        da = regridder(self.ori_dataset[self.varname]).persist()
+
+        # create dataset
+        ds = xr.Dataset({self.varname: da})
+
+        return ds
+
+    def regrid_specific(self,ds_specific)->xr.Dataset:
+        """regrid the data to the same grid as ds_specific
+        ds_specific should have the dim name 'lon' and 'lat'
+
+        Parameters
+        ----------
+        ds_specific : xr.Dataset
+            dataset that contains the coordinate for regridding
+        
+        Returns
+        -------
+        xr.Dataset
+            regridded dataset
+        """
+
+        # generate regridder
+        regridder = self.generate_regridder(self.ori_dataset, ds_specific)
 
         # regrid to tracer point(memory intensive if the whole dataset is big)
         da = regridder(self.ori_dataset[self.varname]).persist()
