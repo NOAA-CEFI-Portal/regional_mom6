@@ -3,18 +3,19 @@ The script do batch rename from
 original reforecast to cefi format
 
 !!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
-original file name must follow the following pattern
+file name of original file must follow the following pattern
 to accurately get the needed info to new file attrs
-!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
-orignal naming format:
-ocean_cobalt_daily_2d.forecast_info.btm_o2.nc
-<model_module>.<forecast_info>.<variable>.nc
 
 cefi naming format:
 <variable>.<region>.<subdomain>.<experiment_type>
-.<version>.<output_frequency>.<grid_type>.<iYYYY0M>.nc
+.<version>.<output_frequency>.<grid_type>.enss.nc
 
-also perform using nco?
+ALSO : this script is designed to work with the
+original reforecast file format that concat all initialization 
+into one file
+!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
+
+also perform using nco:
 - add file attribute relative data path
 - add file attribute original file name
 - add file attribute new file name
@@ -111,9 +112,9 @@ def cefi_preprocess(dict_setting:dict):
             # get file name
             filename = file_path_format[-1]
 
-            # each file decipher the format to make sure the file type (original CEFI style naming!!!!!!)
+            # each file decipher the format to make sure the file type (CEFI style naming!!!!!!)
             file_format_list = filename.split('.')
-            variable = file_format_list[-2]
+            variable = file_format_list[0]
             # initial_date = file_format_list[-2]
 
             # determine the data path
@@ -150,7 +151,6 @@ def cefi_preprocess(dict_setting:dict):
                 imonth = ds_init.init.dt.month.data
                 initial_date = f'i{iyear:04d}{imonth:02d}'
                 init_file = f'{file[:-2]}{initial_date}.nc'
-                ds_init.to_netcdf(init_file)
 
                 # rename to the new format
                 filename = portal_data.SeasonalForecastFilename(
@@ -192,6 +192,9 @@ def cefi_preprocess(dict_setting:dict):
                 if os.path.exists(new_file):
                     print(f"{new_file}: already exists. skipping...")
                 else:
+                    # create single initial file in scratch (removed later)
+                    ds_init.to_netcdf(init_file)
+
                     # find the variable dimension info (for chunking)
                     print(f"processing {new_file}")
                     

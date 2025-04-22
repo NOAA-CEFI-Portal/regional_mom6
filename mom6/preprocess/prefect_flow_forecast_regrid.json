@@ -1,0 +1,8 @@
+{
+    "task1": [
+      {"script": "mom6_climo_batch.py", "config": "mom6_climo_batch_nwa_refcast_mon_regrid.json"},
+      {"script": "mom6_tercile_batch.py", "config": "mom6_tercile_batch_nwa_refcast_mon_regrid.json"},
+      {"script": "mom6_tercile_probability_batch.py", "config": "mom6_tercile_probability_batch_nwa_refcast_mon_regrid.json"},
+      {"script": "mom6_tercile_probability_batch.py", "config": "mom6_tercile_probability_batch_nwa_fcast_mon_regrid.json"}
+    ]
+}

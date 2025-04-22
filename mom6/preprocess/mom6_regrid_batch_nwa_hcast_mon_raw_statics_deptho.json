@@ -2,14 +2,14 @@
     "local_top_dir": "/Projects/CEFI/regional_mom6/",
     "region": "northwest_atlantic",
     "subdomain": "full_domain",
-    "experiment_type": "seasonal_forecast",
-    "tercile_experiment_type": "seasonal_reforecast",
+    "experiment_type": "hindcast",
     "output_frequency": "monthly",
     "grid_type": "raw",
-    "release": "r20250413",
+    "release": "r20230520",
     "data_source": "local",
-    "load_data_to_memory": false,
+    "static_variable": "deptho",
     "output": {
-        "cefi_aux": "Postprocessed Data : calculated tercile probability"
+        "cefi_grid_type": "regrid",
+        "cefi_aux": "Postprocessed Data : regrid to regular grid"
     }
 }
