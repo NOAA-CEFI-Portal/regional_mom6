@@ -366,6 +366,62 @@ class SeasonalForecastFilename:
             f"{self.ensemble_info}."+
             f"{self.initial_date}.nc"
         )
+    
+@dataclass
+class DecadalForecastFilename:
+    """constructing cefi filename for forecast and reforecast
+    """
+    variable: str
+    region: str
+    subdomain: str
+    experiment_type: str
+    output_frequency: str
+    release: str
+    grid_type: str
+    initial_date: str
+    ensemble_info: str
+
+    def __post_init__(self):
+        # Access the shared FilenameStructure instance
+        filename_structure = FilenameStructure()
+
+        # Validate each attribute
+        validate_attribute(self.region, filename_structure.region, "region")
+        validate_attribute(self.subdomain, filename_structure.subdomain, "subdomain")
+        if self.experiment_type not in ['dc_fcast']:
+            raise ValueError(
+                f"Invalid experiment_type: {self.experiment_type}. "+
+                "Must be one of ['dc_fcast']."
+            )
+        validate_attribute(self.grid_type, filename_structure.grid_type, "grid_type")
+        validate_attribute(
+            self.output_frequency, filename_structure.output_frequency, "output_frequency"
+        )
+        validate_attribute(
+            self.ensemble_info, filename_structure.ensemble_info, "ensemble_info"
+        )
+
+        validate_release(self.release)
+
+        # Regular expression to match the required format
+        if not re.match(r"^i\d{6}$", self.initial_date):
+            raise ValueError(
+                f"Invalid initial_date: {self.initial_date}. Must be in the format 'iYYYYMM'."
+            )
+
+    @property
+    def filename(self) -> str:
+        """construct the filename based on attributes"""
+        return (
+            f"{self.variable}."+
+            f"{self.region}.{self.subdomain}."+
+            f"{self.experiment_type}."+
+            f"{self.output_frequency}."+
+            f"{self.grid_type}."+
+            f"{self.release}."+
+            f"{self.ensemble_info}."+
+            f"{self.initial_date}.nc"
+        )
 
 @dataclass
 class ProjectionFilename:
