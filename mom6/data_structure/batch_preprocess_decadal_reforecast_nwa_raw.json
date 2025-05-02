@@ -1,0 +1,20 @@
+{
+    "ori_path": "/Projects/CEFI/private/scratch/chsu/NWA_reforecast_decadal_r20250502/concat/",
+    "archive_category": "ocean_monthly",
+    "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
+    "release_date": "r20250502",
+    "archive_version": "/archive/###/fre/NWA/2023_02_prod/NWA12_physics_2023_prod_SPEAR_h14_yyyy-e##/gfdl.ncrc6-intel23-prod/",
+    "aux": "archive format /archive/###/ where ### are vnk and acr; yyyy-e## represents the initialization year (yyyy), and ensemble member number (e##); ensemble members are 1-10 but with three exceptions: e6 => e12 for year 1966, e8 => e13 for year 2012, and e9 => e14 for year 2012 where later ens is used to replace the missing ens",
+    "region_dir": "northwest_atlantic",
+    "region_file": "nwa",
+    "subdomain_dir": "full_domain",
+    "subdomain_file": "full",
+    "grid_type": "raw",
+    "output_frequency": "monthly",
+    "experiment_type_dir": "decadal_forecast",
+    "experiment_type_file": "dc_fcast",
+    "experiment_name": "nwa12_decadal_forecast",
+    "data_doi": "10.5281/zenodo.10412703",
+    "paper_doi": "10.1029/2024GL110946",
+    "ensemble_info": "enss"
+}
