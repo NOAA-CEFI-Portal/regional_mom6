@@ -97,8 +97,9 @@ class OpenDapStore:
             if html_response.status_code == 200:
                 # Response is OK
                 print(f"Success: URL {self.catalog_url} responded with status 200.")
-                # Perform other actions here if needed
+               
             else:
+                # dealing with the non-200 response due to the release date
                 parent_dir_release = os.path.dirname(self.cefi_rel_dir)
                 parent_dir_release_catalog_url = os.path.join(
                     CATALOG_HEAD,
@@ -107,6 +108,7 @@ class OpenDapStore:
                     'catalog.html'
                 )
                 release_response = requests.get(parent_dir_release_catalog_url, timeout=10)
+                # find the parent before release exist
                 if release_response.status_code == 200:
                     # Parse the html response
                     soup = BeautifulSoup(release_response.text, 'html.parser')
@@ -121,21 +123,23 @@ class OpenDapStore:
                     for release_dir in all_release_list:
                         print(release_dir)
                     print('--------------------------------')
-                    raise FileNotFoundError('No files available based on release date')
-
+                    raise FileNotFoundError('No files available based on release date, check available release data above')
+                # this else should not be reach when THREDD server is working.
+                # Error should be catched when constructing cefi_data_path.
+                # This error is reach when the connection is not available 
                 else:
                     # Non-200 response
                     print(
-                        f"Warning: URL {self.catalog_url}"+
+                        f"URL {self.catalog_url} "+
                         f"responded with status {html_response.status_code}."
                     )
                     # Perform additional error handling here
-                    sys.exit('Experiement might not exist. Check keyword Arg')
+                    raise ConnectionError(f'Error: Connection status code {html_response.status_code}')
         except requests.exceptions.RequestException as e:
             # Log the exception
-            print(f"Error: Failed to connect to {self.catalog_url}. Exception: {e}")
+            print(f"Failed to connect to {self.catalog_url}. Exception: {e}")
             # Handle connection failure here
-            sys.exit('Experiement might not exist. Check keyword Arg')
+            raise ConnectionError('Error: Server not responding.') from e
 
     def get_files(self,variable:str=None)-> list:
         """Getting file opendap urls
@@ -160,30 +164,7 @@ class OpenDapStore:
             needed.
         """
 
-        # Send a GET request to the URL
         html_response = requests.get(self.catalog_url, timeout=10)
-
-        try:
-            # Make the request
-            html_response = requests.get(self.catalog_url, timeout=10)
-
-            if html_response.status_code == 200:
-                # Response is OK
-                print(f"Success: URL {self.catalog_url} responded with status 200.")
-                # Perform other actions here if needed
-            else:
-                # Non-200 response
-                print(
-                    f"Warning: URL {self.catalog_url}"+
-                    f"responded with status {html_response.status_code}."
-                )
-                # Perform additional error handling here
-                sys.exit('Experiement might not exist. Check keyword Arg')
-        except requests.exceptions.RequestException as e:
-            # Log the exception
-            print(f"Error: Failed to connect to {self.catalog_url}. Exception: {e}")
-            # Handle connection failure here
-            sys.exit('Experiement might not exist. Check keyword Arg')
 
         # Parse the html response
         soup = BeautifulSoup(html_response.text, 'html.parser')
@@ -356,10 +337,10 @@ class LocalStore:
 
 class AccessFiles:
     """
-    Class for getting various mom6 simulation
+    Frontend Class for user to get various mom6 simulation
     
     The class is designed to get the regional mom6 files
-    by utilizing the Store class to get the data
+    by utilizing the OpenDapStore,LocalStore class to get the data
     """
     def __init__(
         self,
