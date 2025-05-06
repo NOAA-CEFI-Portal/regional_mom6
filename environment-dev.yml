@@ -1,0 +1,17 @@
+name: regional-mom6-dev
+channels:
+  - conda-forge
+dependencies:
+  - dask
+  - netcdf4
+  - pydap
+  - python=3.11
+  - xarray
+  - xesmf
+  - pytest
+  - beautifulsoup4
+  - matplotlib
+  - jupyter-book
+  - sphinx
+  - sphinx-autodoc-typehints
+  - sphinxcontrib-napoleon
