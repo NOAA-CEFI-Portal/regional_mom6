@@ -1,18 +1,13 @@
 """
 The script do batch rename from 
-original hindcast to cefi format
+original reforecast to cefi format
 
-!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
-original file name must follow the following pattern
-to accurately get the needed info to new file attrs
-!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
 orignal naming format:
-ocean_cobalt_daily_2d.19930101-20191231.btm_o2.nc
-<model_module>.<date_range>.<variable>.nc
+tos_forecast_iYYYYMM.nc
 
 cefi naming format:
 <variable>.<region>.<subdomain>.<experiment_type>
-.<version>.<output_frequency>.<grid_type>.<YYYY0M-YYYY0M>.nc
+.<version>.<output_frequency>.<grid_type>.<iYYYY0M>.nc
 
 also perform using nco?
 - add file attribute relative data path
@@ -24,44 +19,22 @@ also perform using nco?
 """
 import os
 import sys
-import json
 import glob
 import shutil
+import logging
 import subprocess
 import xarray as xr
 from mom6.data_structure import portal_data
+from mom6.mom6_module.util import load_json
 
 
-def load_json(json_file:str,json_path:str=None)->dict:
-    """ Load constant settings from a JSON file.
-
-    Parameters
-    ----------
-    json_file : str
-        Path to the JSON file containing settings.
-
-    Returns
-    -------
-    settings : dict
-        A dictionary of loaded settings.
-    """
-    if json_path is None:
-        script_location = os.path.dirname(os.path.abspath(__file__))
-        json_file_abs = os.path.join(script_location,json_file)
-    else :
-        json_file_abs = os.path.join(json_path,json_file)
-        
-    try:
-        with open(json_file_abs, 'r', encoding='utf-8') as f:
-            settings = json.load(f)
-            print("Settings loaded successfully!")
-            return settings
-    except FileNotFoundError:
-        print(f"Error: File '{json_file_abs}' not found.")
-        sys.exit(1)
-    except json.JSONDecodeError:
-        print(f"Error: Failed to parse JSON file '{json_file_abs}'.")
-        sys.exit(1)
+def setup_logging(logfile):
+    """Set up logging to write messages to a log file."""
+    logging.basicConfig(
+        filename=logfile,
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(message)s",
+    )
 
 def cefi_preprocess(dict_setting:dict):
     """preprocessing the file to CEFI format
@@ -74,20 +47,26 @@ def cefi_preprocess(dict_setting:dict):
     """
     # original data path
     ori_path = dict_setting['ori_path']
+    
 
     # new cefi data path setting
     cefi_portal_base = dict_setting['cefi_portal_base']
     release_date = dict_setting['release_date']
     archive_version = dict_setting['archive_version']
+    archive_category = dict_setting['archive_category']
+    aux = dict_setting['aux']
     region_dir = dict_setting['region_dir']
     region_file = dict_setting['region_file']
     subdomain_dir = dict_setting['subdomain_dir']
     subdomain_file = dict_setting['subdomain_file']
     grid_type = dict_setting['grid_type']
-    experiment_type = dict_setting['experiment_type']
+    experiment_type_dir = dict_setting['experiment_type_dir']
+    experiment_type_file = dict_setting['experiment_type_file']
     experiment_name = dict_setting['experiment_name']
+    output_frequency = dict_setting['output_frequency']
     data_doi = dict_setting['data_doi']
     paper_doi = dict_setting['paper_doi']
+    ensemble_info = dict_setting['ensemble_info']
 
 
     # loop through all file in the original path
@@ -95,6 +74,9 @@ def cefi_preprocess(dict_setting:dict):
     # initialize static files and file name
     static_file = None
     static_filename = None
+    if len(glob.glob(f'{ori_path}/*.nc')) == 0:
+        sys.exit('No *.nc files')
+
     for file in glob.glob(f'{ori_path}/*.nc'):
         if 'ocean_static.nc' not in file:
             # get all dir names and file name
@@ -104,29 +86,17 @@ def cefi_preprocess(dict_setting:dict):
             # get file name
             filename = file_path_format[-1]
 
-            # each file decipher the format to make sure the file type
+            # each file decipher the format to make sure the file type (CEFI style naming!!!!!!)
             file_format_list = filename.split('.')
-            variable = file_format_list[2]
-            date_range = file_format_list[1]
-
-            # find date_range, output_freq, dir_path
-            # based on original date_range format
-            if len(date_range) == 13:
-                OUTPUT_FREQ = 'monthly'
-            elif len(date_range) == 13+4:
-                OUTPUT_FREQ = 'daily'
-                date_range = f"{date_range[0:0+6]}-{date_range[9:9+6]}"
-            else:
-                print('new date_range format not consider')
-                print(f'{file} skipped' )
-                continue
+            variable = file_format_list[0]
+            initial_date = file_format_list[-2]
 
             # determine the data path
             cefi_rel_path = portal_data.DataPath(
                 region=region_dir,
                 subdomain=subdomain_dir,
-                experiment_type=experiment_type,
-                output_frequency=OUTPUT_FREQ,
+                experiment_type=experiment_type_dir,
+                output_frequency=output_frequency,
                 grid_type=grid_type,
                 release=release_date
             ).cefi_dir
@@ -138,21 +108,23 @@ def cefi_preprocess(dict_setting:dict):
 
             # Check if the release directory already exists
             if not os.path.exists(new_dir):
-                print(f"Creating release folder in last level: {new_dir}")
+                logging.info(f"Creating release folder in last level: {new_dir}")
                 # Create the directory
                 os.makedirs(new_dir, exist_ok=True)
             else:
-                print(f"release folder already exists: {new_dir}")
+                logging.warning(f"release folder already exists: {new_dir}")
 
             # rename to the new format
-            filename = portal_data.HindcastFilename(
+            filename = portal_data.DecadalForecastFilename(
                 variable=variable,
                 region=region_file,
                 subdomain=subdomain_file,
-                output_frequency=OUTPUT_FREQ,
-                date_range=date_range,
+                experiment_type=experiment_type_file,
+                output_frequency=output_frequency,
+                initial_date=initial_date,
                 grid_type=grid_type,
-                release=release_date
+                release=release_date,
+                ensemble_info=ensemble_info
             ).filename
 
             # define new global attribute
@@ -161,30 +133,32 @@ def cefi_preprocess(dict_setting:dict):
                 cefi_filename = filename,
                 cefi_variable = variable,
                 cefi_ori_filename = file.split('/')[-1],
-                cefi_ori_category = file.split('/')[-1].split('.')[0],
+                cefi_ori_category = archive_category,
                 cefi_archive_version = archive_version,
                 cefi_region = region_file,
                 cefi_subdomain = subdomain_file,
-                cefi_experiment_type = experiment_type,
+                cefi_experiment_type = experiment_type_dir,
                 cefi_experiment_name = experiment_name,
                 cefi_release = release_date,
-                cefi_output_frequency = OUTPUT_FREQ,
+                cefi_output_frequency = output_frequency,
                 cefi_grid_type = grid_type,
-                cefi_date_range = date_range,
+                cefi_init_date = initial_date,
                 cefi_data_doi = data_doi,
-                cefi_paper_doi = paper_doi
+                cefi_paper_doi = paper_doi,
+                cefi_ensemble_info = ensemble_info,
+                cefi_aux = aux
             )
             # new file location and name
             new_file = os.path.join(new_dir,filename)
             # find if new file name already exist
             if os.path.exists(new_file):
-                print(f"{new_file}: already exists. skipping...")
+                logging.warning(f"{new_file}: already exists. skipping...")
             else:
                 # find the variable dimension info (for chunking)
-                print(f"processing {new_file}")
+                logging.info(f"processing {new_file}")
                 ds = xr.open_dataset(file,chunks={})
                 dims = list(ds[variable].dims)
-
+                
                 # assign chunk size for different dim
                 #  chunk size design in portal_data.py
                 chunks = []
@@ -194,6 +168,10 @@ def cefi_preprocess(dict_setting:dict):
                         chunks.append(chunk_info.vertical)
                     elif 'time' in dim:
                         chunks.append(chunk_info.time)
+                    elif 'lead' in dim:
+                        chunks.append(chunk_info.lead)
+                    elif 'member' in dim:
+                        chunks.append(chunk_info.member)
                     else:
                         chunks.append(chunk_info.horizontal)
 
@@ -210,7 +188,7 @@ def cefi_preprocess(dict_setting:dict):
                     subprocess.run(nco_command, check=True)
                     # print(f'NCO rechunk and compress successfully. Output saved to {new_file}')
                 except subprocess.CalledProcessError as e:
-                    print(f'Error executing NCO command: {e}')
+                    logging.error(f'Error executing NCO command: {e}')
 
 
                 # NCO command for adding global attribute
@@ -227,7 +205,7 @@ def cefi_preprocess(dict_setting:dict):
                         subprocess.run(nco_command, check=True)
                         # print(f'NCO add attribute {key} successfully. Output saved to {new_file}')
                     except subprocess.CalledProcessError as e:
-                        print(f'Error executing NCO command: {e}')
+                        logging.error(f'Error executing NCO command: {e}')
 
                 # remove nco history
                 nco_command = [
@@ -239,7 +217,7 @@ def cefi_preprocess(dict_setting:dict):
                     subprocess.run(nco_command, check=True)
                     # print(f'NCO remove history successfully. Output saved to {new_file}')
                 except subprocess.CalledProcessError as e:
-                    print(f'Error executing NCO command: {e}')
+                    logging.error(f'Error executing NCO command: {e}')
 
         else:
             # store any static files and file name
@@ -254,11 +232,10 @@ def cefi_preprocess(dict_setting:dict):
             # copy static to the new folder only if it is not there
             if not os.path.exists(new_static):
                 shutil.copy2(static_file, new_static)
-                print('ocean_static.nc copying to...')
-                print(new_static)
+                logging.info('ocean_static.nc copying to...')
+                logging.info(new_static)
         else:
-            print('static file not found so no static file at the new location')
-
+            logging.warning('static file not found so no static file at the new location')
 
 if __name__ == "__main__":
 
@@ -274,16 +251,17 @@ if __name__ == "__main__":
     log_name = sys.argv[1].split('.')[0]+'.log'
     log_filename = os.path.join(current_location,log_name)
 
-    with open(log_filename, "w", encoding='utf-8') as log_file:
-        sys.stdout = log_file
-        sys.stderr = log_file
+    if os.path.exists(log_filename):
+        os.remove(log_filename)
 
+    setup_logging(log_filename)
+
+    try:
         # Load the settings
         dict_json = load_json(json_setting)
 
         # preprocessing the file to cefi format
         cefi_preprocess(dict_json)
 
-    # Reset to default after exiting the context manager
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
+    except Exception as e:
+        logging.exception("An error occurred during preprocessing")

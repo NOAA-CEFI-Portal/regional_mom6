@@ -31,7 +31,8 @@ import logging
 import subprocess
 import xarray as xr
 from mom6.data_structure import portal_data
-from mom6.data_structure.batch_preprocess_hindcast import load_json
+from mom6.mom6_module.util import load_json
+
 
 # Configure logging
 def setup_logging(log_filename):

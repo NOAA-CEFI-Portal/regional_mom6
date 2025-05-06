@@ -17,7 +17,7 @@ from mom6.data_structure import portal_data
 from mom6.mom6_module.mom6_read import AccessFiles
 from mom6.mom6_module.mom6_regrid import Regridding
 from mom6.mom6_module.mom6_export import mom6_encode_attr
-from mom6.data_structure.batch_preprocess_hindcast import load_json
+from mom6.mom6_module.util import load_json
 from mom6.data_structure.portal_data import DataStructure
 
 warnings.simplefilter("ignore")

@@ -20,6 +20,8 @@ for root_dir in root_dirs:
                 file_path = os.path.join(dirpath, filename)
                 with xr.open_dataset(file_path,chunks={}) as ds:
                     cefi_category = ds.attrs['cefi_ori_filename'].split('.')[0]
+
+                
                 print(file_path) 
                 print(cefi_category)
                 change_attr_ncatted(

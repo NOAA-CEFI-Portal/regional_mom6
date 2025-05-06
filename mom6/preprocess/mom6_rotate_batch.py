@@ -16,7 +16,7 @@ import xarray as xr
 from dask.distributed import Client
 from mom6.mom6_module.mom6_read import AccessFiles
 from mom6.mom6_module.mom6_vector_rotate import VectorRotation
-from mom6.data_structure.batch_preprocess_hindcast import load_json
+from mom6.mom6_module.util import load_json
 from mom6.data_structure import portal_data
 
 warnings.simplefilter("ignore")

@@ -2,8 +2,12 @@
 The script do batch rename from 
 original reforecast to cefi format
 
-orignal naming format:
-tos_forecast_iYYYYMM.nc
+
+!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
+old naming format is used based on first gen Andrew forecast
+only work in tos_forecast_iYYYYMM.nc
+!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
+
 
 cefi naming format:
 <variable>.<region>.<subdomain>.<experiment_type>
@@ -21,42 +25,12 @@ import os
 import sys
 import glob
 import shutil
-import logging
 import subprocess
 import xarray as xr
 from mom6.data_structure import portal_data
-from mom6.data_structure.batch_preprocess_hindcast import load_json
+from mom6.mom6_module.util import load_json
 
-# Configure logging
-def setup_logging(filename_log):
-    logging.basicConfig(
-        filename=filename_log,
-        filemode='w',
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        level=logging.DEBUG
-    )
-    console = logging.StreamHandler()
-    console.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    console.setFormatter(formatter)
-    logging.getLogger('').addHandler(console)
 
-    # Redirect stdout and stderr to the logging system
-    sys.stdout = StreamToLogger(logging.getLogger('STDOUT'), logging.INFO)
-    sys.stderr = StreamToLogger(logging.getLogger('STDERR'), logging.ERROR)
-
-class StreamToLogger:
-    def __init__(self, logger, log_level):
-        self.logger = logger
-        self.log_level = log_level
-        self.linebuf = ''
-
-    def write(self, buf):
-        for line in buf.rstrip().splitlines():
-            self.logger.log(self.log_level, line.rstrip())
-
-    def flush(self):
-        pass
 
 def cefi_preprocess(dict_setting:dict):
     """preprocessing the file to CEFI format
@@ -94,9 +68,6 @@ def cefi_preprocess(dict_setting:dict):
     # initialize static files and file name
     static_file = None
     static_filename = None
-    if len(glob.glob(f'{ori_path}/*.nc')) == 0:
-        sys.exit('No *.nc files')
-
     for file in glob.glob(f'{ori_path}/*.nc'):
         if 'ocean_static.nc' not in file:
             # get all dir names and file name
@@ -106,10 +77,10 @@ def cefi_preprocess(dict_setting:dict):
             # get file name
             filename = file_path_format[-1]
 
-            # each file decipher the format to make sure the file type (CEFI style naming!!!!!!)
-            file_format_list = filename.split('.')
-            variable = file_format_list[0]
-            initial_date = file_format_list[-2]
+            # each file decipher the format to make sure the file type
+            file_format_list = filename.split('_')
+            variable = file_format_list[-2]
+            initial_date = file_format_list[-3].split('.')[0]
 
             # determine the data path
             cefi_rel_path = portal_data.DataPath(
@@ -153,6 +124,7 @@ def cefi_preprocess(dict_setting:dict):
                 cefi_filename = filename,
                 cefi_variable = variable,
                 cefi_ori_filename = file.split('/')[-1],
+                cefi_ori_category = file.split('/')[-1].split('.')[0],
                 cefi_archive_version = archive_version,
                 cefi_region = region_file,
                 cefi_subdomain = subdomain_file,
@@ -177,7 +149,7 @@ def cefi_preprocess(dict_setting:dict):
                 print(f"processing {new_file}")
                 ds = xr.open_dataset(file,chunks={})
                 dims = list(ds[variable].dims)
-                
+
                 # assign chunk size for different dim
                 #  chunk size design in portal_data.py
                 chunks = []
@@ -256,8 +228,6 @@ def cefi_preprocess(dict_setting:dict):
         else:
             print('static file not found so no static file at the new location')
 
-    
-
 
 if __name__ == "__main__":
 
@@ -273,14 +243,16 @@ if __name__ == "__main__":
     log_name = sys.argv[1].split('.')[0]+'.log'
     log_filename = os.path.join(current_location,log_name)
 
-    setup_logging(log_filename)
+    with open(log_filename, "w", encoding='utf-8') as log_file:
+        sys.stdout = log_file
+        sys.stderr = log_file
 
-    try:
         # Load the settings
         dict_json = load_json(json_setting)
 
         # preprocessing the file to cefi format
         cefi_preprocess(dict_json)
 
-    except Exception as e:
-        logging.exception("An error occurred during preprocessing")
+    # Reset to default after exiting the context manager
+    sys.stdout = sys.__stdout__
+    sys.stderr = sys.__stderr__

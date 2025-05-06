@@ -25,15 +25,39 @@ import logging
 import subprocess
 import xarray as xr
 from mom6.data_structure import portal_data
-from mom6.data_structure.batch_preprocess_hindcast import load_json
+from mom6.mom6_module.util import load_json
 
-def setup_logging(logfile):
-    """Set up logging to write messages to a log file."""
+
+# Configure logging
+def setup_logging(filename_log):
     logging.basicConfig(
-        filename=logfile,
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s",
+        filename=filename_log,
+        filemode='w',
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        level=logging.DEBUG
     )
+    console = logging.StreamHandler()
+    console.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    console.setFormatter(formatter)
+    logging.getLogger('').addHandler(console)
+
+    # Redirect stdout and stderr to the logging system
+    sys.stdout = StreamToLogger(logging.getLogger('STDOUT'), logging.INFO)
+    sys.stderr = StreamToLogger(logging.getLogger('STDERR'), logging.ERROR)
+
+class StreamToLogger:
+    def __init__(self, logger, log_level):
+        self.logger = logger
+        self.log_level = log_level
+        self.linebuf = ''
+
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            self.logger.log(self.log_level, line.rstrip())
+
+    def flush(self):
+        pass
 
 def cefi_preprocess(dict_setting:dict):
     """preprocessing the file to CEFI format
@@ -46,13 +70,11 @@ def cefi_preprocess(dict_setting:dict):
     """
     # original data path
     ori_path = dict_setting['ori_path']
-    
 
     # new cefi data path setting
     cefi_portal_base = dict_setting['cefi_portal_base']
     release_date = dict_setting['release_date']
     archive_version = dict_setting['archive_version']
-    archive_category = dict_setting['archive_category']
     aux = dict_setting['aux']
     region_dir = dict_setting['region_dir']
     region_file = dict_setting['region_file']
@@ -107,14 +129,14 @@ def cefi_preprocess(dict_setting:dict):
 
             # Check if the release directory already exists
             if not os.path.exists(new_dir):
-                logging.info(f"Creating release folder in last level: {new_dir}")
+                print(f"Creating release folder in last level: {new_dir}")
                 # Create the directory
                 os.makedirs(new_dir, exist_ok=True)
             else:
-                logging.warning(f"release folder already exists: {new_dir}")
+                print(f"release folder already exists: {new_dir}")
 
             # rename to the new format
-            filename = portal_data.DecadalForecastFilename(
+            filename = portal_data.SeasonalForecastFilename(
                 variable=variable,
                 region=region_file,
                 subdomain=subdomain_file,
@@ -132,7 +154,6 @@ def cefi_preprocess(dict_setting:dict):
                 cefi_filename = filename,
                 cefi_variable = variable,
                 cefi_ori_filename = file.split('/')[-1],
-                cefi_ori_category = archive_category,
                 cefi_archive_version = archive_version,
                 cefi_region = region_file,
                 cefi_subdomain = subdomain_file,
@@ -151,10 +172,10 @@ def cefi_preprocess(dict_setting:dict):
             new_file = os.path.join(new_dir,filename)
             # find if new file name already exist
             if os.path.exists(new_file):
-                logging.warning(f"{new_file}: already exists. skipping...")
+                print(f"{new_file}: already exists. skipping...")
             else:
                 # find the variable dimension info (for chunking)
-                logging.info(f"processing {new_file}")
+                print(f"processing {new_file}")
                 ds = xr.open_dataset(file,chunks={})
                 dims = list(ds[variable].dims)
                 
@@ -187,7 +208,7 @@ def cefi_preprocess(dict_setting:dict):
                     subprocess.run(nco_command, check=True)
                     # print(f'NCO rechunk and compress successfully. Output saved to {new_file}')
                 except subprocess.CalledProcessError as e:
-                    logging.error(f'Error executing NCO command: {e}')
+                    print(f'Error executing NCO command: {e}')
 
 
                 # NCO command for adding global attribute
@@ -204,7 +225,7 @@ def cefi_preprocess(dict_setting:dict):
                         subprocess.run(nco_command, check=True)
                         # print(f'NCO add attribute {key} successfully. Output saved to {new_file}')
                     except subprocess.CalledProcessError as e:
-                        logging.error(f'Error executing NCO command: {e}')
+                        print(f'Error executing NCO command: {e}')
 
                 # remove nco history
                 nco_command = [
@@ -216,7 +237,7 @@ def cefi_preprocess(dict_setting:dict):
                     subprocess.run(nco_command, check=True)
                     # print(f'NCO remove history successfully. Output saved to {new_file}')
                 except subprocess.CalledProcessError as e:
-                    logging.error(f'Error executing NCO command: {e}')
+                    print(f'Error executing NCO command: {e}')
 
         else:
             # store any static files and file name
@@ -231,10 +252,13 @@ def cefi_preprocess(dict_setting:dict):
             # copy static to the new folder only if it is not there
             if not os.path.exists(new_static):
                 shutil.copy2(static_file, new_static)
-                logging.info('ocean_static.nc copying to...')
-                logging.info(new_static)
+                print('ocean_static.nc copying to...')
+                print(new_static)
         else:
-            logging.warning('static file not found so no static file at the new location')
+            print('static file not found so no static file at the new location')
+
+    
+
 
 if __name__ == "__main__":
 
@@ -249,9 +273,6 @@ if __name__ == "__main__":
     current_location = os.path.dirname(os.path.abspath(__file__))
     log_name = sys.argv[1].split('.')[0]+'.log'
     log_filename = os.path.join(current_location,log_name)
-
-    if os.path.exists(log_filename):
-        os.remove(log_filename)
 
     setup_logging(log_filename)
 

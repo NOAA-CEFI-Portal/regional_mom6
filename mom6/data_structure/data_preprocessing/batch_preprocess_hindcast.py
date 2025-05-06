@@ -1,17 +1,18 @@
 """
 The script do batch rename from 
-original reforecast to cefi format
-
+original hindcast to cefi format
 
 !!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
-old naming format is used based on first gen Andrew forecast
-only work in tos_forecast_iYYYYMM.nc
+original file name must follow the following pattern
+to accurately get the needed info to new file attrs
 !!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
-
+orignal naming format:
+ocean_cobalt_daily_2d.19930101-20191231.btm_o2.nc
+<model_module>.<date_range>.<variable>.nc
 
 cefi naming format:
 <variable>.<region>.<subdomain>.<experiment_type>
-.<version>.<output_frequency>.<grid_type>.<iYYYY0M>.nc
+.<version>.<output_frequency>.<grid_type>.<YYYY0M-YYYY0M>.nc
 
 also perform using nco?
 - add file attribute relative data path
@@ -23,13 +24,13 @@ also perform using nco?
 """
 import os
 import sys
+import json
 import glob
 import shutil
 import subprocess
 import xarray as xr
 from mom6.data_structure import portal_data
-from mom6.data_structure.batch_preprocess_hindcast import load_json
-
+from mom6.mom6_module.util import load_json
 
 def cefi_preprocess(dict_setting:dict):
     """preprocessing the file to CEFI format
@@ -47,19 +48,15 @@ def cefi_preprocess(dict_setting:dict):
     cefi_portal_base = dict_setting['cefi_portal_base']
     release_date = dict_setting['release_date']
     archive_version = dict_setting['archive_version']
-    aux = dict_setting['aux']
     region_dir = dict_setting['region_dir']
     region_file = dict_setting['region_file']
     subdomain_dir = dict_setting['subdomain_dir']
     subdomain_file = dict_setting['subdomain_file']
     grid_type = dict_setting['grid_type']
-    experiment_type_dir = dict_setting['experiment_type_dir']
-    experiment_type_file = dict_setting['experiment_type_file']
+    experiment_type = dict_setting['experiment_type']
     experiment_name = dict_setting['experiment_name']
-    output_frequency = dict_setting['output_frequency']
     data_doi = dict_setting['data_doi']
     paper_doi = dict_setting['paper_doi']
-    ensemble_info = dict_setting['ensemble_info']
 
 
     # loop through all file in the original path
@@ -77,16 +74,28 @@ def cefi_preprocess(dict_setting:dict):
             filename = file_path_format[-1]
 
             # each file decipher the format to make sure the file type
-            file_format_list = filename.split('_')
-            variable = file_format_list[-2]
-            initial_date = file_format_list[-3].split('.')[0]
+            file_format_list = filename.split('.')
+            variable = file_format_list[2]
+            date_range = file_format_list[1]
+
+            # find date_range, output_freq, dir_path
+            # based on original date_range format
+            if len(date_range) == 13:
+                OUTPUT_FREQ = 'monthly'
+            elif len(date_range) == 13+4:
+                OUTPUT_FREQ = 'daily'
+                date_range = f"{date_range[0:0+6]}-{date_range[9:9+6]}"
+            else:
+                print('new date_range format not consider')
+                print(f'{file} skipped' )
+                continue
 
             # determine the data path
             cefi_rel_path = portal_data.DataPath(
                 region=region_dir,
                 subdomain=subdomain_dir,
-                experiment_type=experiment_type_dir,
-                output_frequency=output_frequency,
+                experiment_type=experiment_type,
+                output_frequency=OUTPUT_FREQ,
                 grid_type=grid_type,
                 release=release_date
             ).cefi_dir
@@ -105,16 +114,14 @@ def cefi_preprocess(dict_setting:dict):
                 print(f"release folder already exists: {new_dir}")
 
             # rename to the new format
-            filename = portal_data.SeasonalForecastFilename(
+            filename = portal_data.HindcastFilename(
                 variable=variable,
                 region=region_file,
                 subdomain=subdomain_file,
-                experiment_type=experiment_type_file,
-                output_frequency=output_frequency,
-                initial_date=initial_date,
+                output_frequency=OUTPUT_FREQ,
+                date_range=date_range,
                 grid_type=grid_type,
-                release=release_date,
-                ensemble_info=ensemble_info
+                release=release_date
             ).filename
 
             # define new global attribute
@@ -127,16 +134,14 @@ def cefi_preprocess(dict_setting:dict):
                 cefi_archive_version = archive_version,
                 cefi_region = region_file,
                 cefi_subdomain = subdomain_file,
-                cefi_experiment_type = experiment_type_dir,
+                cefi_experiment_type = experiment_type,
                 cefi_experiment_name = experiment_name,
                 cefi_release = release_date,
-                cefi_output_frequency = output_frequency,
+                cefi_output_frequency = OUTPUT_FREQ,
                 cefi_grid_type = grid_type,
-                cefi_init_date = initial_date,
+                cefi_date_range = date_range,
                 cefi_data_doi = data_doi,
-                cefi_paper_doi = paper_doi,
-                cefi_ensemble_info = ensemble_info,
-                cefi_aux = aux
+                cefi_paper_doi = paper_doi
             )
             # new file location and name
             new_file = os.path.join(new_dir,filename)
@@ -158,10 +163,6 @@ def cefi_preprocess(dict_setting:dict):
                         chunks.append(chunk_info.vertical)
                     elif 'time' in dim:
                         chunks.append(chunk_info.time)
-                    elif 'lead' in dim:
-                        chunks.append(chunk_info.lead)
-                    elif 'member' in dim:
-                        chunks.append(chunk_info.member)
                     else:
                         chunks.append(chunk_info.horizontal)
 
