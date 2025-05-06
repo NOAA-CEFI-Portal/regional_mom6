@@ -219,7 +219,7 @@ class LocalStore:
         ----------
         local_top_dir : str
             the absolution path to the local CEFI data.
-            should be the absolute path before cefi_porta/...
+            should be the absolute path before cefi_portal/...
         region : ModelRegionOptions
             region name
         subdomain : ModelSubdomainOptions
@@ -268,28 +268,30 @@ class LocalStore:
             local_top_dir,
             portal_data.DataStructure.top_directory[0]
         ))
-        if top_level_dir:
-            if os.path.exists(self.cefi_local_dir):
-                pass
-            elif os.path.exists(os.path.dirname(self.cefi_local_dir)):
-                parent_dir_release = os.path.dirname(self.cefi_local_dir)
-                # List all directories under self.cefi_local_dir
-                print('--------------------------------')
-                print('Current release data is not valid. Available releases are:')
-                for release_dir in os.listdir(parent_dir_release):
-                    release_path = os.path.join(parent_dir_release, release_dir)
-                    if os.path.isdir(release_path):
-                        # prevent using the latest directory
-                        if release_dir == 'latest':
-                            pass
-                        else:
-                            print(release_dir)
-                print('--------------------------------')
-                raise FileNotFoundError('No files available based on release date')
-            else:
-                raise FileNotFoundError('Data structure constructed by input does not exist')
-        else :
+        if not top_level_dir:
             raise FileNotFoundError('CEFI data structure does not exist at this location')
+        
+        # check if the release directory exist
+        if  not os.path.exists(self.cefi_local_dir) and os.path.exists(os.path.dirname(self.cefi_local_dir)):
+            parent_dir_release = os.path.dirname(self.cefi_local_dir)
+            # List all directories under self.cefi_local_dir
+            print('--------------------------------')
+            print('Current release data is not valid. Available releases are:')
+            for release_dir in os.listdir(parent_dir_release):
+                release_path = os.path.join(parent_dir_release, release_dir)
+                if os.path.isdir(release_path):
+                    # prevent using the latest directory
+                    if release_dir == 'latest':
+                        pass
+                    else:
+                        print(release_dir)
+            print('--------------------------------')
+            raise FileNotFoundError('No files available based on release date')
+
+        # check if data constructed by input exist
+        if  not os.path.exists(self.cefi_local_dir):
+            raise FileNotFoundError('Data structure constructed by input does not exist')
+
 
     def get_files(self,variable:str=None)-> list:
         """Getting file in local storage
@@ -333,8 +335,6 @@ class LocalStore:
 
         return filtered_files
 
-
-
 class AccessFiles:
     """
     Frontend Class for user to get various mom6 simulation
@@ -369,7 +369,7 @@ class AccessFiles:
         release_date : str
             release date in the format of "rYYYYMMDD"
         data_source : DataSourceOptions
-            'local', 'opendap', 'aws'(unavailable)
+            'local', 'opendap', 's3'(unavailable), 'gcs'(unavailable)
         local_top_dir : str
             the absolution path to the local CEFI data.
             should be the absolute path before cefi_porta/...
@@ -399,10 +399,12 @@ class AccessFiles:
                 grid_type,
                 release
             )
-        elif data_source == 'aws':
-            raise ValueError('aws currently not available')
+        elif data_source == 's3':
+            raise ValueError('s3 currently not available')
+        elif data_source == 'gcs':
+            raise ValueError('gcs currently not available')
         else :
-            raise ValueError('only "local", "opendap", and "aws" are available')
+            raise ValueError('only "local", "opendap", "s3", and "gcs" are available')
 
     def get(self,variable:str=None, print_list=False)-> list:
         """Getting files from storage
