@@ -15,11 +15,8 @@ import warnings
 import xarray as xr
 from dask.distributed import Client
 from mom6 import DATA_PATH
-<<<<<<<< HEAD:mom6/stats/deprecated/mom6_tercile_regional.py
 from mom6.mom6_module.deprecated.mom6_io import MOM6Static,MOM6Misc
-========
-from mom6.mom6_module.mom6_io import MOM6Static,MOM6Misc
->>>>>>>> feature-doc:mom6/stats/mom6_tercile_regional.py
+
 
 warnings.simplefilter("ignore")
 
