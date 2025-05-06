@@ -34,7 +34,7 @@ ModelGridTypeOptions =  Literal[
 
 
 DataSourceOptions = Literal[
-    'local','opendap','aws'
+    'local','opendap','s3','gcs'
 ]
 
 
