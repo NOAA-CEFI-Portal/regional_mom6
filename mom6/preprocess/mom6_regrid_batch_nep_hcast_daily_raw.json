@@ -1,0 +1,14 @@
+{
+    "local_top_dir": "/Projects/CEFI/regional_mom6/",
+    "region": "northeast_pacific",
+    "subdomain": "full_domain",
+    "experiment_type": "hindcast",
+    "output_frequency": "daily",
+    "grid_type": "raw",
+    "release": "r20241015",
+    "data_source": "local",
+    "output": {
+        "cefi_grid_type": "regrid",
+        "cefi_aux": "Postprocessed Data : regrid to regular grid"
+    }
+}

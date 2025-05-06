@@ -23,7 +23,7 @@ import pandas as pd
 import xarray as xr
 from scipy.stats import norm as normal
 from mom6 import DATA_PATH
-from mom6.mom6_module.mom6_types import RegionalOptions,GridOptions,DataTypeOptions,DataSourceOptions
+from mom6.mom6_module.mom6_types import RegionalOptions,ModelGridTypeOptions,ModelExperimentTypeOptions,DataSourceOptions
 
 warnings.simplefilter("ignore")
 xr.set_options(keep_attrs=True)
@@ -34,8 +34,8 @@ class OpenDapStore:
     """
     def __init__(
             self,
-            grid : GridOptions = 'raw',
-            data_type : DataTypeOptions = 'historical'
+            grid : ModelGridTypeOptions = 'raw',
+            data_type : ModelExperimentTypeOptions = 'historical'
     ) -> None:
         """
         input for the class to get the opendap data
@@ -129,7 +129,7 @@ class MOM6Forecast:
         iyear : int,
         imonth : int,
         var : str,
-        grid : GridOptions = 'raw',
+        grid : ModelGridTypeOptions = 'raw',
         source : DataSourceOptions = 'local'
     ) -> None:
         """
@@ -215,7 +215,7 @@ class MOM6Forecast:
     @staticmethod
     def get_mom6_all(
         var : str,
-        grid : GridOptions = 'raw',
+        grid : ModelGridTypeOptions = 'raw',
         source : DataSourceOptions = 'local'
     ) -> xr.Dataset:
         """
@@ -579,7 +579,7 @@ class MOM6Historical:
         year : int,
         month : int,
         day : int = 1,
-        grid : GridOptions = 'raw',
+        grid : ModelGridTypeOptions = 'raw',
         source : DataSourceOptions = 'local'
     ) -> None:
         """
@@ -665,7 +665,7 @@ class MOM6Historical:
     @staticmethod
     def get_mom6_all(
         var : str,
-        grid : GridOptions = 'raw',
+        grid : ModelGridTypeOptions = 'raw',
         source : DataSourceOptions = 'local'
     ) -> xr.Dataset:
         """
@@ -767,7 +767,7 @@ class MOM6Static:
     @staticmethod
     def get_mom6_mask(
         mask : Literal['wet','wet_c','wet_u','wet_v'] = 'wet',
-        grid : GridOptions = 'raw'
+        grid : ModelGridTypeOptions = 'raw'
     ) -> xr.DataArray:
         """
         The function is designed to export the various mask provided

@@ -1,27 +1,44 @@
 from typing import Literal
 
-
-ModelRegionOptions = Literal[
-    'northwest_atlantic'
+ModelRegionOptions =  Literal[
+    'northwest_atlantic',
+    'northeast_pacific',
+    'arctic',
+    'pacific_islands',
+    'great_lakes'
 ]
 
-GridOptions = Literal[
-    'raw','regrid'
+ModelSubdomainOptions =  Literal[
+    'full_domain'
 ]
 
-DataTypeOptions = Literal[
-    'forecast','historical'
+ModelExperimentTypeOptions =  Literal[
+    'hindcast',
+    'seasonal_forecast',
+    'seasonal_reforecast',
+    'seasonal_forecast_initialization',
+    'decadal_forecast',
+    'long_term_projection'
 ]
+
+ModelOutputFrequencyOptions =  Literal[
+    'daily',
+    'monthly',
+    'yearly'
+]
+
+ModelGridTypeOptions =  Literal[
+    'raw',
+    'regrid'
+]
+
 
 DataSourceOptions = Literal[
-    'local','opendap'
+    'local','opendap','s3','gcs'
 ]
 
-DataFreqOptions = Literal[
-    'daily','monthly','annual'
-]
 
-RegionalOptions = Literal[
+NWASubregionalOptions = Literal[
     'MAB', 'GOM', 'SS', 'GB', 'SS_LME', 'NEUS_LME', 'SEUS_LME',
     'GOMEX', 'GSL', 'NGOMEX', 'SGOMEX', 'Antilles', 'Floridian'
 ]

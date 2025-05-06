@@ -1,6 +1,6 @@
 [![unittest](https://github.com/NOAA-PSL/regional_mom6/actions/workflows/gha_pytest_push.yml/badge.svg)](https://github.com/NOAA-PSL/regional_mom6/actions/workflows/gha_pytest_push.yml)
 
-NOAA Climate, Ecosystems, and Fisheries Initiative (CEFI) - Data Portal Team
+NOAA Changing, Ecosystems, and Fisheries Initiative (CEFI) - Data Portal Team
 ========
 
 ## Regional MOM6 preprocessing package
@@ -41,21 +41,6 @@ We welcome external contribution to the package. Please feel free to submit issu
    ```
    pip install -e .
    ```
-6. setup config file (data path for local data directory)
-
-   ```
-   cp config.json.template config.json
-   ```
-
-   open the `config.json` and input the absolute path to the top level of the regional mom6 data
-
-   ```
-   {
-   "data_path": "<your-mom6data-path-here>"
-   }
-   ```
-
-   current setup assuming the data directory structure is fixed (i.e. the historical run or forecast data subdirectory (ex: hist_run and forecast) need to be under this data_path )
 
 ## Syncing with the NOAA-CEFI-Portal version
 1. Create a remote `upstream` to track the changes that is on NOAA-CEFI-Portal

@@ -15,13 +15,15 @@ Criteria for determine the Cold Pool Index (CPI) mask
 import numpy as np
 import xarray as xr
 import xesmf as xe
-from mom6 import DATA_PATH
-from mom6.mom6_module import mom6_io
+from mom6.mom6_module.deprecated import mom6_io
 
 if __name__ == '__main__':
+    
+    glorys_dir = 'folder/with/Glorys/data'
+
     ### Glorys IO
-    glorys_file = f'{DATA_PATH}/glorys/bottomT.mon.mean.199301-202012.nc'
-    glorys_static_file = f'{DATA_PATH}/glorys/GLO-MFC_001_030_mask_bathy.nc'
+    glorys_file = f'{glorys_dir}/glorys/bottomT.mon.mean.199301-202012.nc'
+    glorys_static_file = f'{glorys_dir}/glorys/GLO-MFC_001_030_mask_bathy.nc'
     ds = xr.open_mfdataset([glorys_file,glorys_static_file],chunks={'time':1})
     ds = ds.drop_vars('mask')
 
@@ -101,4 +103,4 @@ if __name__ == '__main__':
         'Cold pool index need to be calculated on the GLORYS grid. '+
         'Following Ross et al., 2023 approach, user should regrid data to the mask grid.'
     )
-    ds_cpi_mask.to_netcdf(f'{DATA_PATH}/masks/cpi_mask.nc')
+    ds_cpi_mask.to_netcdf(f'{glorys_dir}/masks/cpi_mask.nc')
