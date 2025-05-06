@@ -4,8 +4,13 @@
 format: jb-book
 root: content/intro
 parts:
+  - caption: Getting started
+    chapters:
+    - file: content/get_started/install
   - caption: API reference
     chapters:
+    - file: content/api/mom6_read
+    - file: content/api/mom6_statistics
     - file: content/api/api_reference_content
 
 
