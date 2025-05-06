@@ -1,0 +1,13 @@
+{
+    "attr_change_mode": "m",
+    "data_paths": [
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_reforecast/monthly/raw/r20240213/",
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_reforecast/monthly/regrid/r20240213/"
+    ],
+    "attribute_names": [
+        "cefi_paper_doi"
+    ],
+    "attribute_values": [
+        "10.5194/os-20-1631-2024"
+    ]
+}

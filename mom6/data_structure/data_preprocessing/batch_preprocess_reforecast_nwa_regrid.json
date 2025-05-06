@@ -1,0 +1,19 @@
+{
+    "ori_path": "/Projects/CEFI/regional_mom6/northwest_atlantic/forecast/regrid/",
+    "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
+    "release_date": "r20240213",
+    "archive_version": "/archive/acr/fre/NWA/2023_04/NWA12_forecast_2023-04_yyyy-mm-e##/gfdl.ncrc5-intel22-prod/",
+    "aux": "archive format yyyy-mm-e## represents the initialization year (yyyy), month (mm), and ensemble member number (e##)",
+    "region_dir": "northwest_atlantic",
+    "region_file": "nwa",
+    "subdomain_dir": "full_domain",
+    "subdomain_file": "full",
+    "grid_type": "regrid",
+    "output_frequency": "monthly",
+    "experiment_type_dir": "seasonal_reforecast",
+    "experiment_type_file": "ss_refcast",
+    "experiment_name": "nwa12_reforecast",
+    "data_doi": "10.5281/zenodo.10642295",
+    "paper_doi": "10.5194/egusphere-2024-394",
+    "ensemble_info": "enss"
+}

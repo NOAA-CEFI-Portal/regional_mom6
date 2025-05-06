@@ -2,6 +2,7 @@
 config.json
 *.nc
 .vscode/
+doc/_build/
 
 
 
