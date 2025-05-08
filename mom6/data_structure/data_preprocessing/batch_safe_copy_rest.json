@@ -1,0 +1,13 @@
+{
+    "data_paths": [
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_forecast/monthly/raw/r20250413/",
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_forecast/monthly/regrid/r20250212/",
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_forecast/monthly/regrid/r20250413/",
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_reforecast/monthly/raw/r20240213",
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_reforecast/monthly/raw/r20250413",
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_reforecast/monthly/raw/r20250212",
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_reforecast/monthly/regrid/r20240213",
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_reforecast/monthly/regrid/r20250413",
+        "/Projects/CEFI/regional_mom6/cefi_portal/northwest_atlantic/full_domain/seasonal_reforecast/monthly/regrid/r20250212"
+    ]
+}
