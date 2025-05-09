@@ -1,0 +1,21 @@
+{
+    "ori_path": "/Projects/CEFI/private/scratch/chsu/nwa_reforecast_forecast_r20250212/forecast/",
+    "archive_category": "ocean_monthly",
+    "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
+    "release_date": "r20250212",
+    "archive_version": "/archive/Andrew.C.Ross/fre/NWA/2024_09/NWA12_cobalt_forecast_2024_09_2025-02-e##/gfdl.ncrc6-intel23-prod/",
+    "aux": "archive format yyyy-mm-e## represents the initialization year (yyyy), month (mm), and ensemble member number (e##)",
+    "region_dir": "northwest_atlantic",
+    "region_file": "nwa",
+    "subdomain_dir": "full_domain",
+    "subdomain_file": "full",
+    "grid_type": "raw",
+    "output_frequency": "monthly",
+    "experiment_type_dir": "seasonal_forecast",
+    "experiment_type_file": "ss_fcast",
+    "experiment_name": "nwa12_forecast",
+    "data_doi": "10.5281/zenodo.10642295",
+    "paper_doi": "10.5194/egusphere-2024-394",
+    "ensemble_info": "enss",
+    "forcing_info": "N/A"
+}
