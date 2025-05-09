@@ -196,6 +196,9 @@ def cefi_preprocess(dict_setting:dict):
                     print(f"{new_file}: already exists. skipping...")
                 else:
                     # create single initial file in scratch (removed later)
+                    ds_init['init'].encoding['dtype'] = 'int32'
+                    ds_init['member'].encoding['dtype'] = 'int32'
+                    ds_init['lead'].encoding['dtype'] = 'int32'
                     ds_init.to_netcdf(init_file)
 
                     # find the variable dimension info (for chunking)

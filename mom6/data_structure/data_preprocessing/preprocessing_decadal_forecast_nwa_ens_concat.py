@@ -46,8 +46,10 @@ for year in range(start_year, end_year + 1):
     ds_concat['tos'] = ds_concat['tos'].transpose('lead', 'member', 'yh', 'xh')
 
     ds_concat['init'] = np.datetime64(f'{year}-01-01').astype('datetime64[ns]')
+    ds_concat['init'].encoding['dtype'] = 'int32'
 
-    ds_concat['member'] = np.arange(1, 10+1)
+    ds_concat['member'] = np.arange(1, 10+1, dtype=int)
+    ds_concat['member'].encoding['dtype'] = 'int32'
 
     ds_concat = ds_concat.drop_dims('time', errors='ignore')
     ds_concat = ds_concat.drop_dims('nv', errors='ignore')
