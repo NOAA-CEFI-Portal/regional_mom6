@@ -130,10 +130,10 @@ def cefi_preprocess(dict_setting:dict):
             # define new global attribute
             file_global_attrs = portal_data.GlobalAttrs(
                 cefi_rel_path = cefi_rel_path,
+                cefi_ori_category = archive_category,
                 cefi_filename = filename,
                 cefi_variable = variable,
                 cefi_ori_filename = file.split('/')[-1],
-                cefi_ori_category = archive_category,
                 cefi_archive_version = archive_version,
                 cefi_region = region_file,
                 cefi_subdomain = subdomain_file,
