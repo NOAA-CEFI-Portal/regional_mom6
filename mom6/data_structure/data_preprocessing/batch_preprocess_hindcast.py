@@ -24,7 +24,6 @@ also perform using nco?
 """
 import os
 import sys
-import json
 import glob
 import shutil
 import subprocess
