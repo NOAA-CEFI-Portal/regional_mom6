@@ -16,7 +16,7 @@ import xarray as xr
 from dask.distributed import Client
 from mom6.mom6_module.mom6_read import AccessFiles
 from mom6.mom6_module.mom6_vector_rotate import VectorRotation
-from mom6.mom6_module.util import load_json
+from mom6.mom6_module.util import load_json, setup_logging, log_filename
 from mom6.data_structure import portal_data
 
 warnings.simplefilter("ignore")
@@ -93,7 +93,7 @@ def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
     print(f"Output file: {output_file}")
 
 
-def rotate_batch(dict_json:dict,logger_object)->tuple:
+def rotate_batch(dict_json:dict)->tuple:
     """perform the batch rotation of the mom6 output
 
     Parameters
@@ -131,15 +131,17 @@ def rotate_batch(dict_json:dict,logger_object)->tuple:
     )
 
     if os.path.exists(new_file_u) and os.path.exists(new_file_v):
-        logger_object.info(f"{new_file_u}: already exists. skipping...")
-        logger_object.info(f"{new_file_v}: already exists. skipping...")
-        logger_object.info("rotation complete cleanly")
-        sys.exit()
+        logging.info("%s: already exists. skipping...", new_file_u)
+        logging.info("%s: already exists. skipping...", new_file_v)
+        logging.info("rotation complete cleanly")
+        sys.exit(0)
     else:
         # find the variable dimension info (for chunking)
-        logger_object.info(
-            "At least one of the vector is not present \n"+
-            f"processing {new_file_u} and {new_file_v}"
+        logging.info(
+            "At least one of the rotated vector is not produced \n"
+            "processing %s and %s",
+            new_file_u,
+            new_file_v
         )
 
     local_access = AccessFiles(
@@ -153,10 +155,18 @@ def rotate_batch(dict_json:dict,logger_object)->tuple:
         data_source=data_source
     )
 
-    ufile_list = local_access.get(variable=u_name)
-    vfile_list = local_access.get(variable=v_name)
+    try:
+        ufile_list = local_access.get(variable=u_name)
+        vfile_list = local_access.get(variable=v_name)
+    except FileNotFoundError as e:
+        logging.error(
+            "FileNotFoundError: %s\n"
+            "Please check the input file path",
+            e
+        )
+        sys.exit(1)
     statics = local_access.get(variable='ocean_static')
-    rotations = local_access.get(variable='ice_monthly')
+    rotations = local_access.get(variable='ice_static')
 
     ds_u = xr.open_mfdataset(
         ufile_list,
@@ -177,6 +187,7 @@ def rotate_batch(dict_json:dict,logger_object)->tuple:
         ds_static = xr.open_dataset(statics[0])
 
     # prepare the rotation matrix to regular coord names
+
     ds_rotate = xr.open_dataset(rotations[0])
     ds_rotate = (ds_rotate
         .rename({
@@ -253,49 +264,48 @@ if __name__=="__main__":
 
     # Get the JSON file path from command-line arguments
     json_setting = sys.argv[1]
-
+    logfilename = log_filename(json_setting)
     current_location = os.path.dirname(os.path.abspath(__file__))
-    log_name = sys.argv[1].split('.')[0]+'.log'
-    log_filename = os.path.join(current_location,log_name)
+    logfilename = os.path.join(current_location,logfilename)
 
     # remove previous log file if exists
-    if os.path.exists(log_filename):
-        os.remove(log_filename)
+    if os.path.exists(logfilename):
+        os.remove(logfilename)
 
-    # Configure logging to write to both console and log file
-    logging.basicConfig(
-        level=logging.INFO,  # Log INFO and above
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.FileHandler(log_filename),  # Log to file
-            logging.StreamHandler()  # Log to console
-        ]
-    )
-    logger = logging.getLogger()
+    setup_logging(logfilename)
 
     try:
         # Load the settings
         dict_json1 = load_json(json_setting,json_path=current_location)
 
         # preprocessing the file to cefi format
-        ds_u_x,ds_v_y = rotate_batch(dict_json1,logger)
+        ds_u_x,ds_v_y = rotate_batch(dict_json1)
 
         ds_u_x = ds_u_x.compute()
         ds_v_y = ds_v_y.compute()
 
         # output the processed data
-        output_processed_data(
-            ds_u_x,
-            top_dir=dict_json1['local_top_dir'],
-            dict_json_output=dict_json1['output_u']
-        )
-        output_processed_data(
-            ds_v_y,
-            top_dir=dict_json1['local_top_dir'],
-            dict_json_output=dict_json1['output_v']
-        )
-        logger.info("rotation complete cleanly")
+        try:
+            output_processed_data(
+                ds_u_x,
+                top_dir=dict_json1['local_top_dir'],
+                dict_json_output=dict_json1['output_u']
+            )
+            output_processed_data(
+                ds_v_y,
+                top_dir=dict_json1['local_top_dir'],
+                dict_json_output=dict_json1['output_v']
+            )
+        except PermissionError as e:
+            logging.error(
+                "PermissionError: %s\n"
+                "Please check the output directory permission",
+                e
+            )
+            sys.exit(1)
+
+        logging.info("rotation complete cleanly")
     except Exception as e:
-        logger.exception("An exception occurred")
+        logging.exception("An exception occurred")
     finally:
-        logger.info("Rotate process finished.")
+        logging.info("Rotate process finished.")

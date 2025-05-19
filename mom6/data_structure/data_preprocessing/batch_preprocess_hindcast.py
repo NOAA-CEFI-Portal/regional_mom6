@@ -25,11 +25,12 @@ also perform using nco?
 import os
 import sys
 import glob
+import logging
 import shutil
 import subprocess
 import xarray as xr
 from mom6.data_structure import portal_data
-from mom6.mom6_module.util import load_json
+from mom6.mom6_module.util import load_json,log_filename,setup_logging
 
 def cefi_preprocess(dict_setting:dict):
     """preprocessing the file to CEFI format
@@ -64,13 +65,8 @@ def cefi_preprocess(dict_setting:dict):
     static_file = None
     static_filename = None
     for file in glob.glob(f'{ori_path}/*.nc'):
-        if 'ocean_static.nc' not in file:
-            # get all dir names and file name
-            file_path_format = file.split('/')
-            # Remove empty strings and strings with only spaces
-            file_path_format = [name for name in file_path_format if name.strip()]
-            # get file name
-            filename = file_path_format[-1]
+        filename = os.path.basename(file)
+        if filename not in portal_data.StaticFile.filenames:
 
             # each file decipher the format to make sure the file type
             file_format_list = filename.split('.')
@@ -85,8 +81,8 @@ def cefi_preprocess(dict_setting:dict):
                 OUTPUT_FREQ = 'daily'
                 date_range = f"{date_range[0:0+6]}-{date_range[9:9+6]}"
             else:
-                print('new date_range format not consider')
-                print(f'{file} skipped' )
+                logging.error('new date_range format not consider')
+                logging.error(f'{file} skipped' )
                 continue
 
             # determine the data path
@@ -106,11 +102,11 @@ def cefi_preprocess(dict_setting:dict):
 
             # Check if the release directory already exists
             if not os.path.exists(new_dir):
-                print(f"Creating release folder in last level: {new_dir}")
+                logging.info(f"Creating release folder in last level: {new_dir}")
                 # Create the directory
                 os.makedirs(new_dir, exist_ok=True)
             else:
-                print(f"release folder already exists: {new_dir}")
+                logging.warning(f"release folder already exists: {new_dir}")
 
             # rename to the new format
             filename = portal_data.HindcastFilename(
@@ -146,10 +142,10 @@ def cefi_preprocess(dict_setting:dict):
             new_file = os.path.join(new_dir,filename)
             # find if new file name already exist
             if os.path.exists(new_file):
-                print(f"{new_file}: already exists. skipping...")
+                logging.warning(f"{new_file}: already exists. skipping...")
             else:
                 # find the variable dimension info (for chunking)
-                print(f"processing {new_file}")
+                logging.info(f"processing {new_file}")
                 ds = xr.open_dataset(file,chunks={})
                 dims = list(ds[variable].dims)
 
@@ -178,7 +174,7 @@ def cefi_preprocess(dict_setting:dict):
                     subprocess.run(nco_command, check=True)
                     # print(f'NCO rechunk and compress successfully. Output saved to {new_file}')
                 except subprocess.CalledProcessError as e:
-                    print(f'Error executing NCO command: {e}')
+                    logging.error(f'Error executing NCO command: {e}')
 
 
                 # NCO command for adding global attribute
@@ -195,7 +191,7 @@ def cefi_preprocess(dict_setting:dict):
                         subprocess.run(nco_command, check=True)
                         # print(f'NCO add attribute {key} successfully. Output saved to {new_file}')
                     except subprocess.CalledProcessError as e:
-                        print(f'Error executing NCO command: {e}')
+                        logging.error(f'Error executing NCO command: {e}')
 
                 # remove nco history
                 nco_command = [
@@ -207,7 +203,7 @@ def cefi_preprocess(dict_setting:dict):
                     subprocess.run(nco_command, check=True)
                     # print(f'NCO remove history successfully. Output saved to {new_file}')
                 except subprocess.CalledProcessError as e:
-                    print(f'Error executing NCO command: {e}')
+                    logging.error(f'Error executing NCO command: {e}')
 
         else:
             # store any static files and file name
@@ -222,10 +218,10 @@ def cefi_preprocess(dict_setting:dict):
             # copy static to the new folder only if it is not there
             if not os.path.exists(new_static):
                 shutil.copy2(static_file, new_static)
-                print('ocean_static.nc copying to...')
+                logging.info('ocean_static.nc copying to...')
                 print(new_static)
         else:
-            print('static file not found so no static file at the new location')
+            logging.warning('static file not found so no static file at the new location')
 
 
 if __name__ == "__main__":
@@ -238,20 +234,16 @@ if __name__ == "__main__":
     # Get the JSON file path from command-line arguments
     json_setting = sys.argv[1]
 
-    current_location = os.path.dirname(os.path.abspath(__file__))
-    log_name = sys.argv[1].split('.')[0]+'.log'
-    log_filename = os.path.join(current_location,log_name)
+    log_filename = log_filename(json_setting)
+    # check if the log file already exist
+    if os.path.exists(log_filename):
+        # remove the old log file
+        os.remove(log_filename)
+    setup_logging(log_filename)
 
-    with open(log_filename, "w", encoding='utf-8') as log_file:
-        sys.stdout = log_file
-        sys.stderr = log_file
+    # Load the settings
+    dict_json = load_json(json_setting)
 
-        # Load the settings
-        dict_json = load_json(json_setting)
+    # preprocessing the file to cefi format
+    cefi_preprocess(dict_json)
 
-        # preprocessing the file to cefi format
-        cefi_preprocess(dict_json)
-
-    # Reset to default after exiting the context manager
-    sys.stdout = sys.__stdout__
-    sys.stderr = sys.__stderr__
