@@ -49,10 +49,6 @@
       {
         "script": "../preprocess/mom6_rotate_batch.py",
         "config": "../preprocess/mom6_rotate_batch_nep_hcast_mon_raw_S_adx_2d_S_ady_2d.json"
-      },
-      {
-        "script": "../preprocess/mom6_rotate_batch.py",
-        "config": "../preprocess/mom6_rotate_batch_nep_hcast_daily_raw_ssu_ssv.json"
       }
     ],
     "regridding rotated vector":[
