@@ -1,0 +1,48 @@
+{
+    "regridding monthly": [
+      {
+        "script": "../preprocess/mom6_regrid_batch.py",
+        "config": "../preprocess/mom6_regrid_batch_nwa_refcast_mon_raw.json"
+      },
+      {
+        "script": "../preprocess/mom6_regrid_batch.py",
+        "config": "../preprocess/mom6_regrid_batch_nwa_refcast_mon_raw_statics_deptho.json"
+      }
+    ],
+    "climatology monthly": [
+      {
+        "script": "../preprocess/mom6_climo_batch.py",
+        "config": "../preprocess/mom6_climo_batch_nwa_refcast_mon_raw.json"
+      },
+      {
+        "script": "../preprocess/mom6_climo_batch.py",
+        "config": "../preprocess/mom6_climo_batch_nwa_refcast_mon_regrid.json"
+      }
+    ],
+    "tercile monthly": [
+      {
+        "script": "../preprocess/mom6_tercile_batch.py",
+        "config": "../preprocess/mom6_tercile_batch_nwa_refcast_mon_raw.json"
+      },
+      {
+        "script": "../preprocess/mom6_tercile_probability_batch.py",
+        "config": "../preprocess/mom6_tercile_probability_batch_nwa_refcast_mon_raw.json"
+      },
+      {
+        "script": "../preprocess/mom6_tercile_probability_batch.py",
+        "config": "../preprocess/mom6_tercile_probability_batch_nwa_fcast_mon_raw.json"
+      },
+      {
+        "script": "../preprocess/mom6_tercile_batch.py",
+        "config": "../preprocess/mom6_tercile_batch_nwa_refcast_mon_regrid.json"
+      },
+      {
+        "script": "../preprocess/mom6_tercile_probability_batch.py",
+        "config": "../preprocess/mom6_tercile_probability_batch_nwa_refcast_mon_regrid.json"
+      },
+      {
+        "script": "../preprocess/mom6_tercile_probability_batch.py",
+        "config": "../preprocess/mom6_tercile_probability_batch_nwa_fcast_mon_regrid.json"
+      }
+    ]
+}
