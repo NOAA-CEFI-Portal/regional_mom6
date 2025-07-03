@@ -1,5 +1,6 @@
 {
     "ori_path": "/Projects/CEFI/regional_mom6/northwest_atlantic/forecast/regrid/",
+    "archive_category": "ocean_monthly",
     "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
     "release_date": "r20240213",
     "archive_version": "/archive/acr/fre/NWA/2023_04/NWA12_forecast_2023-04_yyyy-mm-e##/gfdl.ncrc5-intel22-prod/",

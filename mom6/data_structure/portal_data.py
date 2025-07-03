@@ -61,6 +61,19 @@ class DataStructureAttrOrder:
     )
 
 @dataclass(frozen=True)
+class StaticFile:
+    """Provide all attrs in DataStructure in 
+    order of level
+    
+    need to contain all attributes in DataStructure class
+    """
+    filenames: Tuple[str, ...] = (
+        "ocean_static.nc",
+        "ice_static.nc"
+    )
+
+
+@dataclass(frozen=True)
 class FilenameStructure:
     """Provide all information used for the naming
     the filename provided on cefi data portal
@@ -95,8 +108,10 @@ class FilenameStructure:
     forcing_info: Tuple[str, ...] = (
         'picontrol',
         'historical',
+        'proj_ssp126',
+        'proj_ssp245',
         'proj_ssp370',
-        'proj_ssp585'
+        'proj_ssp585',
     )
     grid_type: Tuple[str, ...] = (
         'raw',

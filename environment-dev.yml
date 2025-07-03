@@ -8,6 +8,7 @@ dependencies:
   - python=3.11
   - xarray
   - xesmf
+  - prefect
   - pytest
   - beautifulsoup4
   - matplotlib

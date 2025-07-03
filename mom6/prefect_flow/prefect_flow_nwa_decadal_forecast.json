@@ -1,0 +1,12 @@
+{
+    "regridding": [
+      {
+        "script": "../preprocess/mom6_regrid_batch.py",
+        "config": "../preprocess/mom6_regrid_batch_nwa_dcfcast_mon_raw.json"
+      },
+      {
+        "script": "../preprocess/mom6_regrid_batch.py",
+        "config": "../preprocess/mom6_regrid_batch_nwa_dcfcast_mon_raw_statics_deptho.json"
+      }
+    ]
+}

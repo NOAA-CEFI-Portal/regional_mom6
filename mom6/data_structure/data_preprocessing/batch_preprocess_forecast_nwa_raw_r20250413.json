@@ -1,5 +1,6 @@
 {
     "ori_path": "/Projects/CEFI/private/scratch/chsu/NWA_reforecast_forecast_r20250413/forecast/",
+    "archive_category": "ocean_monthly",
     "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
     "release_date": "r20250413",
     "archive_version": "/archive/Andrew.C.Ross/fre/NWA/2024_09/NWA12_cobalt_forecast_2024_09_2025-02-e##/gfdl.ncrc6-intel23-prod/",

@@ -46,6 +46,7 @@ def cefi_preprocess(dict_setting:dict):
 
     # new cefi data path setting
     cefi_portal_base = dict_setting['cefi_portal_base']
+    archive_category = dict_setting['archive_category']
     release_date = dict_setting['release_date']
     archive_version = dict_setting['archive_version']
     aux = dict_setting['aux']
@@ -121,6 +122,7 @@ def cefi_preprocess(dict_setting:dict):
             # define new global attribute
             file_global_attrs = portal_data.GlobalAttrs(
                 cefi_rel_path = cefi_rel_path,
+                cefi_ori_category = archive_category,
                 cefi_filename = filename,
                 cefi_variable = variable,
                 cefi_ori_filename = file.split('/')[-1],
