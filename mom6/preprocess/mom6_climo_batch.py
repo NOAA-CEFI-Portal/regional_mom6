@@ -16,12 +16,12 @@ from mom6_rotate_batch import output_processed_data
 from mom6.data_structure import portal_data
 from mom6.mom6_module.mom6_read import AccessFiles
 from mom6.mom6_module.mom6_export import mom6_encode_attr
-from mom6.mom6_module.util import load_json
+from mom6.mom6_module.util import load_json, setup_logging, log_filename
 from mom6.data_structure.portal_data import DataStructure
 from mom6.mom6_module.mom6_statistics import HindcastClimatology, ForecastClimatology
 
 
-def climo_batch(dict_json: dict, logger_object) -> xr.Dataset:
+def climo_batch(dict_json: dict) -> xr.Dataset:
     """perform the batch climatology of the mom6 output
 
     Parameters
@@ -61,12 +61,13 @@ def climo_batch(dict_json: dict, logger_object) -> xr.Dataset:
 
     # Check if the release directory already exists
     if not os.path.exists(output_dir):
-        logger_object.info(f"Creating release folder in last level of derivative: {output_dir}")
+        logging.info("Creating release folder in last level of derivative: %s", output_dir)
         # Create the directory
         os.makedirs(output_dir, exist_ok=True)
     else:
-        logger_object.info(
-            f"release folder already exists in last level of derivative: {output_dir}"
+        logging.info(
+            "release folder already exists in last level of derivative: %s",
+            output_dir
         )
 
     # get all files in the experiment
@@ -102,12 +103,12 @@ def climo_batch(dict_json: dict, logger_object) -> xr.Dataset:
                     # find if new file name already exist
                     new_file = os.path.join(output_dir, new_filename)
                     if os.path.exists(new_file):
-                        logger_object.info(f"{new_file}: already exists. skipping...")
+                        logging.info("%s: already exists. skipping...", new_file)
                     else:
                         if load:
                             ds_var = ds_var.load()
                         # find the variable dimension info (for chunking)
-                        logger_object.info(f"processing {new_file}")
+                        logging.info("processing %s", new_file)
 
                         # call climatology class
                         # calculate climatology of hindcast
@@ -181,12 +182,12 @@ def climo_batch(dict_json: dict, logger_object) -> xr.Dataset:
                 # find if new file name already exist
                 new_file = os.path.join(output_dir, new_filename)
                 if os.path.exists(new_file):
-                    logger_object.info(f"{new_file}: already exists. skipping...")
+                    logging.info("%s: already exists. skipping...", new_file)
                 else:
                     if load:
                         ds_var = ds_var.load()
                     # find the variable dimension info (for chunking)
-                    logger_object.info(f"processing {new_file}")
+                    logging.info("processing %s", new_file)
 
                     # calculate climatology of reforecast
                     class_climo = ForecastClimatology(
@@ -243,34 +244,25 @@ if __name__ == "__main__":
     # Get the JSON file path from command-line arguments
     json_setting = sys.argv[1]
 
+    logfilename = log_filename(json_setting)
     current_location = os.path.dirname(os.path.abspath(__file__))
-    log_name = sys.argv[1].split('.')[0] + '.log'
-    log_filename = os.path.join(current_location, log_name)
+    logfilename = os.path.join(current_location,logfilename)
 
     # remove previous log file if exists
-    if os.path.exists(log_filename):
-        os.remove(log_filename)
+    if os.path.exists(logfilename):
+        os.remove(logfilename)
 
-    # Configure logging to write to both console and log file
-    logging.basicConfig(
-        level=logging.INFO,  # Log INFO and above
-        format="%(asctime)s - %(levelname)s - %(message)s",
-        handlers=[
-            logging.FileHandler(log_filename),  # Log to file
-            logging.StreamHandler()  # Log to console
-        ]
-    )
-    logger = logging.getLogger()
+    setup_logging(logfilename)
 
     try:
         # Load the settings
         dict_json1 = load_json(json_setting, json_path=current_location)
 
         # preprocessing the file to cefi format
-        climo_batch(dict_json1, logger)
+        climo_batch(dict_json1)
 
     except Exception as e:
-        logger.exception("An exception occurred")
+        logging.exception("An exception occurred")
 
     finally:
-        logger.info("Climatology process finished.")
+        logging.info("Climatology process finished.")
