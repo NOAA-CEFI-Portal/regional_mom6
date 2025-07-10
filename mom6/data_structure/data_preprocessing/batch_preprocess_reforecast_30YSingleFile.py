@@ -5,6 +5,8 @@ original reforecast to cefi format
 !!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
 file name of original file must follow the following pattern
 to accurately get the needed info to new file attrs
+(a soft link that has the following naming convention 
+which link to the original file is recommanded)
 
 cefi naming format:
 <variable>.<region>.<subdomain>.<experiment_type>
@@ -12,7 +14,7 @@ cefi naming format:
 
 ALSO : this script is designed to work with the
 original reforecast file format that concat all initialization 
-into one file
+into one file provided by the GFDL regional MOM6 team.
 !!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!
 
 also perform using nco:
