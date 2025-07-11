@@ -9,7 +9,7 @@ parts:
     - file: content/get_started/install
   - caption: Tutorials
     chapters:
-    - file: content/tutorials/regrid
+    - file: content/tutorials/regrid_tutorial
   - caption: API reference
     chapters:
     - file: content/api/mom6_read
