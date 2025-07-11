@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mom6.mom6_module.mom6_read &#8212; Regional MOM6 Package</title>
+    <title>mom6.mom6_module.mom6_regrid &#8212; Regional MOM6 Package</title>
   
   
   
@@ -57,11 +57,11 @@
     <script async="async" src="../../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/generated/mom6.mom6_module.mom6_read';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/generated/mom6.mom6_module.mom6_regrid';</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="mom6.mom6_module.mom6_statistics" href="mom6.mom6_module.mom6_statistics.html" />
-    <link rel="prev" title="API Reference for mom6_module" href="../api_reference_content.html" />
+    <link rel="next" title="mom6.mom6_module.mom6_detrend" href="mom6.mom6_module.mom6_detrend.html" />
+    <link rel="prev" title="mom6.mom6_module.mom6_statistics" href="mom6.mom6_module.mom6_statistics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -193,9 +193,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../mom6_statistics.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../mom6_regrid.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid</a></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">mom6.mom6_module.mom6_read</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">mom6.mom6_module.mom6_regrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
 </ul>
@@ -271,7 +271,7 @@
       
       
       
-      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6/issues/new?title=Issue%20on%20page%20%2Fcontent/api/generated/mom6.mom6_module.mom6_read.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6/issues/new?title=Issue%20on%20page%20%2Fcontent/api/generated/mom6.mom6_module.mom6_regrid.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -301,7 +301,7 @@
       
       
       
-      <li><a href="../../../_sources/content/api/generated/mom6.mom6_module.mom6_read.rst" target="_blank"
+      <li><a href="../../../_sources/content/api/generated/mom6.mom6_module.mom6_regrid.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -383,7 +383,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>mom6.mom6_module.mom6_read</h1>
+    <h1>mom6.mom6_module.mom6_regrid</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -397,22 +397,15 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-mom6.mom6_module.mom6_read">
-<span id="mom6-mom6-module-mom6-read"></span><h1>mom6.mom6_module.mom6_read<a class="headerlink" href="#module-mom6.mom6_module.mom6_read" title="Link to this heading">#</a></h1>
-<p>The module is created to read CEFI
-regional mom6 data under the CEFI
-data structure.</p>
+  <section id="module-mom6.mom6_module.mom6_regrid">
+<span id="mom6-mom6-module-mom6-regrid"></span><h1>mom6.mom6_module.mom6_regrid<a class="headerlink" href="#module-mom6.mom6_module.mom6_regrid" title="Link to this heading">#</a></h1>
+<p>The module include Regridding class
+for regional mom6 field</p>
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../mom6_read.html#mom6.mom6_module.mom6_read.AccessFiles" title="mom6.mom6_module.mom6_read.AccessFiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AccessFiles</span></code></a>(region, subdomain, ...[, ...])</p></td>
-<td><p>Frontend Class for user to get various mom6 simulation</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../mom6_read.html#mom6.mom6_module.mom6_read.LocalStore" title="mom6.mom6_module.mom6_read.LocalStore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LocalStore</span></code></a>(local_top_dir, region, subdomain, ...)</p></td>
-<td><p>class to handle the local read request</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../mom6_read.html#mom6.mom6_module.mom6_read.OpenDapStore" title="mom6.mom6_module.mom6_read.OpenDapStore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OpenDapStore</span></code></a>(region, subdomain, ...)</p></td>
-<td><p>class to handle the OPeNDAP request</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding" title="mom6.mom6_module.mom6_regrid.Regridding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Regridding</span></code></a>(ori_dataset, varname[, ...])</p></td>
+<td><p>class to handle regridding</p></td>
 </tr>
 </tbody>
 </table>
@@ -450,20 +443,20 @@ data structure.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../api_reference_content.html"
+       href="mom6.mom6_module.mom6_statistics.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></p>
+        <p class="prev-next-title">mom6.mom6_module.mom6_statistics</p>
       </div>
     </a>
     <a class="right-next"
-       href="mom6.mom6_module.mom6_statistics.html"
+       href="mom6.mom6_module.mom6_detrend.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mom6.mom6_module.mom6_statistics</p>
+        <p class="prev-next-title">mom6.mom6_module.mom6_detrend</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

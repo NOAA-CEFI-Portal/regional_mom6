@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Extract CEFI data using mom6_read &#8212; Regional MOM6 Package</title>
+    <title>Module mom6_read - get the CEFI data &#8212; Regional MOM6 Package</title>
   
   
   
@@ -60,8 +60,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/mom6_read';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Calculate CEFI statistics mom6_statistics" href="mom6_statistics.html" />
-    <link rel="prev" title="Installation" href="../get_started/install.html" />
+    <link rel="next" title="Module mom6_statistics - Calculate CEFI statistics" href="mom6_statistics.html" />
+    <link rel="prev" title="Regridding the Raw Grid to Regular Grid" href="../tutorials/regrid_tutorial.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -183,13 +183,19 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../get_started/install.html">Installation</a></li>
 </ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/regrid_tutorial.html">Regridding the Raw Grid to Regular Grid</a></li>
+</ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Extract CEFI data using <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code></a></li>
-<li class="toctree-l1"><a class="reference internal" href="mom6_statistics.html">Calculate CEFI statistics <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code></a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mom6_statistics.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mom6_regrid.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
 </ul>
@@ -248,7 +254,7 @@
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -265,7 +271,7 @@
       
       
       
-      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fcontent/api/mom6_read.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6/issues/new?title=Issue%20on%20page%20%2Fcontent/api/mom6_read.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -379,7 +385,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Extract CEFI data using mom6_read</h1>
+    <h1>Module mom6_read - get the CEFI data</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -413,7 +419,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="module-mom6.mom6_module.mom6_read">
-<span id="extract-cefi-data-using-mom6-read"></span><h1>Extract CEFI data using <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code><a class="headerlink" href="#module-mom6.mom6_module.mom6_read" title="Link to this heading">#</a></h1>
+<span id="module-mom6-read-get-the-cefi-data"></span><h1>Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data<a class="headerlink" href="#module-mom6.mom6_module.mom6_read" title="Link to this heading">#</a></h1>
 <p>The module is created to read CEFI
 regional mom6 data under the CEFI
 data structure.</p>
@@ -540,12 +546,12 @@ accessing using opendap</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../get_started/install.html"
+       href="../tutorials/regrid_tutorial.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Installation</p>
+        <p class="prev-next-title">Regridding the Raw Grid to Regular Grid</p>
       </div>
     </a>
     <a class="right-next"
@@ -553,7 +559,7 @@ accessing using opendap</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Calculate CEFI statistics <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code></p>
+        <p class="prev-next-title">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
