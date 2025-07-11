@@ -1,4 +1,4 @@
-# Calculate CEFI statistics `mom6_statistics`
+# Module `mom6_statistics` - Calculate CEFI statistics 
 
 ```{eval-rst}
 .. automodule::  mom6.mom6_module.mom6_statistics
