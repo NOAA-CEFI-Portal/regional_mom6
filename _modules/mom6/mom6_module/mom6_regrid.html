@@ -501,7 +501,11 @@ document.write(`
         <span class="n">regridder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">,</span> <span class="n">ds_regrid</span><span class="p">)</span>
 
         <span class="c1"># regrid to tracer point(memory intensive if the whole dataset is big)</span>
-        <span class="n">da</span> <span class="o">=</span> <span class="n">regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">])</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span>
+        <span class="n">da</span> <span class="o">=</span> <span class="n">regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;persist&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;.persisting data...&#39;</span><span class="p">)</span>
+            <span class="n">da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span> <span class="c1">#type: ignore</span>
+
 
         <span class="c1"># create dataset</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">:</span> <span class="n">da</span><span class="p">})</span>
@@ -530,7 +534,10 @@ document.write(`
         <span class="n">regridder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">,</span> <span class="n">ds_specific</span><span class="p">)</span>
 
         <span class="c1"># regrid to tracer point(memory intensive if the whole dataset is big)</span>
-        <span class="n">da</span> <span class="o">=</span> <span class="n">regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">])</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span>
+        <span class="n">da</span> <span class="o">=</span> <span class="n">regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;persist&quot;</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;.persisting data...&#39;</span><span class="p">)</span>
+            <span class="n">da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span> <span class="c1">#type: ignore</span>
 
         <span class="c1"># create dataset</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">:</span> <span class="n">da</span><span class="p">})</span>
