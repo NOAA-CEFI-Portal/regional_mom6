@@ -101,13 +101,13 @@ class Regridding:
         """
         # Create longitude and latitude arrays (e.g., 1D arrays)
         x = np.linspace(
-            self.ori_dataset['lon'].min(),
-            self.ori_dataset['lon'].max(),
+            self.ori_dataset['lon'].min().data,
+            self.ori_dataset['lon'].max().data,
             nx-1
         )
         y = np.linspace(
-            self.ori_dataset['lat'].min(),
-            self.ori_dataset['lat'].max(),
+            self.ori_dataset['lat'].min().data,
+            self.ori_dataset['lat'].max().data,
             ny-1
         )
 
