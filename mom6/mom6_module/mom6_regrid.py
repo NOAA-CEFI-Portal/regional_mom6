@@ -140,7 +140,11 @@ class Regridding:
         regridder = self.generate_regridder(self.ori_dataset, ds_regrid)
 
         # regrid to tracer point(memory intensive if the whole dataset is big)
-        da = regridder(self.ori_dataset[self.varname]).persist()
+        da = regridder(self.ori_dataset[self.varname])
+        if hasattr(da.data, "persist"):
+            print('.persisting data...')
+            da = da.persist() #type: ignore
+
 
         # create dataset
         ds = xr.Dataset({self.varname: da})
@@ -166,7 +170,10 @@ class Regridding:
         regridder = self.generate_regridder(self.ori_dataset, ds_specific)
 
         # regrid to tracer point(memory intensive if the whole dataset is big)
-        da = regridder(self.ori_dataset[self.varname]).persist()
+        da = regridder(self.ori_dataset[self.varname])
+        if hasattr(da.data, "persist"):
+            print('.persisting data...')
+            da = da.persist() #type: ignore
 
         # create dataset
         ds = xr.Dataset({self.varname: da})
