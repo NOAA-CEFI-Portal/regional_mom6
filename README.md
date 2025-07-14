@@ -10,7 +10,30 @@ Many scripts are the modified version of the [GFDL CEFI github repository](https
 Current stage of the module is for estabilishing the processing workflow in the [CEFI data portal](https://psl.noaa.gov/cefi_portal/). 
 Future availability of a more sophisticated python pakcage for various end-user purposes is in the roadmap of this project.
   
-We welcome external contribution to the package. Please feel free to submit issue for any inputs and joining the development core team. Thank you! 
+We welcome external contribution to the package. Please feel free to submit issue for any inputs and joining the development core team. Thank you!
+
+## Installing the package using `Conda`
+We recommand using conda to mamage the virtual environment that one is going to install the package. Due to the esmpy and ESMF are complex, compiled librarie, `pip` will not be able to install the module. 
+Therefore a installation of the xesmf package using conda with conda-forge channel is needed. 
+Please following the steps to install the package correctly
+
+1. Install the xesmf using `conda install`
+   ```
+   conda install -c conda-forge xesmf
+   ```
+2. Install the mom6 package using `pip install`
+   ```
+   pip install rmom6_preprocessing
+   ```
+
+## Test installation of the package
+```
+import mom6
+```
+or
+```
+from mom6.mom6_module import mom6_regrid
+```
 
 ## Setting up the developement environment
 
