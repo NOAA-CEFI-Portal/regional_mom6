@@ -7,6 +7,14 @@
       {
         "script": "../preprocess/mom6_regrid_batch.py",
         "config": "../preprocess/mom6_regrid_batch_nwa_refcast_mon_raw_statics_deptho.json"
+      },
+      {
+        "script": "../preprocess/mom6_regrid_batch.py",
+        "config": "../preprocess/mom6_regrid_batch_nwa_fcast_mon_raw.json"
+      },
+      {
+        "script": "../preprocess/mom6_regrid_batch.py",
+        "config": "../preprocess/mom6_regrid_batch_nwa_fcast_mon_raw_statics_deptho.json"
       }
     ],
     "climatology monthly": [
@@ -19,7 +27,7 @@
         "config": "../preprocess/mom6_climo_batch_nwa_refcast_mon_regrid.json"
       }
     ],
-    "tercile monthly": [
+    "tercile and tercile probability monthly": [
       {
         "script": "../preprocess/mom6_tercile_batch.py",
         "config": "../preprocess/mom6_tercile_batch_nwa_refcast_mon_raw.json"

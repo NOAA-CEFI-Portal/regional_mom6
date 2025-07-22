@@ -5,20 +5,20 @@
     "experiment_type": "hindcast",
     "output_frequency": "daily",
     "grid_type": "raw",
-    "release": "r20230520",
+    "release": "r20250715",
     "data_source": "local",
     "u_name": "ssu",
     "v_name": "ssv",
     "output_u": {
-        "cefi_rel_path": "cefi_portal/northwest_atlantic/full_domain/hindcast/daily/raw/r20230520",
-        "cefi_filename": "ssu_rotate.nwa.full.hcast.daily.raw.r20230520.199301-201912.nc",
+        "cefi_rel_path": "cefi_portal/northwest_atlantic/full_domain/hindcast/daily/raw/r20250715",
+        "cefi_filename": "ssu_rotate.nwa.full.hcast.daily.raw.r20250715.199301-202312.nc",
         "cefi_grid_type": "raw",
         "cefi_variable": "ssu_rotate",
         "cefi_aux": "Postprocessed Data : regrid to tracer points and rotate to east-west"
     },
     "output_v": {
-        "cefi_rel_path": "cefi_portal/northwest_atlantic/full_domain/hindcast/daily/raw/r20230520",
-        "cefi_filename": "ssv_rotate.nwa.full.hcast.daily.raw.r20230520.199301-201912.nc",
+        "cefi_rel_path": "cefi_portal/northwest_atlantic/full_domain/hindcast/daily/raw/r20250715",
+        "cefi_filename": "ssv_rotate.nwa.full.hcast.daily.raw.r20250715.199301-202312.nc",
         "cefi_grid_type": "raw",
         "cefi_variable": "ssv_rotate",
         "cefi_aux": "Postprocessed Data : regrid to tracer points and rotate to north-south"

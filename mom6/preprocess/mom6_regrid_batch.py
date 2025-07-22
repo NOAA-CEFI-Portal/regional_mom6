@@ -22,7 +22,7 @@ from mom6.data_structure.portal_data import DataStructure
 
 warnings.simplefilter("ignore")
 
-def regrid_batch(dict_json:dict)->xr.Dataset:
+def regrid_batch(dict_json:dict):
     """perform the batch regridding of the mom6 output
 
     TODO: dealing with the ice_month static field and 
@@ -82,10 +82,6 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
 
     allfile_list = local_access.get()
     statics = local_access.get(variable='ocean_static')
-    try:
-        ice_statics = local_access.get(variable='ice_static')
-    except FileNotFoundError:
-        logging.warning("ice_static file not found")
 
     # prepare static data
     try:
@@ -94,9 +90,11 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
         ds_static = xr.open_dataset(statics[0])
 
     try:
+        ice_statics = local_access.get(variable='ice_static')
         ds_static_ice = xr.open_dataset(ice_statics[0])
-    except Exception as e:
+    except Exception:
         ds_static_ice = None
+        logging.warning("ice_static file not found")
 
     # loop through all file in the original path
     for file in allfile_list:
@@ -164,7 +162,7 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
                         try:
                             raise ValueError("Unknown grid (need implementations)")
                         except ValueError as e:
-                            logging.info(f"Skipping file due to error: {e}")
+                            logging.info("Skipping file due to error: %s",e)
                             continue
 
                     # call regridding class
@@ -210,7 +208,7 @@ def regrid_batch(dict_json:dict)->xr.Dataset:
                         dict_json_output=dict_json['output']
                     )
 
-def regrid_static(dict_json:dict)->xr.Dataset:
+def regrid_static(dict_json:dict):
     """perform the regridding for static file 
 
     Parameters
@@ -364,8 +362,8 @@ def regrid_static(dict_json:dict)->xr.Dataset:
 if __name__=="__main__":
 
     client = Client(processes=False,memory_limit='500GB',silence_logs=50)
-    print(client)
-    print(client.cluster.dashboard_link)
+    # print(client)
+    # print(client.cluster.dashboard_link)
 
     # Ensure a JSON file is provided as an argument
     if len(sys.argv) < 2:

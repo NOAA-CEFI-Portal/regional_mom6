@@ -2,10 +2,7 @@
 The script do batch rename from 
 original reforecast to cefi format
 
-orignal naming format:
-tos_forecast_iYYYYMM.nc
-
-cefi naming format:
+orignal naming format before preprocessing:
 <variable>.<region>.<subdomain>.<experiment_type>
 .<version>.<output_frequency>.<grid_type>.<iYYYY0M>.nc
 
@@ -186,13 +183,13 @@ def cefi_preprocess(dict_setting:dict):
                 chunks = []
                 chunk_info = portal_data.FileChunking()
                 for dim in dims:
-                    if 'z' in dim :
+                    if isinstance(dim, str) and 'z' in dim :
                         chunks.append(chunk_info.vertical)
-                    elif 'time' in dim:
+                    elif isinstance(dim, str) and 'time' in dim:
                         chunks.append(chunk_info.time)
-                    elif 'lead' in dim:
+                    elif isinstance(dim, str) and 'lead' in dim:
                         chunks.append(chunk_info.lead)
-                    elif 'member' in dim:
+                    elif isinstance(dim, str) and 'member' in dim:
                         chunks.append(chunk_info.member)
                     else:
                         chunks.append(chunk_info.horizontal)
