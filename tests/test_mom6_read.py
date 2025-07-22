@@ -133,27 +133,27 @@ class TestOpenDapStore:
     def test_OpenDapStore_fail_region(self, fail_region):
         """test the OpenDapStore class"""
         with pytest.raises(ValueError):
-                mr.OpenDapStore(**fail_region)
+            mr.OpenDapStore(**fail_region)
     def test_OpenDapStore_fail_subdomain(self, fail_subdomain):
         """test the OpenDapStore class"""
         with pytest.raises(ValueError):
-                mr.OpenDapStore(**fail_subdomain)
+            mr.OpenDapStore(**fail_subdomain)
     def test_OpenDapStore_fail_experiment_type(self, fail_experiment_type):   
         """test the OpenDapStore class"""
         with pytest.raises(ValueError):
-                mr.OpenDapStore(**fail_experiment_type)
+            mr.OpenDapStore(**fail_experiment_type)
     def test_OpenDapStore_fail_output_frequency(self, fail_output_frequency):
         """test the OpenDapStore class"""
         with pytest.raises(ValueError):
-                mr.OpenDapStore(**fail_output_frequency)
+            mr.OpenDapStore(**fail_output_frequency)
     def test_OpenDapStore_fail_grid_type(self, fail_grid_type):
         """test the OpenDapStore class"""
         with pytest.raises(ValueError):
-                mr.OpenDapStore(**fail_grid_type)
+            mr.OpenDapStore(**fail_grid_type)
     def test_OpenDapStore_fail_release(self, fail_release):
         """test the OpenDapStore class"""
         with pytest.raises(FileNotFoundError):
-                mr.OpenDapStore(**fail_release)
+            mr.OpenDapStore(**fail_release)
 
     def test_OpenDapStore_server_error(self, correct_arguments):
         """test the OpenDapStore class with server status error"""
@@ -192,12 +192,75 @@ class TestOpenDapStore:
             store.get_files(variable='non_existent_variable')
 
 
+####### Test GCSStore Class #######
+class TestGCSStore:
+    """Test the GCSStore class"""
+    def test_GCSStore_correct(self, correct_arguments):
+        """test the GCSStore class"""
+        result = mr.GCSStore(**correct_arguments)
+        # successful opendap store object creation
+        assert isinstance(result, mr.GCSStore), f"Expected type GCSStore, but got {type(result)}"
+    def test_GCSStore_fail_region(self, fail_region):
+        """test the GCSStore class"""
+        with pytest.raises(ValueError):
+            mr.GCSStore(**fail_region)
+    def test_GCSStore_fail_subdomain(self, fail_subdomain):
+        """test the GCSStore class"""
+        with pytest.raises(ValueError):
+            mr.GCSStore(**fail_subdomain)
+    def test_GCSStore_fail_experiment_type(self, fail_experiment_type):   
+        """test the GCSStore class"""
+        with pytest.raises(ValueError):
+            mr.GCSStore(**fail_experiment_type)
+    def test_GCSStore_fail_output_frequency(self, fail_output_frequency):
+        """test the OpenDGCSStoreapStore class"""
+        with pytest.raises(ValueError):
+            mr.GCSStore(**fail_output_frequency)
+    def test_GCSStore_fail_grid_type(self, fail_grid_type):
+        """test the GCSStore class"""
+        with pytest.raises(ValueError):
+            mr.GCSStore(**fail_grid_type)
+    def test_GCSStore_fail_release(self, fail_release):
+        """test the GCSStore class"""
+        with pytest.raises(FileNotFoundError):
+            mr.GCSStore(**fail_release)
+
+    # Test OpenDapStore.get_file
+    def test_GCSStore_get_file_correct(self, correct_arguments):
+        """test the GCSStore class get file method"""
+        store = mr.GCSStore(**correct_arguments)
+        result = store.get_files()
+        # successful file list object creation
+        assert isinstance(result, list)
+
+        result = store.get_files(variable='tos')
+        # successful file list object creation
+        assert isinstance(result, list)
+
+    def test_GCSStore_get_file_fail_variable(self, correct_arguments):
+        """test the GCSStore class get file method failed variable name"""
+        store = mr.GCSStore(**correct_arguments)
+        with pytest.raises(FileNotFoundError):
+            store.get_files(variable='non_existent_variable')
+
 ####### Test AccessFiles Class #######
 class test_AccessFiles:
     """Test the AccessFiles class"""
     def test_AccessFiles_correct_opendap(self, correct_arguments):
         """test the AccessFiles class"""
         result = mr.AccessFiles(**correct_arguments,data_source='opendap')
+        # successful access files object creation
+        assert isinstance(result, mr.AccessFiles), f"Expected type AccessFiles, but got {type(result)}"
+
+    def test_AccessFiles_correct_gcs(self, correct_arguments):
+        """test the AccessFiles class"""
+        result = mr.AccessFiles(**correct_arguments,data_source='gcs')
+        # successful access files object creation
+        assert isinstance(result, mr.AccessFiles), f"Expected type AccessFiles, but got {type(result)}"
+
+    def test_AccessFiles_correct_s3(self, correct_arguments):
+        """test the AccessFiles class"""
+        result = mr.AccessFiles(**correct_arguments,data_source='s3')
         # successful access files object creation
         assert isinstance(result, mr.AccessFiles), f"Expected type AccessFiles, but got {type(result)}"
 
