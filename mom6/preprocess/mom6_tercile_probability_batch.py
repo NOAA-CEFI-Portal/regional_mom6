@@ -22,7 +22,7 @@ from mom6.data_structure.portal_data import DataStructure
 from mom6.mom6_module.mom6_forecast_tercile import Tercile
 
 
-def tercile_probability_batch(dict_json:dict, logger_object) -> xr.Dataset:
+def tercile_probability_batch(dict_json:dict, logger_object):
     """perform the batch climatology of the mom6 output
 
     Parameters
@@ -176,7 +176,8 @@ if __name__=="__main__":
     warnings.simplefilter("ignore")
     client = Client(processes=False,memory_limit='500GB',silence_logs=50)
     print(client)
-    print(client.cluster.dashboard_link)
+    if client.cluster is not None:
+        print(client.cluster.dashboard_link)
 
     # Ensure a JSON file is provided as an argument
     if len(sys.argv) < 1:

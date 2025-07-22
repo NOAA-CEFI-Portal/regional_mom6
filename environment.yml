@@ -5,6 +5,10 @@ dependencies:
   - dask
   - netcdf4
   - pydap
+  - zarr
+  - fsspec
+  - s3fs
+  - gcsfs
   - python=3.11
   - xarray
   - xesmf

@@ -10,8 +10,10 @@ https://xesmf.readthedocs.io/en/stable/notebooks/Compare_algorithms.html
 """
 import os
 import sys
+import time
 import logging
 import warnings
+from typing import Optional
 import xarray as xr
 from dask.distributed import Client
 from mom6.mom6_module.mom6_read import AccessFiles
@@ -22,7 +24,12 @@ from mom6.data_structure import portal_data
 warnings.simplefilter("ignore")
 
 
-def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
+def output_processed_data(
+    ds:xr.Dataset,
+    top_dir:str,
+    dict_json_output:Optional[dict]=None,
+    max_attempts:int=10
+):
     """output the processed data to the netcdf file
 
     Parameters
@@ -58,18 +65,19 @@ def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
     chunks = []
     chunk_info = portal_data.FileChunking()
     for dim in dims:
-        if 'z' in dim :
-            chunks.append(chunk_info.vertical)
-        elif 'time' in dim:
-            chunks.append(chunk_info.time)
-        elif 'lead' in dim:
-            chunks.append(chunk_info.lead)
-        elif 'member' in dim:
-            chunks.append(chunk_info.member)
-        elif 'init' in dim:
-            chunks.append(chunk_info.init)
-        else:
-            chunks.append(chunk_info.horizontal)
+        if isinstance(dim, str):
+            if 'z' in dim :
+                chunks.append(chunk_info.vertical)
+            elif 'time' in dim:
+                chunks.append(chunk_info.time)
+            elif 'lead' in dim:
+                chunks.append(chunk_info.lead)
+            elif 'member' in dim:
+                chunks.append(chunk_info.member)
+            elif 'init' in dim:
+                chunks.append(chunk_info.init)
+            else:
+                chunks.append(chunk_info.horizontal)
 
     for var in variables:
         if len(ds[var].dims) == len(chunks):
@@ -89,8 +97,32 @@ def output_processed_data(ds:xr.Dataset,top_dir:str,dict_json_output:dict=None):
                 'chunksizes': chunks
             }
 
-    ds.compute().to_netcdf(output_file)
-    print(f"Output file: {output_file}")
+    ds = ds.compute()
+
+    attempt = 0
+    print(f"Outputing file: {output_file}")
+    while attempt < max_attempts:
+        try:
+            print(f"Attempt {attempt + 1}/{max_attempts} to write {output_file}")
+            ds.to_netcdf(output_file)
+            break
+        except (RuntimeError, PermissionError) as e:
+            print(f"Error during file write (attempt {attempt + 1}): {e}")
+            if "NetCDF: HDF error" in str(e) or "Permission denied" in str(e):
+                if attempt < max_attempts - 1:
+                    delay = 1. * (2. ** attempt) # 2 second for initial retry, 4s next
+                    print(f"Retrying in {delay:.2f} seconds...")
+                    time.sleep(delay)
+                    attempt += 1
+                else:
+                    print("Max retry attempts reached for netcdf write. Skipping for failing.")
+                    logging.warning("%s not saved. An NetCDF: HDF error or Permission denied error occurred: %s.", output_file,e)
+                    break
+            else:
+                logging.warning("%s not saved. An unexpected error occurred: %s.", output_file,e)
+        except Exception as e:
+            # this print the error message but does not stop the file processing
+            logging.warning("%s not saved. An unexpected error occurred: %s.", output_file,e)
 
 
 def rotate_batch(dict_json:dict)->tuple:
@@ -254,8 +286,8 @@ def rotate_batch(dict_json:dict)->tuple:
 if __name__=="__main__":
 
     client = Client(processes=False,memory_limit='500GB',silence_logs=50)
-    print(client)
-    print(client.cluster.dashboard_link)
+    # print(client)
+    # print(client.cluster.dashboard_link)
 
     # Ensure a JSON file is provided as an argument
     if len(sys.argv) < 1:

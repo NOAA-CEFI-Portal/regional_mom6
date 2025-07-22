@@ -6,7 +6,7 @@ the tercile probability of the forecast
 or reforecast
 
 """
-from typing import List
+from typing import List, Optional
 import warnings
 import numpy as np
 import pandas as pd
@@ -86,7 +86,7 @@ class Tercile:
         # find existing initial month
         init_months = list(set(da_data[f'{self.init}.month'].data))
 
-        list_ds_terciles = [] 
+        list_ds_terciles = []
         for init_month in init_months:
 
             # seperate based on initialization time
@@ -126,7 +126,7 @@ class Tercile:
         ds_single_initialization : xr.Dataset,
         varname : str,
         ds_tercile : xr.Dataset,
-        lead_bins : List[int] = None,
+        lead_bins : Optional[List[int]] = None
     ) -> xr.Dataset:
         """use single initialization's normal distribution
         and pre-determined tercile value based on the long-term 
@@ -204,6 +204,9 @@ class Tercile:
         if lead_bins is None:
             ds_tercile_binned = ds_tercile.rename({'lead': 'lead_bin'})
         else:
+            # setup lead bins to average during forecast lead time
+            lead_bin_label = np.arange(0,len(lead_bins)-1)
+
             # average the forecast over the lead bins
             ds_tercile_binned = (
                 ds_tercile

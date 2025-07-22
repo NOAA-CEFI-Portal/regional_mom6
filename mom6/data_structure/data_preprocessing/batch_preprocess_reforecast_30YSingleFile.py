@@ -176,7 +176,6 @@ def cefi_preprocess(dict_setting:dict):
                     cefi_filename = filename,
                     cefi_variable = variable,
                     cefi_ori_filename = file.split('/')[-1],
-                    cefi_ori_category = file.split('/')[-1].split('.')[0],
                     cefi_archive_version = archive_version,
                     cefi_region = region_file,
                     cefi_subdomain = subdomain_file,
@@ -211,13 +210,13 @@ def cefi_preprocess(dict_setting:dict):
                     chunks = []
                     chunk_info = portal_data.FileChunking()
                     for dim in dims:
-                        if 'z' in dim :
+                        if isinstance(dim, str) and 'z' in dim :
                             chunks.append(chunk_info.vertical)
-                        elif 'time' in dim:
+                        elif isinstance(dim, str) and 'time' in dim:
                             chunks.append(chunk_info.time)
-                        elif 'lead' in dim:
+                        elif isinstance(dim, str) and 'lead' in dim:
                             chunks.append(chunk_info.lead)
-                        elif 'member' in dim:
+                        elif isinstance(dim, str) and 'member' in dim:
                             chunks.append(chunk_info.member)
                         else:
                             chunks.append(chunk_info.horizontal)
