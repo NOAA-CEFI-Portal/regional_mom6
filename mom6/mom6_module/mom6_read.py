@@ -5,11 +5,12 @@ regional mom6 data under the CEFI
 data structure.
 """
 import os
-import sys
 import glob
 import warnings
+from typing import Optional
 import requests
-from bs4 import BeautifulSoup
+import fsspec
+from bs4 import BeautifulSoup, NavigableString
 import xarray as xr
 from mom6.data_structure import portal_data
 from mom6.mom6_module.mom6_types import (
@@ -97,7 +98,7 @@ class OpenDapStore:
             if html_response.status_code == 200:
                 # Response is OK
                 print(f"Success: URL {self.catalog_url} responded with status 200.")
-               
+
             else:
                 # dealing with the non-200 response due to the release date
                 parent_dir_release = os.path.dirname(self.cefi_rel_dir)
@@ -114,16 +115,17 @@ class OpenDapStore:
                     soup = BeautifulSoup(release_response.text, 'html.parser')
                     # get all div tag with class name including "content"
                     div_content = soup.find('div', class_='content')
-                    # get all a tag within the subset div_content
-                    a_tags = div_content.find_all('a')
-                    # get all code tag within the subset a_tags
-                    all_release_list = [a_tag.find_all('code')[0].text for a_tag in a_tags]
-                    print('--------------------------------')
-                    print('Current release data is not valid. Available releases are:')
-                    for release_dir in all_release_list:
-                        print(release_dir)
-                    print('--------------------------------')
-                    raise FileNotFoundError('No files available based on release date, check available release data above')
+                    if div_content and not isinstance(div_content, NavigableString):
+                        # get all a tag within the subset div_content
+                        a_tags = div_content.find_all('a')
+                        # get all code tag within the subset a_tags
+                        all_release_list = [a_tag.find_all('code')[0].text for a_tag in a_tags]
+                        print('--------------------------------')
+                        print('Current release data is not valid. Available releases are:')
+                        for release_dir in all_release_list:
+                            print(release_dir)
+                        print('--------------------------------')
+                        raise FileNotFoundError('No files available based on release date, check available release data above')
                 # this else should not be reach when THREDD server is working.
                 # Error should be catched when constructing cefi_data_path.
                 # This error is reach when the connection is not available 
@@ -141,7 +143,7 @@ class OpenDapStore:
             # Handle connection failure here
             raise ConnectionError('Error: Server not responding.') from e
 
-    def get_files(self,variable:str=None)-> list:
+    def get_files(self,variable:Optional[str]=None)-> list:
         """Getting file opendap urls
 
         Parameters
@@ -171,25 +173,261 @@ class OpenDapStore:
 
         # get all div tag with class name including "content"
         div_content = soup.find('div', class_='content')
-        # get all a tag within the subset div_content
-        a_tags = div_content.find_all('a')
-        # get all code tag within the subset a_tags
-        all_file_list = [a_tag.find_all('code')[0].text for a_tag in a_tags]
+        if div_content and not isinstance(div_content, NavigableString):
+            # get all a tag within the subset div_content
+            a_tags = div_content.find_all('a')
+            # get all code tag within the subset a_tags
+            all_file_list = [a_tag.find_all('code')[0].text for a_tag in a_tags]
+
+            # include only netcdf file
+            files = []
+            if variable is None:
+                for file in all_file_list:
+                    if 'nc' == file.split('.')[-1] :
+                        files.append(
+                            os.path.join(self.opendap_url,file)
+                        )
+            else:
+                for file in all_file_list:
+                    if 'nc' == file.split('.')[-1] and variable == file.split('.')[0] :
+                        files.append(
+                            os.path.join(self.opendap_url,file)
+                        )
+
+            # if zero file is found
+            if not files :
+                raise FileNotFoundError('No files available based on input')
+
+            return files
+        else:
+            raise FileNotFoundError('No div_content for BeautifulSoup based on input')
+            
+
+
+class GCSStore:
+    """class to handle the Google Cloud Storage request
+    """
+    def __init__(
+        self,
+        region : ModelRegionOptions,
+        subdomain : ModelSubdomainOptions,
+        experiment_type : ModelExperimentTypeOptions,
+        output_frequency : ModelOutputFrequencyOptions,
+        grid_type : ModelGridTypeOptions,
+        release : str
+    ) -> None:
+        """input for the class to get the GCS object full name
+
+        Parameters
+        ----------
+        region : ModelRegionOptions
+            region name
+        subdomain : ModelSubdomainOptions
+            subdomain name
+        experiment_type : ModelExperimentTypeOptions
+            experiment type
+        output_frequency : ModelOutputFrequencyOptions
+            data output frequency
+        grid_type : ModelGridTypeOptions
+            model grid type
+        release_date : str
+            release date in the format of "rYYYYMMDD"
+        """
+        self.region = region
+        self.subdomain = subdomain
+        self.experiment_type = experiment_type
+        self.output_frequency = output_frequency
+        self.grid_type = grid_type
+        self.release = release
+
+        # check kwarg input exists using data class
+        cefi_data_path = portal_data.DataPath(
+            region=region,
+            subdomain=subdomain,
+            experiment_type=experiment_type,
+            output_frequency=output_frequency,
+            grid_type=grid_type,
+            release=release
+        )
+
+        # remove "cefi_portal" dir at the top rel path
+        parse_path = cefi_data_path.cefi_dir
+        self.cefi_rel_dir = os.path.join(*parse_path.split('/')[1:])
+
+
+        # construct the catalog/opendap url
+        self.cloud_head = 'gcs://'
+        self.cloud_obj_proj_name = 'gcs://noaa-oar-cefi-regional-mom6/'
+
+        self.cloud_obj_parent_name = os.path.join(
+            self.cloud_obj_proj_name,
+            self.cefi_rel_dir
+        )
+        # print(self.cefi_rel_dir)
+
+        try:
+            # Make the request
+            fs = fsspec.filesystem("gcs", anon=True)
+            self.all_objs = fs.ls(self.cloud_obj_parent_name, detail=False)
+            print(f"Files are available on GCS ({self.cloud_obj_parent_name})")
+        except FileNotFoundError as e:
+            gcs_url = 'https://console.cloud.google.com/storage/browser/noaa-oar-cefi-regional-mom6'
+            raise FileNotFoundError(f"Please check if the release number is available at {gcs_url}.") from e
+
+
+    def get_files(self,variable:Optional[str]=None)-> list:
+        """Getting file GCS links
+
+        Parameters
+        ----------
+        variable : str
+            variable short name ex:'tos' for sea surface temperature
+        
+        Returns
+        -------
+        list
+            a list of url in the form of string that 
+            provide the locations of the data when
+            accessing using GCS
+
+        Raises
+        ------
+        FileNotFoundError
+            When the files is empty that means the init setting 
+            or code must have some incorrect pairing. Debug possibly 
+            needed.
+        """
+
 
         # include only netcdf file
         files = []
         if variable is None:
-            for file in all_file_list:
-                if 'nc' == file.split('.')[-1] :
-                    files.append(
-                        os.path.join(self.opendap_url,file)
-                    )
+            for file in self.all_objs:
+                if 'json' == file.split('.')[-1] :
+                    cloud_store = self.cloud_head+file
+                    files.append(cloud_store)
         else:
-            for file in all_file_list:
-                if 'nc' == file.split('.')[-1] and variable == file.split('.')[0] :
-                    files.append(
-                        os.path.join(self.opendap_url,file)
-                    )
+            for file in self.all_objs:
+                var_filename = file.split('/')[-1]
+                if 'json' == var_filename.split('.')[-1] and variable == var_filename.split('.')[0] :
+                    cloud_store = self.cloud_head+file
+                    files.append(cloud_store)
+
+        # if zero file is found
+        if not files :
+            raise FileNotFoundError('No files available based on input')
+
+        return files
+
+
+class S3Store:
+    """class to handle the AWS S3 bucket request
+    """
+    def __init__(
+        self,
+        region : ModelRegionOptions,
+        subdomain : ModelSubdomainOptions,
+        experiment_type : ModelExperimentTypeOptions,
+        output_frequency : ModelOutputFrequencyOptions,
+        grid_type : ModelGridTypeOptions,
+        release : str
+    ) -> None:
+        """input for the class to get the S3 object full name
+
+        Parameters
+        ----------
+        region : ModelRegionOptions
+            region name
+        subdomain : ModelSubdomainOptions
+            subdomain name
+        experiment_type : ModelExperimentTypeOptions
+            experiment type
+        output_frequency : ModelOutputFrequencyOptions
+            data output frequency
+        grid_type : ModelGridTypeOptions
+            model grid type
+        release_date : str
+            release date in the format of "rYYYYMMDD"
+        """
+        self.region = region
+        self.subdomain = subdomain
+        self.experiment_type = experiment_type
+        self.output_frequency = output_frequency
+        self.grid_type = grid_type
+        self.release = release
+
+        # check kwarg input exists using data class
+        cefi_data_path = portal_data.DataPath(
+            region=region,
+            subdomain=subdomain,
+            experiment_type=experiment_type,
+            output_frequency=output_frequency,
+            grid_type=grid_type,
+            release=release
+        )
+
+        # remove "cefi_portal" dir at the top rel path
+        parse_path = cefi_data_path.cefi_dir
+        self.cefi_rel_dir = os.path.join(*parse_path.split('/')[1:])
+
+
+        # construct the catalog/opendap url
+        self.cloud_head = 's3://'
+        self.cloud_obj_proj_name = 's3://noaa-oar-cefi-regional-mom6-pds/'
+
+        self.cloud_obj_parent_name = os.path.join(
+            self.cloud_obj_proj_name,
+            self.cefi_rel_dir
+        )
+        # print(self.cefi_rel_dir)
+
+        try:
+            # Make the request
+            fs = fsspec.filesystem("s3", anon=True)
+            self.all_objs = fs.ls(self.cloud_obj_parent_name, detail=False)
+            print(f"Files are available on S3 ({self.cloud_obj_parent_name})")
+        except FileNotFoundError :
+            s3_url = 'https://noaa-oar-cefi-regional-mom6-pds.s3.amazonaws.com/index.html'
+            print(f"Please check if the release number is available at {s3_url}.")
+
+
+    def get_files(self,variable:Optional[str]=None)-> list:
+        """Getting file S3 links
+
+        Parameters
+        ----------
+        variable : str
+            variable short name ex:'tos' for sea surface temperature
+        
+        Returns
+        -------
+        list
+            a list of links in the form of string that 
+            provide the locations of the data when
+            accessing using S3
+
+        Raises
+        ------
+        FileNotFoundError
+            When the files is empty that means the init setting 
+            or code must have some incorrect pairing. Debug possibly 
+            needed.
+        """
+
+
+        # include only netcdf file
+        files = []
+        if variable is None:
+            for file in self.all_objs:
+                if 'json' == file.split('.')[-1] :
+                    cloud_store = self.cloud_head+file
+                    files.append(cloud_store)
+        else:
+            for file in self.all_objs:
+                var_filename = file.split('/')[-1]
+                if 'json' == var_filename.split('.')[-1] and variable == var_filename.split('.')[0] :
+                    cloud_store = self.cloud_head+file
+                    files.append(cloud_store)
 
         # if zero file is found
         if not files :
@@ -293,7 +531,7 @@ class LocalStore:
             raise FileNotFoundError('Data structure constructed by input does not exist')
 
 
-    def get_files(self,variable:str=None)-> list:
+    def get_files(self,variable:Optional[str]=None)-> list:
         """Getting file in local storage
 
         Parameters
@@ -351,7 +589,7 @@ class AccessFiles:
         grid_type : ModelGridTypeOptions,
         release : str,
         data_source : DataSourceOptions,
-        local_top_dir : str = None,
+        local_top_dir : Optional[str] = None,
     ) -> None:
         """
         Parameters
@@ -400,13 +638,27 @@ class AccessFiles:
                 release
             )
         elif data_source == 's3':
-            raise ValueError('s3 currently not available')
+            self.storage = S3Store(
+                region,
+                subdomain,
+                experiment_type,
+                output_frequency,
+                grid_type,
+                release
+            )
         elif data_source == 'gcs':
-            raise ValueError('gcs currently not available')
+            self.storage = GCSStore(
+                region,
+                subdomain,
+                experiment_type,
+                output_frequency,
+                grid_type,
+                release
+            )
         else :
             raise ValueError('only "local", "opendap", "s3", and "gcs" are available')
 
-    def get(self,variable:str=None, print_list=False)-> list:
+    def get(self,variable:Optional[str]=None, print_list=False)-> list:
         """Getting files from storage
 
         Parameters
@@ -422,9 +674,12 @@ class AccessFiles:
             accessing using opendap
 
         """
-        files = self.storage.get_files(variable)
-        if print_list :
-            print('--------- All avaible files ------------')
-            for file in files:
-                print(file)
-        return files
+        if self.storage:
+            files = self.storage.get_files(variable)
+            if print_list :
+                print('--------- All available files ------------')
+                for file in files:
+                    print(file)
+            return files
+        else:
+            raise FileNotFoundError('the storage is not assigned')

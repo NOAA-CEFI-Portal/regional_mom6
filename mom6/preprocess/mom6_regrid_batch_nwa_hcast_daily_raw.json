@@ -5,7 +5,7 @@
     "experiment_type": "hindcast",
     "output_frequency": "daily",
     "grid_type": "raw",
-    "release": "r20230520",
+    "release": "r20250715",
     "data_source": "local",
     "output": {
         "cefi_grid_type": "regrid",
