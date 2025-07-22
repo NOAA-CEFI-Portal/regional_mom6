@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -408,11 +408,17 @@ data structure.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="../mom6_read.html#mom6.mom6_module.mom6_read.AccessFiles" title="mom6.mom6_module.mom6_read.AccessFiles"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AccessFiles</span></code></a>(region, subdomain, ...[, ...])</p></td>
 <td><p>Frontend Class for user to get various mom6 simulation</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../mom6_read.html#mom6.mom6_module.mom6_read.LocalStore" title="mom6.mom6_module.mom6_read.LocalStore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LocalStore</span></code></a>(local_top_dir, region, subdomain, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../mom6_read.html#mom6.mom6_module.mom6_read.GCSStore" title="mom6.mom6_module.mom6_read.GCSStore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GCSStore</span></code></a>(region, subdomain, experiment_type, ...)</p></td>
+<td><p>class to handle the Google Cloud Storage request</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../mom6_read.html#mom6.mom6_module.mom6_read.LocalStore" title="mom6.mom6_module.mom6_read.LocalStore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LocalStore</span></code></a>(local_top_dir, region, subdomain, ...)</p></td>
 <td><p>class to handle the local read request</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../mom6_read.html#mom6.mom6_module.mom6_read.OpenDapStore" title="mom6.mom6_module.mom6_read.OpenDapStore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OpenDapStore</span></code></a>(region, subdomain, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../mom6_read.html#mom6.mom6_module.mom6_read.OpenDapStore" title="mom6.mom6_module.mom6_read.OpenDapStore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OpenDapStore</span></code></a>(region, subdomain, ...)</p></td>
 <td><p>class to handle the OPeNDAP request</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../mom6_read.html#mom6.mom6_module.mom6_read.S3Store" title="mom6.mom6_module.mom6_read.S3Store"><code class="xref py py-obj docutils literal notranslate"><span class="pre">S3Store</span></code></a>(region, subdomain, experiment_type, ...)</p></td>
+<td><p>class to handle the AWS S3 bucket request</p></td>
 </tr>
 </tbody>
 </table>

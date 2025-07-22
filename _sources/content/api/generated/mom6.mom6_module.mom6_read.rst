@@ -9,6 +9,8 @@
    .. autosummary::
    
       AccessFiles
+      GCSStore
       LocalStore
       OpenDapStore
+      S3Store
    
