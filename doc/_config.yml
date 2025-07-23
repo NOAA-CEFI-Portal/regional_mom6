@@ -3,7 +3,7 @@
 
 title: Regional MOM6 Package
 author: regional_mom6 development team
-logo: CEFI_logo_nobg.png
+logo: CEFI_python_tool.png
 
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
