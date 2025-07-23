@@ -20,3 +20,7 @@ dependencies:
   - sphinx
   - sphinx-autodoc-typehints
   - sphinxcontrib-napoleon
+  - pip:
+    - build
+    - twine
+

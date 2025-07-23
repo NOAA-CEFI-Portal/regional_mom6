@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="rmom6_preprocessing",
-    version="0.10.3",
+    version="0.10.4",
     description="Regional MOM6 CEFI preprocessing and data access",
     author="Chia-Wei Hsu",
     author_email="chia-wei.hsu@noaa.gov",
@@ -18,7 +18,11 @@ setup(
         "pydap",
         "pytest",
         "beautifulsoup4",
-        "matplotlib"
+        "matplotlib",
+        "zarr",
+        "fsspec",
+        "s3fs",
+        "gcsfs"
     ],
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
