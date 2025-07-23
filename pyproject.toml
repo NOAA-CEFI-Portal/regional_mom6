@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rmom6_preprocessing"
-version = "0.10.3"
+version = "0.10.4"
 description = "Regional MOM6 CEFI preprocessing and data access"
 authors = [
     { name="Chia-Wei Hsu", email="chia-wei.hsu@noaa.gov" }
@@ -20,7 +20,11 @@ dependencies = [
     "pydap",
     "pytest",
     "beautifulsoup4",
-    "matplotlib"
+    "matplotlib",
+    "zarr",
+    "fsspec",
+    "s3fs",
+    "gcsfs"
 ]
 
 [project.urls]
