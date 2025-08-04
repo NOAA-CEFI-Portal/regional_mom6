@@ -13,13 +13,12 @@ setup(
     install_requires=[
         "xarray",
         "netcdf4",
-        "xesmf",
         "dask",
         "pydap",
         "pytest",
         "beautifulsoup4",
         "matplotlib",
-        "zarr",
+        "zarr==2.18.3",
         "fsspec",
         "s3fs",
         "gcsfs"

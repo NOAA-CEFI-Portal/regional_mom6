@@ -5,7 +5,7 @@ dependencies:
   - dask
   - netcdf4
   - pydap
-  - zarr
+  - zarr=2.18.3
   - fsspec
   - s3fs
   - gcsfs
