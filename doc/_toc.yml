@@ -9,6 +9,7 @@ parts:
     - file: content/get_started/install
   - caption: Tutorials
     chapters:
+    - file: content/tutorials/data_access_tutorial
     - file: content/tutorials/regrid_tutorial
   - caption: API reference
     chapters:
