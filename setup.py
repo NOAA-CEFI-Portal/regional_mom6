@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="rmom6_preprocessing",
-    version="0.10.4",
+    version="0.10.5",
     description="Regional MOM6 CEFI preprocessing and data access",
     author="Chia-Wei Hsu",
     author_email="chia-wei.hsu@noaa.gov",
@@ -13,13 +13,12 @@ setup(
     install_requires=[
         "xarray",
         "netcdf4",
-        "xesmf",
         "dask",
         "pydap",
         "pytest",
         "beautifulsoup4",
         "matplotlib",
-        "zarr",
+        "zarr==2.18.3",
         "fsspec",
         "s3fs",
         "gcsfs"

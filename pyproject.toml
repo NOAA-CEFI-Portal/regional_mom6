@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rmom6_preprocessing"
-version = "0.10.4"
+version = "0.10.5"
 description = "Regional MOM6 CEFI preprocessing and data access"
 authors = [
     { name="Chia-Wei Hsu", email="chia-wei.hsu@noaa.gov" }
@@ -15,13 +15,12 @@ license = {text = "BSD 3-Clause"}
 dependencies = [
     "xarray",
     "netcdf4",
-    "xesmf",
     "dask",
     "pydap",
     "pytest",
     "beautifulsoup4",
     "matplotlib",
-    "zarr",
+    "zarr==2.18.3",
     "fsspec",
     "s3fs",
     "gcsfs"
