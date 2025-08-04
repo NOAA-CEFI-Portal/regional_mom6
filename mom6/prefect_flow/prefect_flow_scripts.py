@@ -4,7 +4,7 @@ import subprocess
 from prefect import flow, task
 from prefect.logging import get_run_logger
 
-@task(retry_delay_seconds=60, retries=100, timeout_seconds=12*60*60)
+@task(retry_delay_seconds=60, retries=100, timeout_seconds=2*60*60)
 def run_script(script_name, config_file):
     """Run a Python script with a given configuration file.
 

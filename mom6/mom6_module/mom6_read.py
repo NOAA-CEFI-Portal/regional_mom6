@@ -299,25 +299,35 @@ class GCSStore:
         """
 
 
-        # include only netcdf file
+        # include only json index file and netcdf file
         files = []
+        ncfiles = []
         if variable is None:
             for file in self.all_objs:
                 if 'json' == file.split('.')[-1] :
                     cloud_store = self.cloud_head+file
                     files.append(cloud_store)
+                elif 'nc' == file.split('.')[-1] :
+                    cloud_store = self.cloud_head+file
+                    ncfiles.append(cloud_store)
         else:
             for file in self.all_objs:
                 var_filename = file.split('/')[-1]
                 if 'json' == var_filename.split('.')[-1] and variable == var_filename.split('.')[0] :
                     cloud_store = self.cloud_head+file
                     files.append(cloud_store)
+                elif 'nc' == var_filename.split('.')[-1] and variable == var_filename.split('.')[0]:
+                    cloud_store = self.cloud_head+file
+                    ncfiles.append(cloud_store)
 
         # if zero file is found
-        if not files :
+        if not files and not ncfiles:
             raise FileNotFoundError('No files available based on input')
+        elif not files and len(ncfiles)>0:
+            raise FileNotFoundError('Kerchunk json file not ready')
 
         return files
+
 
 
 class S3Store:
@@ -415,23 +425,32 @@ class S3Store:
         """
 
 
-        # include only netcdf file
+        # include only json index file and netcdf file
         files = []
+        ncfiles = []
         if variable is None:
             for file in self.all_objs:
                 if 'json' == file.split('.')[-1] :
                     cloud_store = self.cloud_head+file
                     files.append(cloud_store)
+                elif 'nc' == file.split('.')[-1] :
+                    cloud_store = self.cloud_head+file
+                    ncfiles.append(cloud_store)
         else:
             for file in self.all_objs:
                 var_filename = file.split('/')[-1]
                 if 'json' == var_filename.split('.')[-1] and variable == var_filename.split('.')[0] :
                     cloud_store = self.cloud_head+file
                     files.append(cloud_store)
+                elif 'nc' == var_filename.split('.')[-1] and variable == var_filename.split('.')[0]:
+                    cloud_store = self.cloud_head+file
+                    ncfiles.append(cloud_store)
 
         # if zero file is found
-        if not files :
+        if not files and not ncfiles:
             raise FileNotFoundError('No files available based on input')
+        elif not files and len(ncfiles)>0:
+            raise FileNotFoundError('Kerchunk json file not ready')
 
         return files
 
@@ -508,7 +527,7 @@ class LocalStore:
         ))
         if not top_level_dir:
             raise FileNotFoundError('CEFI data structure does not exist at this location')
-        
+
         # check if the release directory exist
         if  not os.path.exists(self.cefi_local_dir) and os.path.exists(os.path.dirname(self.cefi_local_dir)):
             parent_dir_release = os.path.dirname(self.cefi_local_dir)
