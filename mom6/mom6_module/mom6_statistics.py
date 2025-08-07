@@ -690,7 +690,7 @@ class HistoricalQuantile:
     ----------
     ds_data : xr.Dataset
         The dataset one want to use to 
-        derive the histiorical run statistics.
+        derive the historical run statistics.
     var_name : str
         The variable name in the dataset 
     initialization_name : str, optional
