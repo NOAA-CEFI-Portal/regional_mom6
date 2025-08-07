@@ -96,7 +96,7 @@ class ForecastClimatology:
     ----------
     ds_data : xr.Dataset
         The dataset one want to use to 
-        derived the forecast statistics.
+        derive the forecast statistics.
     var_name : str
         The variable name in the dataset 
     initialization_name : str, optional
@@ -313,7 +313,7 @@ class ForecastQuantile:
     ----------
     ds_data : xr.Dataset
         The dataset one want to use to 
-        derived the forecast statistics.
+        derive the forecast statistics.
     var_name : str
         The variable name in the dataset 
     initialization_name : str, optional
@@ -452,7 +452,7 @@ class HindcastClimatology:
     ----------
     ds_data : xr.Dataset
         The dataset one want to use to 
-        derived the histiorical run statistics.
+        derive the histiorical run statistics.
     var_name : str
         The variable name in the dataset 
     initialization_name : str, optional
@@ -690,7 +690,7 @@ class HistoricalQuantile:
     ----------
     ds_data : xr.Dataset
         The dataset one want to use to 
-        derived the histiorical run statistics.
+        derive the histiorical run statistics.
     var_name : str
         The variable name in the dataset 
     initialization_name : str, optional
