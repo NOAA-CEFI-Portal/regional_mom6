@@ -1,15 +1,6 @@
 [![unittest](https://github.com/NOAA-PSL/regional_mom6/actions/workflows/gha_pytest_push.yml/badge.svg)](https://github.com/NOAA-PSL/regional_mom6/actions/workflows/gha_pytest_push.yml)
 
-## Regional MOM6 preprocessing package
-This is a developing regional mom6 module help both preprocessing the data and perform various statistical analysis shown in [Ross et al., 2023](https://gmd.copernicus.org/articles/16/6943/2023/).
-Many scripts are the modified version of the [GFDL CEFI github repository](https://github.com/NOAA-GFDL/CEFI-regional-MOM6).
-
-Current stage of the module is for establishing the processing workflow in the [CEFI data portal](https://psl.noaa.gov/cefi_portal/). 
-Future availability of a more sophisticated python package for various end-user purposes is in the roadmap of this project.
-  
-We welcome external contribution to the package. Please feel free to submit issue for any inputs and joining the development core team. Thank you!
-
-## Installing the package using `Conda`
+## Installing the package using `Conda` & `pip`
 We recommend using conda to manage the virtual environment that one is going to install the package. Due to the esmpy and ESMF are complex, compiled libraries, `pip` will not be able to install the module. 
 Therefore a installation of the xesmf package using conda with conda-forge channel is needed. 
 Please following the steps to install the package correctly

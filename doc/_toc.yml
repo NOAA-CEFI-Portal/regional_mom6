@@ -14,7 +14,6 @@ parts:
   - caption: API reference
     chapters:
     - file: content/api/mom6_read
-    - file: content/api/mom6_statistics
     - file: content/api/mom6_regrid
     - file: content/api/api_reference_content
 
