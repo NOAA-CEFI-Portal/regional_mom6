@@ -1,4 +1,4 @@
-# API Reference for `mom6_module`
+# `mom6_module`
 
 This section provides the API reference for the `mom6_module` subpackage in the `mom6` library.
 
