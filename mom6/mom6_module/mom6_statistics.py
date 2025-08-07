@@ -31,7 +31,7 @@ class CoordinateWrangle:
     ----------
     ds_data : xr.Dataset
         The dataset one want to use to
-        derived the forecast statistics.
+        derive the forecast statistics.
 
     """
     def __init__(
