@@ -22,6 +22,15 @@ class GulfStreamIndex:
     Original sources are [Ross et al., 2023](https://gmd.copernicus.org/articles/16/6943/2023/).
     and [GFDL CEFI github repository]
     (https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main/diagnostics/physics/ssh_eval.py).
+
+    Parameters
+    ----------
+    ds_data : xr.Dataset
+        The sea level height dataset one want to use to 
+        derived the gulf stream index. The coordinate
+        must have the name "lon" and "lat" exactly
+    ssh_name : str
+        The sea level height variable name in the dataset 
     
     """
 
@@ -30,16 +39,6 @@ class GulfStreamIndex:
        ds_data : xr.Dataset,
        ssh_name : str = 'ssh'
     ) -> None:
-        """
-        Parameters
-        ----------
-        ds_data : xr.Dataset
-            The sea level height dataset one want to use to 
-            derived the gulf stream index. The coordinate
-            must have the name "lon" and "lat" exactly
-        ssh_name : str
-            The sea level height variable name in the dataset 
-        """
         self.dataset = ds_data
         self.varname = ssh_name
 
@@ -194,6 +193,18 @@ class ColdPoolIndex:
     and [GFDL CEFI github repository]
     (https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main
      /diagnostics/physics/NWA12/coldpool.py)
+
+    Parameters
+    ----------
+    ds_data: xr.Dataset
+        The bottom temperature dataset used to
+        derive the cold pool index.
+    ds_cpi_mask: xr.Dataset
+        The CPI mask.
+    bottomT_name" str
+        The bottom temperature variable name in the data set
+    mask_name" str
+        The CPI mask variable name in the `ds_cpi_mask`
     """
     def __init__(
         self,
@@ -202,19 +213,6 @@ class ColdPoolIndex:
         bottom_temp_name: str = 'bottomT',
         mask_name: str = 'CPI_mask'
     ) -> None:
-        """
-        Parameters
-        ----------
-        ds_data: xr.Dataset
-            The bottom temperature dataset used to
-            derive the cold pool index.
-        ds_cpi_mask: xr.Dataset
-            The CPI mask.
-        bottomT_name" str
-            The bottom temperature variable name in the data set
-        mask_name" str
-            The CPI mask variable name in the `ds_cpi_mask`
-        """
         self.dataset = ds_data
         self.mask = ds_cpi_mask
         self.varname = bottom_temp_name

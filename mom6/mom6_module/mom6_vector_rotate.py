@@ -14,7 +14,41 @@ import xarray as xr
 import xesmf as xe
 
 class VectorRotation:
-    """class to handle vector rotation due to the grid design"""
+    """
+    class to handle vector rotation due to the grid design
+    
+    preprocess and save the input data to self
+
+    Parameters
+    ----------
+    dataset_u : xr.Dataset
+        dataset that contain the raw u matrix, need to contain coordinate 
+        'geolon_u','geolat_u'
+    u_varname : str
+        raw u variable name
+    dataset_v : xr.Dataset
+        dataset that contain the raw v matrix, need to contain coordinate 
+        'geolon_v','geolat_v'
+    v_varname : str
+        raw v variable name
+    ds_rotate : xr.Dataset
+        dataset that contain the rotation matrix, need to contain coordinate 
+        'geolon','geolat'
+    rot_cosname : str, optional
+        rotation matrix cosine variable name, by default 'cosrot'
+    rot_sinname : str, optional
+        rotation matrix sine variable name, by default 'sinrot'
+
+    Raises
+    ------
+    KeyError
+        Catching the improper raw u dataset coordinate name
+    KeyError
+        Catching the improper raw v dataset coordinate name
+    KeyError
+        Catching the improper rotation matrix coordinate name
+
+    """
     def  __init__(
         self,
         dataset_u : xr.Dataset,
@@ -25,37 +59,7 @@ class VectorRotation:
         rot_cosname : str = 'cosrot',
         rot_sinname : str = 'sinrot'
     ):
-        """preprocess and save the input data to self
 
-        Parameters
-        ----------
-        dataset_u : xr.Dataset
-            dataset that contain the raw u matrix, need to contain coordinate 
-            'geolon_u','geolat_u'
-        u_varname : str
-            raw u variable name
-        dataset_v : xr.Dataset
-            dataset that contain the raw v matrix, need to contain coordinate 
-            'geolon_v','geolat_v'
-        v_varname : str
-            raw v variable name
-        ds_rotate : xr.Dataset
-            dataset that contain the rotation matrix, need to contain coordinate 
-            'geolon','geolat'
-        rot_cosname : str, optional
-            rotation matrix cosine variable name, by default 'cosrot'
-        rot_sinname : str, optional
-            rotation matrix sine variable name, by default 'sinrot'
-
-        Raises
-        ------
-        KeyError
-            Catching the improper raw u dataset coordinate name
-        KeyError
-            Catching the improper raw v dataset coordinate name
-        KeyError
-            Catching the improper rotation matrix coordinate name
-        """
         # prepare dataset for interpolation
         try:
             self.u = dataset_u.rename({'geolon_u':'lon','geolat_u':'lat'})

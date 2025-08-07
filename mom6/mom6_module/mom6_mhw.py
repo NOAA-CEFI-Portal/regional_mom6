@@ -33,6 +33,23 @@ class MarineHeatwaveForecast:
 
     The method should be able to accomadate the 
     raw and regridded format
+
+    Parameters
+    ----------
+    ds_data : xr.Dataset
+        The sea surface temperature dataset one want to use to 
+        derived the marine heatwave. The coordinate
+        must have the name "lon" and "lat" exactly (raw grid
+        geolon and geolat need to be renamed).
+    sst_name : str
+        The sea surface temperature variable name in the dataset
+    initialization_name : str, optional
+        initialization dimension name, by default 'init'
+    member_name : str, optional
+        ensemble member dimension name, by default 'member'
+    time_frequency : TimeGroupByOptions, optional
+        name in time frequency to do the time group, by default 'month'
+        'year', 'month', 'dayofyear' are the available options.
     """
 
     def __init__(
@@ -43,24 +60,6 @@ class MarineHeatwaveForecast:
         member_name : str = 'member',
         time_frequency : TimeGroupByOptions = 'month'
     ) -> None:
-        """
-        Parameters
-        ----------
-        ds_data : xr.Dataset
-            The sea surface temperature dataset one want to use to 
-            derived the marine heatwave. The coordinate
-            must have the name "lon" and "lat" exactly (raw grid
-            geolon and geolat need to be renamed).
-        sst_name : str
-            The sea surface temperature variable name in the dataset
-        initialization_name : str, optional
-            initialization dimension name, by default 'init'
-        member_name : str, optional
-            ensemble member dimension name, by default 'member'
-        time_frequency : TimeGroupByOptions, optional
-            name in time frequency to do the time group, by default 'month'
-            'year', 'month', 'dayofyear' are the available options.
-        """
 
         self.dataset = CoordinateWrangle(ds_data).to_360()
         self.varname = sst_name
