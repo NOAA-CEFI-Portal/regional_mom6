@@ -11,6 +11,25 @@ import xesmf as xe
 class Regridding:
     """class to handle regridding 
 
+
+    Parameters
+    ----------
+    ori_dataset : xr.Dataset
+        dataset that contain the raw data matrix
+    regrid_dataset : xr.Dataset
+        dataset that contain the coordinate for regridding
+    varname : str
+        variable name
+    xname : str
+        x coordinate name
+    yname : str
+        y coordinate name
+
+    Raises
+    ------
+    KeyError
+        if the coordinate name is not found in the dataset
+
     Examples
     -------
     ds_var = xr.merge([ds_var, ds_static], combine_attrs='override')
@@ -31,26 +50,7 @@ class Regridding:
         ori_xname : str = 'lon',
         ori_yname : str = 'lat',
     ):
-        """preprocess and save the input data to self
 
-        Parameters
-        ----------
-        ori_dataset : xr.Dataset
-            dataset that contain the raw data matrix
-        regrid_dataset : xr.Dataset
-            dataset that contain the coordinate for regridding
-        varname : str
-            variable name
-        xname : str
-            x coordinate name
-        yname : str
-            y coordinate name
-
-        Raises
-        ------
-
-
-        """
         # prepare dataset for interpolation
         try:
             self.ori_dataset = ori_dataset.rename({ori_xname:'lon',ori_yname:'lat'})
