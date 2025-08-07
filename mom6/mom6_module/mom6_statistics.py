@@ -306,7 +306,7 @@ class ForecastQuantile:
     """
     Class for calculating the quantile of forecast
 
-    The method should be able to accomadate the 
+    The method should be able to accommodate the 
     raw and regridded format
 
     Parameters
