@@ -31,7 +31,7 @@ class MarineHeatwaveForecast:
     and the probability with the use of prob forecast
     provided by the forecast/reforecast
 
-    The method should be able to accomadate the 
+    The method should be able to accommodate the 
     raw and regridded format
 
     Parameters
