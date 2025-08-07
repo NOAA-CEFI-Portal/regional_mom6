@@ -5,7 +5,7 @@ This is a developing regional mom6 module help both preprocessing the data and p
 Many scripts are the modified version of the [GFDL CEFI github repository](https://github.com/NOAA-GFDL/CEFI-regional-MOM6).
 
 Current stage of the module is for establishing the processing workflow in the [CEFI data portal](https://psl.noaa.gov/cefi_portal/). 
-Future availability of a more sophisticated python pakcage for various end-user purposes is in the roadmap of this project.
+Future availability of a more sophisticated python package for various end-user purposes is in the roadmap of this project.
   
 We welcome external contribution to the package. Please feel free to submit issue for any inputs and joining the development core team. Thank you!
 
