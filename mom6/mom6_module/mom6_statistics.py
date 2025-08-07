@@ -683,7 +683,7 @@ class HistoricalQuantile:
     """
     Class for calculating the quantile of historical
 
-    The method should be able to accomadate the 
+    The method should be able to accommodate the 
     raw and regridded format
 
     Parameters
