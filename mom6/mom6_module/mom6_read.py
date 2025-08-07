@@ -27,6 +27,21 @@ xr.set_options(keep_attrs=True)
 
 class OpenDapStore:
     """class to handle the OPeNDAP request
+
+    Parameters
+    ----------
+    region : ModelRegionOptions
+        region name
+    subdomain : ModelSubdomainOptions
+        subdomain name
+    experiment_type : ModelExperimentTypeOptions
+        experiment type
+    output_frequency : ModelOutputFrequencyOptions
+        data output frequency
+    grid_type : ModelGridTypeOptions
+        model grid type
+    release_date : str
+        release date in the format of "rYYYYMMDD"
     """
     def __init__(
         self,
@@ -37,23 +52,6 @@ class OpenDapStore:
         grid_type : ModelGridTypeOptions,
         release : str
     ) -> None:
-        """input for the class to get the opendap path
-
-        Parameters
-        ----------
-        region : ModelRegionOptions
-            region name
-        subdomain : ModelSubdomainOptions
-            subdomain name
-        experiment_type : ModelExperimentTypeOptions
-            experiment type
-        output_frequency : ModelOutputFrequencyOptions
-            data output frequency
-        grid_type : ModelGridTypeOptions
-            model grid type
-        release_date : str
-            release date in the format of "rYYYYMMDD"
-        """
         self.region = region
         self.subdomain = subdomain
         self.experiment_type = experiment_type
@@ -205,7 +203,24 @@ class OpenDapStore:
 
 
 class GCSStore:
-    """class to handle the Google Cloud Storage request
+    """
+    class to handle the Google Cloud Storage request
+
+
+    Parameters
+    ----------
+    region : ModelRegionOptions
+        region name
+    subdomain : ModelSubdomainOptions
+        subdomain name
+    experiment_type : ModelExperimentTypeOptions
+        experiment type
+    output_frequency : ModelOutputFrequencyOptions
+        data output frequency
+    grid_type : ModelGridTypeOptions
+        model grid type
+    release_date : str
+        release date in the format of "rYYYYMMDD"
     """
     def __init__(
         self,
@@ -216,23 +231,6 @@ class GCSStore:
         grid_type : ModelGridTypeOptions,
         release : str
     ) -> None:
-        """input for the class to get the GCS object full name
-
-        Parameters
-        ----------
-        region : ModelRegionOptions
-            region name
-        subdomain : ModelSubdomainOptions
-            subdomain name
-        experiment_type : ModelExperimentTypeOptions
-            experiment type
-        output_frequency : ModelOutputFrequencyOptions
-            data output frequency
-        grid_type : ModelGridTypeOptions
-            model grid type
-        release_date : str
-            release date in the format of "rYYYYMMDD"
-        """
         self.region = region
         self.subdomain = subdomain
         self.experiment_type = experiment_type
@@ -331,7 +329,23 @@ class GCSStore:
 
 
 class S3Store:
-    """class to handle the AWS S3 bucket request
+    """
+    class to handle the AWS S3 bucket request
+    
+    Parameters
+    ----------
+    region : ModelRegionOptions
+        region name
+    subdomain : ModelSubdomainOptions
+        subdomain name
+    experiment_type : ModelExperimentTypeOptions
+        experiment type
+    output_frequency : ModelOutputFrequencyOptions
+        data output frequency
+    grid_type : ModelGridTypeOptions
+        model grid type
+    release_date : str
+        release date in the format of "rYYYYMMDD"
     """
     def __init__(
         self,
@@ -342,23 +356,6 @@ class S3Store:
         grid_type : ModelGridTypeOptions,
         release : str
     ) -> None:
-        """input for the class to get the S3 object full name
-
-        Parameters
-        ----------
-        region : ModelRegionOptions
-            region name
-        subdomain : ModelSubdomainOptions
-            subdomain name
-        experiment_type : ModelExperimentTypeOptions
-            experiment type
-        output_frequency : ModelOutputFrequencyOptions
-            data output frequency
-        grid_type : ModelGridTypeOptions
-            model grid type
-        release_date : str
-            release date in the format of "rYYYYMMDD"
-        """
         self.region = region
         self.subdomain = subdomain
         self.experiment_type = experiment_type
@@ -456,7 +453,36 @@ class S3Store:
 
 
 class LocalStore:
-    """class to handle the local read request
+    """
+    class to handle the local read request
+    
+    getting local directory structure under CEFI structure
+    the existence of the CEFI structure is needed to be able to 
+    use this class
+
+    Parameters
+    ----------
+    local_top_dir : str
+        the absolution path to the local CEFI data.
+        should be the absolute path before cefi_portal/...
+    region : ModelRegionOptions
+        region name
+    subdomain : ModelSubdomainOptions
+        subdomain name
+    experiment_type : ModelExperimentTypeOptions
+        experiment type
+    output_frequency : ModelOutputFrequencyOptions
+        data output frequency
+    grid_type : ModelGridTypeOptions
+        model grid type
+    release_date : str
+        release date in the format of "rYYYYMMDD"
+
+    Raises
+    ------
+    FileNotFoundError
+        When there is no data structure or 
+        data structure constructed by input does not exist
     """
     def __init__(
         self,
@@ -468,34 +494,7 @@ class LocalStore:
         grid_type : ModelGridTypeOptions,
         release : str
     ) -> None:
-        """getting local directory structure under CEFI structure
-        the existence of the CEFI structure is needed to be able to 
-        use this class
 
-        Parameters
-        ----------
-        local_top_dir : str
-            the absolution path to the local CEFI data.
-            should be the absolute path before cefi_portal/...
-        region : ModelRegionOptions
-            region name
-        subdomain : ModelSubdomainOptions
-            subdomain name
-        experiment_type : ModelExperimentTypeOptions
-            experiment type
-        output_frequency : ModelOutputFrequencyOptions
-            data output frequency
-        grid_type : ModelGridTypeOptions
-            model grid type
-        release_date : str
-            release date in the format of "rYYYYMMDD"
-
-        Raises
-        ------
-        FileNotFoundError
-            When there is no data structure or 
-            data structure constructed by input does not exist
-        """
         self.local_top_dir = local_top_dir
         self.region = region
         self.subdomain = subdomain
@@ -598,6 +597,26 @@ class AccessFiles:
     
     The class is designed to get the regional mom6 files
     by utilizing the OpenDapStore,LocalStore class to get the data
+
+    Parameters
+    ----------
+    region : ModelRegionOptions
+        region name
+    subdomain : ModelSubdomainOptions
+        subdomain name
+    experiment_type : ModelExperimentTypeOptions
+        experiment type
+    output_frequency : ModelOutputFrequencyOptions
+        data output frequency
+    grid_type : ModelGridTypeOptions
+        model grid type
+    release_date : str
+        release date in the format of "rYYYYMMDD"
+    data_source : DataSourceOptions
+        'local', 'opendap', 's3'(unavailable), 'gcs'(unavailable)
+    local_top_dir : str
+        the absolution path to the local CEFI data.
+        should be the absolute path before cefi_porta/...
     """
     def __init__(
         self,
@@ -610,27 +629,7 @@ class AccessFiles:
         data_source : DataSourceOptions,
         local_top_dir : Optional[str] = None,
     ) -> None:
-        """
-        Parameters
-        ----------
-        region : ModelRegionOptions
-            region name
-        subdomain : ModelSubdomainOptions
-            subdomain name
-        experiment_type : ModelExperimentTypeOptions
-            experiment type
-        output_frequency : ModelOutputFrequencyOptions
-            data output frequency
-        grid_type : ModelGridTypeOptions
-            model grid type
-        release_date : str
-            release date in the format of "rYYYYMMDD"
-        data_source : DataSourceOptions
-            'local', 'opendap', 's3'(unavailable), 'gcs'(unavailable)
-        local_top_dir : str
-            the absolution path to the local CEFI data.
-            should be the absolute path before cefi_porta/...
-        """
+
         self.storage = None
 
         # check data source

@@ -6,24 +6,25 @@ from typing import Tuple
 import xarray as xr
 
 class ForecastDetrend:
-    """Detrend class for forecast data"""
+    """
+    Detrend class for forecast data
+
+    Parameters
+    ----------
+    da_data : xr.DataArray
+        The dataarray one want to use to 
+        detrend.
+    initialization_name : str, optional
+        initialization dimension name, by default 'init'
+    member_name : str, optional
+        ensemble member dimension name, by default 'member'
+    """
     def __init__(
         self,
         da_data : xr.DataArray,
         initialization_name : str = 'init',
         member_name : str = 'member',
     ) -> None:
-        """
-        Parameters
-        ----------
-        da_data : xr.DataArray
-            The dataarray one want to use to 
-            detrend.
-        initialization_name : str, optional
-            initialization dimension name, by default 'init'
-        member_name : str, optional
-            ensemble member dimension name, by default 'member'
-        """
         self.data = da_data
         self.init = initialization_name
         self.mem = member_name

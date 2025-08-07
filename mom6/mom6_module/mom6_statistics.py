@@ -27,18 +27,17 @@ class CoordinateWrangle:
     must have the name "lon" and "lat" exactly (raw grid
     geolon and geolat need to be renamed).
 
+    Parameters
+    ----------
+    ds_data : xr.Dataset
+        The dataset one want to use to
+        derive the forecast statistics.
+
     """
     def __init__(
        self,
        ds_data : xr.Dataset,
     ) -> None:
-        """
-        Parameters
-        ----------
-        ds_data : xr.Dataset
-            The dataset one want to use to 
-            derived the forecast statstics.
-        """
 
         self.dataset = ds_data.copy(deep=True)
 
@@ -93,6 +92,21 @@ class ForecastClimatology:
     """
     Class for calculating the climatology of forecast
 
+    Parameters
+    ----------
+    ds_data : xr.Dataset
+        The dataset one want to use to 
+        derive the forecast statistics.
+    var_name : str
+        The variable name in the dataset 
+    initialization_name : str, optional
+        initialization dimension name, by default 'init'
+    member_name : str, optional
+        ensemble member dimension name, by default 'member'
+    time_frequency : TimeGroupByOptions, optional
+        name in time frequency to do the time group, by default 'month'
+        'year', 'month', 'dayofyear' are the available options.
+
     """
 
     def __init__(
@@ -103,22 +117,7 @@ class ForecastClimatology:
         member_name : str = 'member',
         time_frequency : TimeGroupByOptions = 'month'
     ) -> None:
-        """
-        Parameters
-        ----------
-        ds_data : xr.Dataset
-            The dataset one want to use to 
-            derived the forecast statistics.
-        var_name : str
-            The variable name in the dataset 
-        initialization_name : str, optional
-            initialization dimension name, by default 'init'
-        member_name : str, optional
-            ensemble member dimension name, by default 'member'
-        time_frequency : TimeGroupByOptions, optional
-            name in time frequency to do the time group, by default 'month'
-            'year', 'month', 'dayofyear' are the available options.
-        """
+
         # self.dataset = CoordinateWrangle(ds_data).to_360()
         self.dataset = ds_data
         self.varname = var_name
@@ -307,8 +306,23 @@ class ForecastQuantile:
     """
     Class for calculating the quantile of forecast
 
-    The method should be able to accomadate the 
+    The method should be able to accommodate the 
     raw and regridded format
+
+    Parameters
+    ----------
+    ds_data : xr.Dataset
+        The dataset one want to use to 
+        derive the forecast statistics.
+    var_name : str
+        The variable name in the dataset 
+    initialization_name : str, optional
+        initialization dimension name, by default 'init'
+    member_name : str, optional
+        ensemble member dimension name, by default 'member'
+    time_frequency : TimeGroupByOptions, optional
+        name in time frequency to do the time group, by default 'month'
+        'year', 'month', 'dayofyear' are the available options.
     """
     def __init__(
         self,
@@ -318,22 +332,6 @@ class ForecastQuantile:
         member_name : str = 'member',
         time_frequency : TimeGroupByOptions = 'month'
     ) -> None:
-        """
-        Parameters
-        ----------
-        ds_data : xr.Dataset
-            The dataset one want to use to 
-            derived the forecast statistics.
-        var_name : str
-            The variable name in the dataset 
-        initialization_name : str, optional
-            initialization dimension name, by default 'init'
-        member_name : str, optional
-            ensemble member dimension name, by default 'member'
-        time_frequency : TimeGroupByOptions, optional
-            name in time frequency to do the time group, by default 'month'
-            'year', 'month', 'dayofyear' are the available options.
-        """
         # self.dataset = CoordinateWrangle(ds_data).to_360()
         self.dataset = ds_data
         self.varname = var_name
@@ -450,6 +448,21 @@ class HindcastClimatology:
     """
     Class for calculating the climatology of hindcast
 
+    Parameters
+    ----------
+    ds_data : xr.Dataset
+        The dataset one want to use to 
+        derive the historical run statistics.
+    var_name : str
+        The variable name in the dataset 
+    initialization_name : str, optional
+        initialization dimension name, by default 'init'
+    member_name : str, optional
+        ensemble member dimension name, by default 'member'
+    time_frequency : TimeGroupByOptions, optional
+        name in time frequency to do the time group, by default 'month'
+        'year', 'month', 'dayofyear' are the available options.
+
     """
 
     def __init__(
@@ -459,22 +472,6 @@ class HindcastClimatology:
         time_name : str = 'time',
         time_frequency : TimeGroupByOptions = 'month'
     ) -> None:
-        """
-        Parameters
-        ----------
-        ds_data : xr.Dataset
-            The dataset one want to use to 
-            derived the histiorical run statistics.
-        var_name : str
-            The variable name in the dataset 
-        initialization_name : str, optional
-            initialization dimension name, by default 'init'
-        member_name : str, optional
-            ensemble member dimension name, by default 'member'
-        time_frequency : TimeGroupByOptions, optional
-            name in time frequency to do the time group, by default 'month'
-            'year', 'month', 'dayofyear' are the available options.
-        """
         # self.dataset = CoordinateWrangle(ds_data).to_360()
         self.dataset = ds_data
         self.varname = var_name
@@ -686,8 +683,23 @@ class HistoricalQuantile:
     """
     Class for calculating the quantile of historical
 
-    The method should be able to accomadate the 
+    The method should be able to accommodate the 
     raw and regridded format
+
+    Parameters
+    ----------
+    ds_data : xr.Dataset
+        The dataset one want to use to 
+        derive the historical run statistics.
+    var_name : str
+        The variable name in the dataset 
+    initialization_name : str, optional
+        initialization dimension name, by default 'init'
+    member_name : str, optional
+        ensemble member dimension name, by default 'member'
+    time_frequency : TimeGroupByOptions, optional
+        name in time frequency to do the time group, by default 'month'
+        'year', 'month', 'dayofyear' are the available options.
     """
     def __init__(
         self,
@@ -696,22 +708,7 @@ class HistoricalQuantile:
         time_name : str = 'time',
         time_frequency : TimeGroupByOptions = 'month'
     ) -> None:
-        """
-        Parameters
-        ----------
-        ds_data : xr.Dataset
-            The dataset one want to use to 
-            derived the histiorical run statistics.
-        var_name : str
-            The variable name in the dataset 
-        initialization_name : str, optional
-            initialization dimension name, by default 'init'
-        member_name : str, optional
-            ensemble member dimension name, by default 'member'
-        time_frequency : TimeGroupByOptions, optional
-            name in time frequency to do the time group, by default 'month'
-            'year', 'month', 'dayofyear' are the available options.
-        """
+
         # self.dataset = CoordinateWrangle(ds_data).to_360()
         self.dataset = ds_data
         self.varname = var_name
