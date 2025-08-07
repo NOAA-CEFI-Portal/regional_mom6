@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Module mom6_regrid - Regridding the raw grid to rectilinear grid &#8212; Regional MOM6 Package</title>
+    <title>mom6_regrid - Regrid the data &#8212; Regional MOM6 Package</title>
   
   
   
@@ -61,7 +61,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="API Reference for mom6_module" href="api_reference_content.html" />
-    <link rel="prev" title="Module mom6_statistics - Calculate CEFI statistics" href="mom6_statistics.html" />
+    <link rel="prev" title="mom6_statistics - Calculate statistics" href="mom6_statistics.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -181,7 +181,11 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../get_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/install.html">Regional MOM6 preprocessing package</a></li>
+
+
+
+
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
@@ -190,15 +194,18 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="mom6_read.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mom6_statistics.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mom6_read.html"><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mom6_statistics.html"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_vector_rotate.html">mom6.mom6_module.mom6_vector_rotate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_mhw.html">mom6.mom6_module.mom6_mhw</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_indexes.html">mom6.mom6_module.mom6_indexes</a></li>
 </ul>
 </details></li>
 </ul>
@@ -386,7 +393,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Module mom6_regrid - Regridding the raw grid to rectilinear grid</h1>
+    <h1>mom6_regrid - Regrid the data</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -415,7 +422,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="module-mom6.mom6_module.mom6_regrid">
-<span id="module-mom6-regrid-regridding-the-raw-grid-to-rectilinear-grid"></span><h1>Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid<a class="headerlink" href="#module-mom6.mom6_module.mom6_regrid" title="Link to this heading">#</a></h1>
+<span id="mom6-regrid-regrid-the-data"></span><h1><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data<a class="headerlink" href="#module-mom6.mom6_module.mom6_regrid" title="Link to this heading">#</a></h1>
 <p>The module include Regridding class
 for regional mom6 field</p>
 <dl class="py class">
@@ -423,6 +430,20 @@ for regional mom6 field</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_regrid.</span></span><span class="sig-name descname"><span class="pre">Regridding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ori_dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">varname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_xname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lon'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_yname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lat'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_regrid.html#Regridding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_regrid.Regridding" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>class to handle regridding</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ori_dataset</strong> (<em>xr.Dataset</em>) – dataset that contain the raw data matrix</p></li>
+<li><p><strong>regrid_dataset</strong> (<em>xr.Dataset</em>) – dataset that contain the coordinate for regridding</p></li>
+<li><p><strong>varname</strong> (<em>str</em>) – variable name</p></li>
+<li><p><strong>xname</strong> (<em>str</em>) – x coordinate name</p></li>
+<li><p><strong>yname</strong> (<em>str</em>) – y coordinate name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – if the coordinate name is not found in the dataset</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <p>ds_var = xr.merge([ds_var, ds_static], combine_attrs=’override’)</p>
 <p># call regridding class
@@ -541,7 +562,7 @@ ds_specific should have the dim name ‘lon’ and ‘lat’</p>
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</p>
+        <p class="prev-next-title"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</p>
       </div>
     </a>
     <a class="right-next"

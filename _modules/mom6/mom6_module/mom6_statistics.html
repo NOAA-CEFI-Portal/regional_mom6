@@ -180,7 +180,11 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../content/get_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/get_started/install.html">Regional MOM6 preprocessing package</a></li>
+
+
+
+
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
@@ -189,15 +193,18 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_read.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_statistics.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_regrid.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_read.html"><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_statistics.html"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_regrid.html"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../content/api/api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_vector_rotate.html">mom6.mom6_module.mom6_vector_rotate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_mhw.html">mom6.mom6_module.mom6_mhw</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_indexes.html">mom6.mom6_module.mom6_indexes</a></li>
 </ul>
 </details></li>
 </ul>
@@ -381,18 +388,17 @@ document.write(`
 <span class="sd">    must have the name &quot;lon&quot; and &quot;lat&quot; exactly (raw grid</span>
 <span class="sd">    geolon and geolat need to be renamed).</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds_data : xr.Dataset</span>
+<span class="sd">        The dataset one want to use to</span>
+<span class="sd">        derive the forecast statistics.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
        <span class="bp">self</span><span class="p">,</span>
        <span class="n">ds_data</span> <span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ds_data : xr.Dataset</span>
-<span class="sd">            The dataset one want to use to </span>
-<span class="sd">            derived the forecast statstics.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ds_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -456,6 +462,21 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for calculating the climatology of forecast</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds_data : xr.Dataset</span>
+<span class="sd">        The dataset one want to use to </span>
+<span class="sd">        derive the forecast statistics.</span>
+<span class="sd">    var_name : str</span>
+<span class="sd">        The variable name in the dataset </span>
+<span class="sd">    initialization_name : str, optional</span>
+<span class="sd">        initialization dimension name, by default &#39;init&#39;</span>
+<span class="sd">    member_name : str, optional</span>
+<span class="sd">        ensemble member dimension name, by default &#39;member&#39;</span>
+<span class="sd">    time_frequency : TimeGroupByOptions, optional</span>
+<span class="sd">        name in time frequency to do the time group, by default &#39;month&#39;</span>
+<span class="sd">        &#39;year&#39;, &#39;month&#39;, &#39;dayofyear&#39; are the available options.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -466,22 +487,7 @@ document.write(`
         <span class="n">member_name</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;member&#39;</span><span class="p">,</span>
         <span class="n">time_frequency</span> <span class="p">:</span> <span class="n">TimeGroupByOptions</span> <span class="o">=</span> <span class="s1">&#39;month&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ds_data : xr.Dataset</span>
-<span class="sd">            The dataset one want to use to </span>
-<span class="sd">            derived the forecast statistics.</span>
-<span class="sd">        var_name : str</span>
-<span class="sd">            The variable name in the dataset </span>
-<span class="sd">        initialization_name : str, optional</span>
-<span class="sd">            initialization dimension name, by default &#39;init&#39;</span>
-<span class="sd">        member_name : str, optional</span>
-<span class="sd">            ensemble member dimension name, by default &#39;member&#39;</span>
-<span class="sd">        time_frequency : TimeGroupByOptions, optional</span>
-<span class="sd">            name in time frequency to do the time group, by default &#39;month&#39;</span>
-<span class="sd">            &#39;year&#39;, &#39;month&#39;, &#39;dayofyear&#39; are the available options.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># self.dataset = CoordinateWrangle(ds_data).to_360()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ds_data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="n">var_name</span>
@@ -679,8 +685,23 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for calculating the quantile of forecast</span>
 
-<span class="sd">    The method should be able to accomadate the </span>
+<span class="sd">    The method should be able to accommodate the </span>
 <span class="sd">    raw and regridded format</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds_data : xr.Dataset</span>
+<span class="sd">        The dataset one want to use to </span>
+<span class="sd">        derive the forecast statistics.</span>
+<span class="sd">    var_name : str</span>
+<span class="sd">        The variable name in the dataset </span>
+<span class="sd">    initialization_name : str, optional</span>
+<span class="sd">        initialization dimension name, by default &#39;init&#39;</span>
+<span class="sd">    member_name : str, optional</span>
+<span class="sd">        ensemble member dimension name, by default &#39;member&#39;</span>
+<span class="sd">    time_frequency : TimeGroupByOptions, optional</span>
+<span class="sd">        name in time frequency to do the time group, by default &#39;month&#39;</span>
+<span class="sd">        &#39;year&#39;, &#39;month&#39;, &#39;dayofyear&#39; are the available options.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -690,22 +711,6 @@ document.write(`
         <span class="n">member_name</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;member&#39;</span><span class="p">,</span>
         <span class="n">time_frequency</span> <span class="p">:</span> <span class="n">TimeGroupByOptions</span> <span class="o">=</span> <span class="s1">&#39;month&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ds_data : xr.Dataset</span>
-<span class="sd">            The dataset one want to use to </span>
-<span class="sd">            derived the forecast statistics.</span>
-<span class="sd">        var_name : str</span>
-<span class="sd">            The variable name in the dataset </span>
-<span class="sd">        initialization_name : str, optional</span>
-<span class="sd">            initialization dimension name, by default &#39;init&#39;</span>
-<span class="sd">        member_name : str, optional</span>
-<span class="sd">            ensemble member dimension name, by default &#39;member&#39;</span>
-<span class="sd">        time_frequency : TimeGroupByOptions, optional</span>
-<span class="sd">            name in time frequency to do the time group, by default &#39;month&#39;</span>
-<span class="sd">            &#39;year&#39;, &#39;month&#39;, &#39;dayofyear&#39; are the available options.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># self.dataset = CoordinateWrangle(ds_data).to_360()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ds_data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="n">var_name</span>
@@ -828,6 +833,21 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for calculating the climatology of hindcast</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds_data : xr.Dataset</span>
+<span class="sd">        The dataset one want to use to </span>
+<span class="sd">        derive the historical run statistics.</span>
+<span class="sd">    var_name : str</span>
+<span class="sd">        The variable name in the dataset </span>
+<span class="sd">    initialization_name : str, optional</span>
+<span class="sd">        initialization dimension name, by default &#39;init&#39;</span>
+<span class="sd">    member_name : str, optional</span>
+<span class="sd">        ensemble member dimension name, by default &#39;member&#39;</span>
+<span class="sd">    time_frequency : TimeGroupByOptions, optional</span>
+<span class="sd">        name in time frequency to do the time group, by default &#39;month&#39;</span>
+<span class="sd">        &#39;year&#39;, &#39;month&#39;, &#39;dayofyear&#39; are the available options.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -837,22 +857,6 @@ document.write(`
         <span class="n">time_name</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span>
         <span class="n">time_frequency</span> <span class="p">:</span> <span class="n">TimeGroupByOptions</span> <span class="o">=</span> <span class="s1">&#39;month&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ds_data : xr.Dataset</span>
-<span class="sd">            The dataset one want to use to </span>
-<span class="sd">            derived the histiorical run statistics.</span>
-<span class="sd">        var_name : str</span>
-<span class="sd">            The variable name in the dataset </span>
-<span class="sd">        initialization_name : str, optional</span>
-<span class="sd">            initialization dimension name, by default &#39;init&#39;</span>
-<span class="sd">        member_name : str, optional</span>
-<span class="sd">            ensemble member dimension name, by default &#39;member&#39;</span>
-<span class="sd">        time_frequency : TimeGroupByOptions, optional</span>
-<span class="sd">            name in time frequency to do the time group, by default &#39;month&#39;</span>
-<span class="sd">            &#39;year&#39;, &#39;month&#39;, &#39;dayofyear&#39; are the available options.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># self.dataset = CoordinateWrangle(ds_data).to_360()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ds_data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="n">var_name</span>
@@ -1073,8 +1077,23 @@ document.write(`
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for calculating the quantile of historical</span>
 
-<span class="sd">    The method should be able to accomadate the </span>
+<span class="sd">    The method should be able to accommodate the </span>
 <span class="sd">    raw and regridded format</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds_data : xr.Dataset</span>
+<span class="sd">        The dataset one want to use to </span>
+<span class="sd">        derive the historical run statistics.</span>
+<span class="sd">    var_name : str</span>
+<span class="sd">        The variable name in the dataset </span>
+<span class="sd">    initialization_name : str, optional</span>
+<span class="sd">        initialization dimension name, by default &#39;init&#39;</span>
+<span class="sd">    member_name : str, optional</span>
+<span class="sd">        ensemble member dimension name, by default &#39;member&#39;</span>
+<span class="sd">    time_frequency : TimeGroupByOptions, optional</span>
+<span class="sd">        name in time frequency to do the time group, by default &#39;month&#39;</span>
+<span class="sd">        &#39;year&#39;, &#39;month&#39;, &#39;dayofyear&#39; are the available options.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1083,22 +1102,7 @@ document.write(`
         <span class="n">time_name</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span>
         <span class="n">time_frequency</span> <span class="p">:</span> <span class="n">TimeGroupByOptions</span> <span class="o">=</span> <span class="s1">&#39;month&#39;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ds_data : xr.Dataset</span>
-<span class="sd">            The dataset one want to use to </span>
-<span class="sd">            derived the histiorical run statistics.</span>
-<span class="sd">        var_name : str</span>
-<span class="sd">            The variable name in the dataset </span>
-<span class="sd">        initialization_name : str, optional</span>
-<span class="sd">            initialization dimension name, by default &#39;init&#39;</span>
-<span class="sd">        member_name : str, optional</span>
-<span class="sd">            ensemble member dimension name, by default &#39;member&#39;</span>
-<span class="sd">        time_frequency : TimeGroupByOptions, optional</span>
-<span class="sd">            name in time frequency to do the time group, by default &#39;month&#39;</span>
-<span class="sd">            &#39;year&#39;, &#39;month&#39;, &#39;dayofyear&#39; are the available options.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># self.dataset = CoordinateWrangle(ds_data).to_360()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ds_data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="n">var_name</span>

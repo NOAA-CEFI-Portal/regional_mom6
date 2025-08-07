@@ -180,7 +180,11 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../content/get_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/get_started/install.html">Regional MOM6 preprocessing package</a></li>
+
+
+
+
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
@@ -189,15 +193,18 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_read.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_statistics.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_regrid.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_read.html"><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_statistics.html"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_regrid.html"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../content/api/api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_vector_rotate.html">mom6.mom6_module.mom6_vector_rotate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_mhw.html">mom6.mom6_module.mom6_mhw</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_indexes.html">mom6.mom6_module.mom6_indexes</a></li>
 </ul>
 </details></li>
 </ul>
@@ -381,6 +388,21 @@ document.write(`
 <a class="viewcode-back" href="../../../content/api/mom6_read.html#mom6.mom6_module.mom6_read.OpenDapStore">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OpenDapStore</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;class to handle the OPeNDAP request</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    region : ModelRegionOptions</span>
+<span class="sd">        region name</span>
+<span class="sd">    subdomain : ModelSubdomainOptions</span>
+<span class="sd">        subdomain name</span>
+<span class="sd">    experiment_type : ModelExperimentTypeOptions</span>
+<span class="sd">        experiment type</span>
+<span class="sd">    output_frequency : ModelOutputFrequencyOptions</span>
+<span class="sd">        data output frequency</span>
+<span class="sd">    grid_type : ModelGridTypeOptions</span>
+<span class="sd">        model grid type</span>
+<span class="sd">    release_date : str</span>
+<span class="sd">        release date in the format of &quot;rYYYYMMDD&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -391,23 +413,6 @@ document.write(`
         <span class="n">grid_type</span> <span class="p">:</span> <span class="n">ModelGridTypeOptions</span><span class="p">,</span>
         <span class="n">release</span> <span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;input for the class to get the opendap path</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        region : ModelRegionOptions</span>
-<span class="sd">            region name</span>
-<span class="sd">        subdomain : ModelSubdomainOptions</span>
-<span class="sd">            subdomain name</span>
-<span class="sd">        experiment_type : ModelExperimentTypeOptions</span>
-<span class="sd">            experiment type</span>
-<span class="sd">        output_frequency : ModelOutputFrequencyOptions</span>
-<span class="sd">            data output frequency</span>
-<span class="sd">        grid_type : ModelGridTypeOptions</span>
-<span class="sd">            model grid type</span>
-<span class="sd">        release_date : str</span>
-<span class="sd">            release date in the format of &quot;rYYYYMMDD&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">region</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subdomain</span> <span class="o">=</span> <span class="n">subdomain</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_type</span> <span class="o">=</span> <span class="n">experiment_type</span>
@@ -565,7 +570,24 @@ document.write(`
 <div class="viewcode-block" id="GCSStore">
 <a class="viewcode-back" href="../../../content/api/mom6_read.html#mom6.mom6_module.mom6_read.GCSStore">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GCSStore</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;class to handle the Google Cloud Storage request</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    class to handle the Google Cloud Storage request</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    region : ModelRegionOptions</span>
+<span class="sd">        region name</span>
+<span class="sd">    subdomain : ModelSubdomainOptions</span>
+<span class="sd">        subdomain name</span>
+<span class="sd">    experiment_type : ModelExperimentTypeOptions</span>
+<span class="sd">        experiment type</span>
+<span class="sd">    output_frequency : ModelOutputFrequencyOptions</span>
+<span class="sd">        data output frequency</span>
+<span class="sd">    grid_type : ModelGridTypeOptions</span>
+<span class="sd">        model grid type</span>
+<span class="sd">    release_date : str</span>
+<span class="sd">        release date in the format of &quot;rYYYYMMDD&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -576,23 +598,6 @@ document.write(`
         <span class="n">grid_type</span> <span class="p">:</span> <span class="n">ModelGridTypeOptions</span><span class="p">,</span>
         <span class="n">release</span> <span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;input for the class to get the GCS object full name</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        region : ModelRegionOptions</span>
-<span class="sd">            region name</span>
-<span class="sd">        subdomain : ModelSubdomainOptions</span>
-<span class="sd">            subdomain name</span>
-<span class="sd">        experiment_type : ModelExperimentTypeOptions</span>
-<span class="sd">            experiment type</span>
-<span class="sd">        output_frequency : ModelOutputFrequencyOptions</span>
-<span class="sd">            data output frequency</span>
-<span class="sd">        grid_type : ModelGridTypeOptions</span>
-<span class="sd">            model grid type</span>
-<span class="sd">        release_date : str</span>
-<span class="sd">            release date in the format of &quot;rYYYYMMDD&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">region</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subdomain</span> <span class="o">=</span> <span class="n">subdomain</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_type</span> <span class="o">=</span> <span class="n">experiment_type</span>
@@ -697,7 +702,23 @@ document.write(`
 <div class="viewcode-block" id="S3Store">
 <a class="viewcode-back" href="../../../content/api/mom6_read.html#mom6.mom6_module.mom6_read.S3Store">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">S3Store</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;class to handle the AWS S3 bucket request</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    class to handle the AWS S3 bucket request</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    region : ModelRegionOptions</span>
+<span class="sd">        region name</span>
+<span class="sd">    subdomain : ModelSubdomainOptions</span>
+<span class="sd">        subdomain name</span>
+<span class="sd">    experiment_type : ModelExperimentTypeOptions</span>
+<span class="sd">        experiment type</span>
+<span class="sd">    output_frequency : ModelOutputFrequencyOptions</span>
+<span class="sd">        data output frequency</span>
+<span class="sd">    grid_type : ModelGridTypeOptions</span>
+<span class="sd">        model grid type</span>
+<span class="sd">    release_date : str</span>
+<span class="sd">        release date in the format of &quot;rYYYYMMDD&quot;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -708,23 +729,6 @@ document.write(`
         <span class="n">grid_type</span> <span class="p">:</span> <span class="n">ModelGridTypeOptions</span><span class="p">,</span>
         <span class="n">release</span> <span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;input for the class to get the S3 object full name</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        region : ModelRegionOptions</span>
-<span class="sd">            region name</span>
-<span class="sd">        subdomain : ModelSubdomainOptions</span>
-<span class="sd">            subdomain name</span>
-<span class="sd">        experiment_type : ModelExperimentTypeOptions</span>
-<span class="sd">            experiment type</span>
-<span class="sd">        output_frequency : ModelOutputFrequencyOptions</span>
-<span class="sd">            data output frequency</span>
-<span class="sd">        grid_type : ModelGridTypeOptions</span>
-<span class="sd">            model grid type</span>
-<span class="sd">        release_date : str</span>
-<span class="sd">            release date in the format of &quot;rYYYYMMDD&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">region</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subdomain</span> <span class="o">=</span> <span class="n">subdomain</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_type</span> <span class="o">=</span> <span class="n">experiment_type</span>
@@ -828,7 +832,36 @@ document.write(`
 <div class="viewcode-block" id="LocalStore">
 <a class="viewcode-back" href="../../../content/api/mom6_read.html#mom6.mom6_module.mom6_read.LocalStore">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LocalStore</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;class to handle the local read request</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    class to handle the local read request</span>
+<span class="sd">    </span>
+<span class="sd">    getting local directory structure under CEFI structure</span>
+<span class="sd">    the existence of the CEFI structure is needed to be able to </span>
+<span class="sd">    use this class</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    local_top_dir : str</span>
+<span class="sd">        the absolution path to the local CEFI data.</span>
+<span class="sd">        should be the absolute path before cefi_portal/...</span>
+<span class="sd">    region : ModelRegionOptions</span>
+<span class="sd">        region name</span>
+<span class="sd">    subdomain : ModelSubdomainOptions</span>
+<span class="sd">        subdomain name</span>
+<span class="sd">    experiment_type : ModelExperimentTypeOptions</span>
+<span class="sd">        experiment type</span>
+<span class="sd">    output_frequency : ModelOutputFrequencyOptions</span>
+<span class="sd">        data output frequency</span>
+<span class="sd">    grid_type : ModelGridTypeOptions</span>
+<span class="sd">        model grid type</span>
+<span class="sd">    release_date : str</span>
+<span class="sd">        release date in the format of &quot;rYYYYMMDD&quot;</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    FileNotFoundError</span>
+<span class="sd">        When there is no data structure or </span>
+<span class="sd">        data structure constructed by input does not exist</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -840,34 +873,7 @@ document.write(`
         <span class="n">grid_type</span> <span class="p">:</span> <span class="n">ModelGridTypeOptions</span><span class="p">,</span>
         <span class="n">release</span> <span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;getting local directory structure under CEFI structure</span>
-<span class="sd">        the existence of the CEFI structure is needed to be able to </span>
-<span class="sd">        use this class</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        local_top_dir : str</span>
-<span class="sd">            the absolution path to the local CEFI data.</span>
-<span class="sd">            should be the absolute path before cefi_portal/...</span>
-<span class="sd">        region : ModelRegionOptions</span>
-<span class="sd">            region name</span>
-<span class="sd">        subdomain : ModelSubdomainOptions</span>
-<span class="sd">            subdomain name</span>
-<span class="sd">        experiment_type : ModelExperimentTypeOptions</span>
-<span class="sd">            experiment type</span>
-<span class="sd">        output_frequency : ModelOutputFrequencyOptions</span>
-<span class="sd">            data output frequency</span>
-<span class="sd">        grid_type : ModelGridTypeOptions</span>
-<span class="sd">            model grid type</span>
-<span class="sd">        release_date : str</span>
-<span class="sd">            release date in the format of &quot;rYYYYMMDD&quot;</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        FileNotFoundError</span>
-<span class="sd">            When there is no data structure or </span>
-<span class="sd">            data structure constructed by input does not exist</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">local_top_dir</span> <span class="o">=</span> <span class="n">local_top_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">region</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subdomain</span> <span class="o">=</span> <span class="n">subdomain</span>
@@ -976,6 +982,26 @@ document.write(`
 <span class="sd">    </span>
 <span class="sd">    The class is designed to get the regional mom6 files</span>
 <span class="sd">    by utilizing the OpenDapStore,LocalStore class to get the data</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    region : ModelRegionOptions</span>
+<span class="sd">        region name</span>
+<span class="sd">    subdomain : ModelSubdomainOptions</span>
+<span class="sd">        subdomain name</span>
+<span class="sd">    experiment_type : ModelExperimentTypeOptions</span>
+<span class="sd">        experiment type</span>
+<span class="sd">    output_frequency : ModelOutputFrequencyOptions</span>
+<span class="sd">        data output frequency</span>
+<span class="sd">    grid_type : ModelGridTypeOptions</span>
+<span class="sd">        model grid type</span>
+<span class="sd">    release_date : str</span>
+<span class="sd">        release date in the format of &quot;rYYYYMMDD&quot;</span>
+<span class="sd">    data_source : DataSourceOptions</span>
+<span class="sd">        &#39;local&#39;, &#39;opendap&#39;, &#39;s3&#39;(unavailable), &#39;gcs&#39;(unavailable)</span>
+<span class="sd">    local_top_dir : str</span>
+<span class="sd">        the absolution path to the local CEFI data.</span>
+<span class="sd">        should be the absolute path before cefi_porta/...</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -988,27 +1014,7 @@ document.write(`
         <span class="n">data_source</span> <span class="p">:</span> <span class="n">DataSourceOptions</span><span class="p">,</span>
         <span class="n">local_top_dir</span> <span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        region : ModelRegionOptions</span>
-<span class="sd">            region name</span>
-<span class="sd">        subdomain : ModelSubdomainOptions</span>
-<span class="sd">            subdomain name</span>
-<span class="sd">        experiment_type : ModelExperimentTypeOptions</span>
-<span class="sd">            experiment type</span>
-<span class="sd">        output_frequency : ModelOutputFrequencyOptions</span>
-<span class="sd">            data output frequency</span>
-<span class="sd">        grid_type : ModelGridTypeOptions</span>
-<span class="sd">            model grid type</span>
-<span class="sd">        release_date : str</span>
-<span class="sd">            release date in the format of &quot;rYYYYMMDD&quot;</span>
-<span class="sd">        data_source : DataSourceOptions</span>
-<span class="sd">            &#39;local&#39;, &#39;opendap&#39;, &#39;s3&#39;(unavailable), &#39;gcs&#39;(unavailable)</span>
-<span class="sd">        local_top_dir : str</span>
-<span class="sd">            the absolution path to the local CEFI data.</span>
-<span class="sd">            should be the absolute path before cefi_porta/...</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># check data source</span>

@@ -1,0 +1,731 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mom6.mom6_module.mom6_indexes &#8212; Regional MOM6 Package</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../../../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mom6/mom6_module/mom6_indexes';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../content/intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/CEFI_python_tool.png" class="logo__image only-light" alt="Regional MOM6 Package - Home"/>
+    <script>document.write(`<img src="../../../_static/CEFI_python_tool.png" class="logo__image only-dark" alt="Regional MOM6 Package - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../../content/intro.html">
+                    Regional MOM6 Package
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../content/get_started/install.html">Regional MOM6 preprocessing package</a></li>
+
+
+
+
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../content/tutorials/data_access_tutorial.html">Accessing the CEFI data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/tutorials/regrid_tutorial.html">Regridding the Raw Grid to Regular Grid</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_read.html"><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_statistics.html"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../content/api/mom6_regrid.html"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../content/api/api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_vector_rotate.html">mom6.mom6_module.mom6_vector_rotate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_mhw.html">mom6.mom6_module.mom6_mhw</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../content/api/generated/mom6.mom6_module.mom6_indexes.html">mom6.mom6_module.mom6_indexes</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6/issues/new?title=Issue%20on%20page%20%2F_modules/mom6/mom6_module/mom6_indexes.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for mom6.mom6_module.mom6_indexes</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This is the module to calculate the various indexes from the </span>
+<span class="sd">regional MOM6 output shown in Ross et al., 2023</span>
+
+<span class="sd">Indexes include:</span>
+<span class="sd">1. Gulf stream index</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xesmf</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xe</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="n">xr</span><span class="o">.</span><span class="n">set_options</span><span class="p">(</span><span class="n">keep_attrs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GulfStreamIndex">
+<a class="viewcode-back" href="../../../content/api/mom6_indexes.html#mom6.mom6_module.mom6_indexes.GulfStreamIndex">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GulfStreamIndex</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The class is use to recreate the Gulf Stream Index calculation in detail. </span>
+<span class="sd">    Original sources are [Ross et al., 2023](https://gmd.copernicus.org/articles/16/6943/2023/).</span>
+<span class="sd">    and [GFDL CEFI github repository]</span>
+<span class="sd">    (https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main/diagnostics/physics/ssh_eval.py).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds_data : xr.Dataset</span>
+<span class="sd">        The sea level height dataset one want to use to </span>
+<span class="sd">        derived the gulf stream index. The coordinate</span>
+<span class="sd">        must have the name &quot;lon&quot; and &quot;lat&quot; exactly</span>
+<span class="sd">    ssh_name : str</span>
+<span class="sd">        The sea level height variable name in the dataset </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+       <span class="bp">self</span><span class="p">,</span>
+       <span class="n">ds_data</span> <span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
+       <span class="n">ssh_name</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;ssh&#39;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ds_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="n">ssh_name</span>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__region_focus</span><span class="p">(</span>
+        <span class="n">lon_min</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">72.</span><span class="p">,</span>
+        <span class="n">lon_max</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="o">-</span><span class="mf">51.9</span><span class="p">,</span>
+        <span class="n">lat_min</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">36.</span><span class="p">,</span>
+        <span class="n">lat_max</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">42.</span><span class="p">,</span>
+        <span class="n">dlon</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.</span><span class="p">,</span>
+        <span class="n">dlat</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the needed Dataset structure for</span>
+<span class="sd">        regridding purpose.</span>
+<span class="sd">        </span>
+<span class="sd">        Currently there is no need for make this </span>
+<span class="sd">        method available to user since this should</span>
+<span class="sd">        be hard coded to maintain the consistence </span>
+<span class="sd">        with the Ross et al., 2023. </span>
+
+<span class="sd">        This could be expanded or make available if</span>
+<span class="sd">        there is need to redefine the region of </span>
+<span class="sd">        interest </span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lon_min : float, optional</span>
+<span class="sd">            minimum longitude for the region, by default -72.</span>
+<span class="sd">        lon_max : float, optional</span>
+<span class="sd">            maximum longitude for the region, by default -51.9</span>
+<span class="sd">        lat_min : float, optional</span>
+<span class="sd">            minimum latitude for the region, by default 36.</span>
+<span class="sd">        lat_max : float, optional</span>
+<span class="sd">            maximum longitude for the region, by default 42.</span>
+<span class="sd">        dlon : float, optional</span>
+<span class="sd">            resolution of longitude, by default 1.</span>
+<span class="sd">        dlat : float, optional</span>
+<span class="sd">            resolution of latitude, by default 0.1</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        xr.Dataset</span>
+<span class="sd">            the regridded Dataset structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+        <span class="c1"># longitude coordinate change -180 180 to 0 360</span>
+        <span class="k">if</span> <span class="n">lon_max</span> <span class="o">&lt;</span> <span class="mf">0.</span> <span class="p">:</span>
+            <span class="n">lon_max</span> <span class="o">+=</span> <span class="mf">360.</span>
+        <span class="k">if</span> <span class="n">lon_min</span> <span class="o">&lt;</span> <span class="mf">0.</span> <span class="p">:</span>
+            <span class="n">lon_min</span> <span class="o">+=</span> <span class="mf">360.</span>
+
+        <span class="c1"># create the array for regridded lon lat</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lon_min</span><span class="p">,</span> <span class="n">lon_max</span><span class="p">,</span> <span class="n">dlon</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lat_min</span><span class="p">,</span> <span class="n">lat_max</span><span class="p">,</span> <span class="n">dlat</span><span class="p">)</span>
+
+        <span class="c1"># create an xarray dataset with empty dataarray and designed grid</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="n">y</span><span class="p">},</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">})</span>
+
+        <span class="k">return</span> <span class="n">ds</span>
+
+<div class="viewcode-block" id="GulfStreamIndex.generate_index">
+<a class="viewcode-back" href="../../../content/api/mom6_indexes.html#mom6.mom6_module.mom6_indexes.GulfStreamIndex.generate_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_index</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate the gulf stream index</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        xr.Dataset</span>
+<span class="sd">            dataset containing the gulf_stream_index</span>
+<span class="sd">            variables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># getting the dataset</span>
+        <span class="n">ds_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span>
+
+        <span class="c1"># change longitude range from -180 180 to 0 360</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">lon</span> <span class="o">=</span> <span class="n">ds_data</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Coordinates should have &#39;lon&#39; and &#39;lat&#39; with exact naming&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="n">lon_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lon</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">lon</span><span class="p">[</span><span class="n">lon_ind</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">360.</span>
+        <span class="n">ds_data</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">lon</span>
+        <span class="c1"># ds_data = ds_data.sortby(&#39;lon&#39;)</span>
+
+        <span class="c1"># Define Regridding data structure</span>
+        <span class="n">ds_regrid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__region_focus</span><span class="p">()</span>
+
+        <span class="c1"># use xesmf to create regridder</span>
+        <span class="n">regridder</span> <span class="o">=</span> <span class="n">xe</span><span class="o">.</span><span class="n">Regridder</span><span class="p">(</span><span class="n">ds_data</span><span class="p">,</span> <span class="n">ds_regrid</span><span class="p">,</span> <span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">unmapped_to_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># perform regrid for each field</span>
+        <span class="n">ds_regrid</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+        <span class="n">ds_regrid</span><span class="p">[</span><span class="s1">&#39;ssh&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">regridder</span><span class="p">(</span><span class="n">ds_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">])</span>
+
+        <span class="c1"># Calculate the Sea Surface Height (SSH) anomaly</span>
+        <span class="c1"># We calculate the anomaly based on the monthly climatology.</span>
+        <span class="n">da_regrid_anom</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">ds_regrid</span><span class="p">[</span><span class="s1">&#39;ssh&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;time.month&#39;</span><span class="p">)</span><span class="o">-</span>
+            <span class="n">ds_regrid</span><span class="p">[</span><span class="s1">&#39;ssh&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;time.month&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Calculate the Standard Deviation of SSH Anomaly</span>
+        <span class="n">da_std</span> <span class="o">=</span> <span class="n">da_regrid_anom</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Calculate the Latitude of Maximum Standard Deviation</span>
+        <span class="c1"># - determine the maximum latitude index</span>
+        <span class="n">da_lat_ind_maxstd</span> <span class="o">=</span> <span class="n">da_std</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="s1">&#39;lat&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="n">da_lat_ind_maxstd</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;lat_ind_of_maxstd&#39;</span>
+
+        <span class="c1"># - use the maximum latitude index to find the latitude</span>
+        <span class="n">da_lat_maxstd</span> <span class="o">=</span> <span class="n">da_std</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">lat</span><span class="o">=</span><span class="n">da_lat_ind_maxstd</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="n">da_lat_maxstd</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;lat_of_maxstd&#39;</span>
+
+        <span class="c1"># Calculate the Gulf Stream Index</span>
+        <span class="c1"># - use the maximum latitude index to find the SSH anomaly along the line shown above.</span>
+        <span class="c1"># - calculate the longitude mean of the SSH anomaly (time dependent)</span>
+        <span class="c1">#     $$\text{{SSHa}}$$</span>
+        <span class="c1"># - calculate the stardarde deviation of the $\text{{SSHa}}$</span>
+        <span class="c1">#     $$\text{{SSHa\_std}}$$</span>
+        <span class="c1"># - calculate the index</span>
+        <span class="c1">#     $$\text{{Gulf Stream Index}} = \frac{\text{{SSHa}}}{\text{{SSHa\_std}}}$$</span>
+        <span class="n">da_ssh_mean_along_gs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">da_regrid_anom</span>
+            <span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">lat</span><span class="o">=</span><span class="n">da_lat_ind_maxstd</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;lon&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">da_ssh_mean_std_along_gs</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">da_regrid_anom</span>
+            <span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">lat</span><span class="o">=</span><span class="n">da_lat_ind_maxstd</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;lon&#39;</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">da_gs_index</span> <span class="o">=</span> <span class="n">da_ssh_mean_along_gs</span><span class="o">/</span><span class="n">da_ssh_mean_std_along_gs</span>
+        <span class="n">ds_gs</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">()</span>
+        <span class="n">ds_gs</span><span class="p">[</span><span class="s1">&#39;gulf_stream_index&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">da_gs_index</span>
+
+        <span class="k">return</span> <span class="n">ds_gs</span></div>
+</div>
+
+
+<div class="viewcode-block" id="ColdPoolIndex">
+<a class="viewcode-back" href="../../../content/api/mom6_indexes.html#mom6.mom6_module.mom6_indexes.ColdPoolIndex">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ColdPoolIndex</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to create the Cold Pool Index calculation</span>
+<span class="sd">    Original sources are [Ross et al., 2023](https://gmd.copernicus.org/articles/16/6943/2023/).</span>
+<span class="sd">    and [GFDL CEFI github repository]</span>
+<span class="sd">    (https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main</span>
+<span class="sd">     /diagnostics/physics/NWA12/coldpool.py)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds_data: xr.Dataset</span>
+<span class="sd">        The bottom temperature dataset used to</span>
+<span class="sd">        derive the cold pool index.</span>
+<span class="sd">    ds_cpi_mask: xr.Dataset</span>
+<span class="sd">        The CPI mask.</span>
+<span class="sd">    bottomT_name&quot; str</span>
+<span class="sd">        The bottom temperature variable name in the data set</span>
+<span class="sd">    mask_name&quot; str</span>
+<span class="sd">        The CPI mask variable name in the `ds_cpi_mask`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ds_data</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
+        <span class="n">ds_cpi_mask</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
+        <span class="n">bottom_temp_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;bottomT&#39;</span><span class="p">,</span>
+        <span class="n">mask_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;CPI_mask&#39;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">ds_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">ds_cpi_mask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="n">bottom_temp_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maskname</span> <span class="o">=</span> <span class="n">mask_name</span>
+
+<div class="viewcode-block" id="ColdPoolIndex.regrid_and_mask">
+<a class="viewcode-back" href="../../../content/api/mom6_indexes.html#mom6.mom6_module.mom6_indexes.ColdPoolIndex.regrid_and_mask">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">regrid_and_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Regrid data from MOM6 model to the mask grid </span>
+<span class="sd">        to apply the mask </span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        da_regrid : xr.DataArray</span>
+<span class="sd">            regridded and masked dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ds_mask</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mask</span>
+        <span class="n">ds_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span>
+
+        <span class="c1"># Regrid the regional MOM6 data to GLORYS grid</span>
+        <span class="c1"># Use xesmf to create regridder using bilinear method</span>
+        <span class="c1"># !!!! Regridded only suited for geolon and geolat to x and y</span>
+        <span class="n">regridder</span> <span class="o">=</span> <span class="n">xe</span><span class="o">.</span><span class="n">Regridder</span><span class="p">(</span>
+            <span class="n">ds_data</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;geolon&#39;</span><span class="p">:</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;geolat&#39;</span><span class="p">:</span><span class="s1">&#39;lat&#39;</span><span class="p">}),</span>
+            <span class="n">ds_mask</span><span class="p">,</span>
+            <span class="s2">&quot;bilinear&quot;</span><span class="p">,</span>
+            <span class="n">unmapped_to_nan</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Perform regrid using adaptive masking</span>
+        <span class="c1">#  https://pangeo-xesmf.readthedocs.io/en/latest/</span>
+        <span class="c1">#  notebooks/Masking.html#Adaptive-masking</span>
+        <span class="n">da_regrid</span> <span class="o">=</span> <span class="n">regridder</span><span class="p">(</span><span class="n">ds_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">],</span> <span class="n">skipna</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">na_thres</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="n">da_regrid</span> <span class="o">=</span> <span class="n">da_regrid</span><span class="o">*</span><span class="n">ds_mask</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">maskname</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">da_regrid</span></div>
+
+
+<div class="viewcode-block" id="ColdPoolIndex.generate_index">
+<a class="viewcode-back" href="../../../content/api/mom6_indexes.html#mom6.mom6_module.mom6_indexes.ColdPoolIndex.generate_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Masked data to the Coldpool Domain and Calculate Index</span>
+<span class="sd">        Coldpool Domain:</span>
+<span class="sd">            Depth: Between 20m and 200m isobath</span>
+<span class="sd">            Time: Between June and September from 1959 to 2022</span>
+<span class="sd">            Temperature: Average bottom temperature was cooler than 10 degrees Celsius (and &gt; 6?)</span>
+<span class="sd">            Location: Mid-Atlantic Bight (MAB) domain between 38N-41.5N and between 75W-68.5W</span>
+<span class="sd">        </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        da_cpi_ann : xr.DataArray</span>
+<span class="sd">            Yearly cold pool index calculation based on yearly climatology</span>
+<span class="sd">        </span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1">#Get masked data and regrid it</span>
+        <span class="n">da_regrid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regrid_and_mask</span><span class="p">()</span>
+
+        <span class="c1">#Calculate annual time series and long term mean at each grid</span>
+        <span class="n">da_tob_jun2sep</span> <span class="o">=</span> <span class="n">da_regrid</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">da_regrid</span><span class="p">[</span><span class="s1">&#39;time.month&#39;</span><span class="p">]</span><span class="o">&gt;=</span><span class="mi">6</span><span class="p">)</span><span class="o">&amp;</span>
+            <span class="p">(</span><span class="n">da_regrid</span><span class="p">[</span><span class="s1">&#39;time.month&#39;</span><span class="p">]</span><span class="o">&lt;=</span><span class="mi">9</span><span class="p">),</span>
+            <span class="n">drop</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">da_tob_ann</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">da_tob_jun2sep</span>
+            <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">da_tob_jun2sep</span><span class="p">[</span><span class="s1">&#39;time.year&#39;</span><span class="p">])</span>
+            <span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">)</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">compute</span><span class="p">()</span>
+        <span class="n">da_tob_ann_ltm</span> <span class="o">=</span> <span class="n">da_tob_ann</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="s1">&#39;year&#39;</span><span class="p">)</span>
+
+        <span class="c1">#Compute Cold Pool Index using the logic found here:</span>
+        <span class="c1"># https://noaa-edab.github.io/tech-doc/cold_pool.html</span>
+        <span class="n">da_tob_ann_anom</span> <span class="o">=</span> <span class="n">da_tob_ann</span><span class="o">-</span><span class="n">da_tob_ann_ltm</span>
+        <span class="n">da_cpi_ann</span> <span class="o">=</span> <span class="n">da_tob_ann_anom</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">da_cpi_ann</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By regional_mom6 development team
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

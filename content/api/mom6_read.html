@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Module mom6_read - get the CEFI data &#8212; Regional MOM6 Package</title>
+    <title>mom6_read - Get the CEFI data &#8212; Regional MOM6 Package</title>
   
   
   
@@ -60,7 +60,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/mom6_read';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Module mom6_statistics - Calculate CEFI statistics" href="mom6_statistics.html" />
+    <link rel="next" title="mom6_statistics - Calculate statistics" href="mom6_statistics.html" />
     <link rel="prev" title="Regridding the Raw Grid to Regular Grid" href="../tutorials/regrid_tutorial.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -181,7 +181,11 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../get_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/install.html">Regional MOM6 preprocessing package</a></li>
+
+
+
+
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
@@ -190,15 +194,18 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mom6_statistics.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mom6_regrid.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mom6_statistics.html"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mom6_regrid.html"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_vector_rotate.html">mom6.mom6_module.mom6_vector_rotate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_mhw.html">mom6.mom6_module.mom6_mhw</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_indexes.html">mom6.mom6_module.mom6_indexes</a></li>
 </ul>
 </details></li>
 </ul>
@@ -386,7 +393,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Module mom6_read - get the CEFI data</h1>
+    <h1>mom6_read - Get the CEFI data</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -428,7 +435,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="module-mom6.mom6_module.mom6_read">
-<span id="module-mom6-read-get-the-cefi-data"></span><h1>Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data<a class="headerlink" href="#module-mom6.mom6_module.mom6_read" title="Link to this heading">#</a></h1>
+<span id="mom6-read-get-the-cefi-data"></span><h1><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data<a class="headerlink" href="#module-mom6.mom6_module.mom6_read" title="Link to this heading">#</a></h1>
 <p>The module is created to read CEFI
 regional mom6 data under the CEFI
 data structure.</p>
@@ -439,6 +446,21 @@ data structure.</p>
 <p>Frontend Class for user to get various mom6 simulation</p>
 <p>The class is designed to get the regional mom6 files
 by utilizing the OpenDapStore,LocalStore class to get the data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> (<em>ModelRegionOptions</em>) – region name</p></li>
+<li><p><strong>subdomain</strong> (<em>ModelSubdomainOptions</em>) – subdomain name</p></li>
+<li><p><strong>experiment_type</strong> (<em>ModelExperimentTypeOptions</em>) – experiment type</p></li>
+<li><p><strong>output_frequency</strong> (<em>ModelOutputFrequencyOptions</em>) – data output frequency</p></li>
+<li><p><strong>grid_type</strong> (<em>ModelGridTypeOptions</em>) – model grid type</p></li>
+<li><p><strong>release_date</strong> (<em>str</em>) – release date in the format of “rYYYYMMDD”</p></li>
+<li><p><strong>data_source</strong> (<em>DataSourceOptions</em>) – ‘local’, ‘opendap’, ‘s3’(unavailable), ‘gcs’(unavailable)</p></li>
+<li><p><strong>local_top_dir</strong> (<em>str</em>) – the absolution path to the local CEFI data.
+should be the absolute path before cefi_porta/…</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mom6.mom6_module.mom6_read.AccessFiles.get">
 <span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_read.html#AccessFiles.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_read.AccessFiles.get" title="Link to this definition">#</a></dt>
@@ -465,6 +487,18 @@ accessing using opendap</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_read.</span></span><span class="sig-name descname"><span class="pre">GCSStore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdomain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">release</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_read.html#GCSStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_read.GCSStore" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>class to handle the Google Cloud Storage request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> (<em>ModelRegionOptions</em>) – region name</p></li>
+<li><p><strong>subdomain</strong> (<em>ModelSubdomainOptions</em>) – subdomain name</p></li>
+<li><p><strong>experiment_type</strong> (<em>ModelExperimentTypeOptions</em>) – experiment type</p></li>
+<li><p><strong>output_frequency</strong> (<em>ModelOutputFrequencyOptions</em>) – data output frequency</p></li>
+<li><p><strong>grid_type</strong> (<em>ModelGridTypeOptions</em>) – model grid type</p></li>
+<li><p><strong>release_date</strong> (<em>str</em>) – release date in the format of “rYYYYMMDD”</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mom6.mom6_module.mom6_read.GCSStore.get_files">
 <span class="sig-name descname"><span class="pre">get_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_read.html#GCSStore.get_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_read.GCSStore.get_files" title="Link to this definition">#</a></dt>
@@ -496,6 +530,27 @@ accessing using GCS</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_read.</span></span><span class="sig-name descname"><span class="pre">LocalStore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_top_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdomain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">release</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_read.html#LocalStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_read.LocalStore" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>class to handle the local read request</p>
+<p>getting local directory structure under CEFI structure
+the existence of the CEFI structure is needed to be able to
+use this class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_top_dir</strong> (<em>str</em>) – the absolution path to the local CEFI data.
+should be the absolute path before cefi_portal/…</p></li>
+<li><p><strong>region</strong> (<em>ModelRegionOptions</em>) – region name</p></li>
+<li><p><strong>subdomain</strong> (<em>ModelSubdomainOptions</em>) – subdomain name</p></li>
+<li><p><strong>experiment_type</strong> (<em>ModelExperimentTypeOptions</em>) – experiment type</p></li>
+<li><p><strong>output_frequency</strong> (<em>ModelOutputFrequencyOptions</em>) – data output frequency</p></li>
+<li><p><strong>grid_type</strong> (<em>ModelGridTypeOptions</em>) – model grid type</p></li>
+<li><p><strong>release_date</strong> (<em>str</em>) – release date in the format of “rYYYYMMDD”</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – When there is no data structure or
+    data structure constructed by input does not exist</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mom6.mom6_module.mom6_read.LocalStore.get_files">
 <span class="sig-name descname"><span class="pre">get_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_read.html#LocalStore.get_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_read.LocalStore.get_files" title="Link to this definition">#</a></dt>
@@ -527,6 +582,18 @@ accessing using opendap</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_read.</span></span><span class="sig-name descname"><span class="pre">OpenDapStore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdomain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">release</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_read.html#OpenDapStore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_read.OpenDapStore" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>class to handle the OPeNDAP request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> (<em>ModelRegionOptions</em>) – region name</p></li>
+<li><p><strong>subdomain</strong> (<em>ModelSubdomainOptions</em>) – subdomain name</p></li>
+<li><p><strong>experiment_type</strong> (<em>ModelExperimentTypeOptions</em>) – experiment type</p></li>
+<li><p><strong>output_frequency</strong> (<em>ModelOutputFrequencyOptions</em>) – data output frequency</p></li>
+<li><p><strong>grid_type</strong> (<em>ModelGridTypeOptions</em>) – model grid type</p></li>
+<li><p><strong>release_date</strong> (<em>str</em>) – release date in the format of “rYYYYMMDD”</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mom6.mom6_module.mom6_read.OpenDapStore.get_files">
 <span class="sig-name descname"><span class="pre">get_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_read.html#OpenDapStore.get_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_read.OpenDapStore.get_files" title="Link to this definition">#</a></dt>
@@ -558,6 +625,18 @@ accessing using opendap</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_read.</span></span><span class="sig-name descname"><span class="pre">S3Store</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdomain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">release</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_read.html#S3Store"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_read.S3Store" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>class to handle the AWS S3 bucket request</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>region</strong> (<em>ModelRegionOptions</em>) – region name</p></li>
+<li><p><strong>subdomain</strong> (<em>ModelSubdomainOptions</em>) – subdomain name</p></li>
+<li><p><strong>experiment_type</strong> (<em>ModelExperimentTypeOptions</em>) – experiment type</p></li>
+<li><p><strong>output_frequency</strong> (<em>ModelOutputFrequencyOptions</em>) – data output frequency</p></li>
+<li><p><strong>grid_type</strong> (<em>ModelGridTypeOptions</em>) – model grid type</p></li>
+<li><p><strong>release_date</strong> (<em>str</em>) – release date in the format of “rYYYYMMDD”</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mom6.mom6_module.mom6_read.S3Store.get_files">
 <span class="sig-name descname"><span class="pre">get_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_read.html#S3Store.get_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_read.S3Store.get_files" title="Link to this definition">#</a></dt>
@@ -630,7 +709,7 @@ accessing using S3</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</p>
+        <p class="prev-next-title"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>mom6.mom6_module.mom6_forecast_tercile &#8212; Regional MOM6 Package</title>
+    <title>mom6.mom6_module.mom6_indexes &#8212; Regional MOM6 Package</title>
   
   
   
@@ -57,11 +57,10 @@
     <script async="async" src="../../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/generated/mom6.mom6_module.mom6_forecast_tercile';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/generated/mom6.mom6_module.mom6_indexes';</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="mom6.mom6_module.mom6_vector_rotate" href="mom6.mom6_module.mom6_vector_rotate.html" />
-    <link rel="prev" title="mom6.mom6_module.mom6_detrend" href="mom6.mom6_module.mom6_detrend.html" />
+    <link rel="prev" title="mom6.mom6_module.mom6_mhw" href="mom6.mom6_module.mom6_mhw.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -202,10 +201,10 @@
 <li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">mom6.mom6_module.mom6_forecast_tercile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_vector_rotate.html">mom6.mom6_module.mom6_vector_rotate</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_mhw.html">mom6.mom6_module.mom6_mhw</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mom6.mom6_module.mom6_indexes.html">mom6.mom6_module.mom6_indexes</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">mom6.mom6_module.mom6_indexes</a></li>
 </ul>
 </details></li>
 </ul>
@@ -279,7 +278,7 @@
       
       
       
-      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6/issues/new?title=Issue%20on%20page%20%2Fcontent/api/generated/mom6.mom6_module.mom6_forecast_tercile.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6/issues/new?title=Issue%20on%20page%20%2Fcontent/api/generated/mom6.mom6_module.mom6_indexes.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -309,7 +308,7 @@
       
       
       
-      <li><a href="../../../_sources/content/api/generated/mom6.mom6_module.mom6_forecast_tercile.rst" target="_blank"
+      <li><a href="../../../_sources/content/api/generated/mom6.mom6_module.mom6_indexes.rst" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -391,7 +390,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>mom6.mom6_module.mom6_forecast_tercile</h1>
+    <h1>mom6.mom6_module.mom6_indexes</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -405,16 +404,20 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-mom6.mom6_module.mom6_forecast_tercile">
-<span id="mom6-mom6-module-mom6-forecast-tercile"></span><h1>mom6.mom6_module.mom6_forecast_tercile<a class="headerlink" href="#module-mom6.mom6_module.mom6_forecast_tercile" title="Link to this heading">#</a></h1>
-<p>The module include the class to determine
-the tercile probability of the forecast
-or reforecast</p>
+  <section id="module-mom6.mom6_module.mom6_indexes">
+<span id="mom6-mom6-module-mom6-indexes"></span><h1>mom6.mom6_module.mom6_indexes<a class="headerlink" href="#module-mom6.mom6_module.mom6_indexes" title="Link to this heading">#</a></h1>
+<p>This is the module to calculate the various indexes from the
+regional MOM6 output shown in Ross et al., 2023</p>
+<p>Indexes include:
+1. Gulf stream index</p>
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../mom6_forecast_tercile.html#mom6.mom6_module.mom6_forecast_tercile.Tercile" title="mom6.mom6_module.mom6_forecast_tercile.Tercile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tercile</span></code></a>(ds_data, var_name[, ...])</p></td>
-<td><p>Class for calculating tercile probability</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../mom6_indexes.html#mom6.mom6_module.mom6_indexes.ColdPoolIndex" title="mom6.mom6_module.mom6_indexes.ColdPoolIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ColdPoolIndex</span></code></a>(ds_data, ds_cpi_mask[, ...])</p></td>
+<td><p>This class is used to create the Cold Pool Index calculation Original sources are [Ross et al., 2023](<a class="reference external" href="https://gmd.copernicus.org/articles/16/6943/2023/">https://gmd.copernicus.org/articles/16/6943/2023/</a>). and [GFDL CEFI github repository] (<a class="github reference external" href="https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main">NOAA-GFDL/CEFI-regional-MOM6</a>  /diagnostics/physics/NWA12/coldpool.py).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../mom6_indexes.html#mom6.mom6_module.mom6_indexes.GulfStreamIndex" title="mom6.mom6_module.mom6_indexes.GulfStreamIndex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GulfStreamIndex</span></code></a>(ds_data[, ssh_name])</p></td>
+<td><p>The class is use to recreate the Gulf Stream Index calculation in detail.</p></td>
 </tr>
 </tbody>
 </table>
@@ -452,22 +455,13 @@ or reforecast</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="mom6.mom6_module.mom6_detrend.html"
+       href="mom6.mom6_module.mom6_mhw.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">mom6.mom6_module.mom6_detrend</p>
+        <p class="prev-next-title">mom6.mom6_module.mom6_mhw</p>
       </div>
-    </a>
-    <a class="right-next"
-       href="mom6.mom6_module.mom6_vector_rotate.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mom6.mom6_module.mom6_vector_rotate</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>

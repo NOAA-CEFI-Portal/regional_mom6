@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Module mom6_statistics - Calculate CEFI statistics &#8212; Regional MOM6 Package</title>
+    <title>mom6_statistics - Calculate statistics &#8212; Regional MOM6 Package</title>
   
   
   
@@ -60,8 +60,8 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/mom6_statistics';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Module mom6_regrid - Regridding the raw grid to rectilinear grid" href="mom6_regrid.html" />
-    <link rel="prev" title="Module mom6_read - get the CEFI data" href="mom6_read.html" />
+    <link rel="next" title="mom6_regrid - Regrid the data" href="mom6_regrid.html" />
+    <link rel="prev" title="mom6_read - Get the CEFI data" href="mom6_read.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -181,7 +181,11 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../get_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/install.html">Regional MOM6 preprocessing package</a></li>
+
+
+
+
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
@@ -190,15 +194,18 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="mom6_read.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mom6_regrid.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mom6_read.html"><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mom6_regrid.html"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_vector_rotate.html">mom6.mom6_module.mom6_vector_rotate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_mhw.html">mom6.mom6_module.mom6_mhw</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_indexes.html">mom6.mom6_module.mom6_indexes</a></li>
 </ul>
 </details></li>
 </ul>
@@ -386,7 +393,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Module mom6_statistics - Calculate CEFI statistics</h1>
+    <h1>mom6_statistics - Calculate statistics</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -431,7 +438,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="module-mom6.mom6_module.mom6_statistics">
-<span id="module-mom6-statistics-calculate-cefi-statistics"></span><h1>Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics<a class="headerlink" href="#module-mom6.mom6_module.mom6_statistics" title="Link to this heading">#</a></h1>
+<span id="mom6-statistics-calculate-statistics"></span><h1><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics<a class="headerlink" href="#module-mom6.mom6_module.mom6_statistics" title="Link to this heading">#</a></h1>
 <p>This is the script to generate the general statistics of all field
 based on the forecast(reforecast) and historical run
 that is generated by Andrew Ross at GFDL.</p>
@@ -444,6 +451,12 @@ in raw grid and regridded data.</p>
 <p>The coordinate
 must have the name “lon” and “lat” exactly (raw grid
 geolon and geolat need to be renamed).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ds_data</strong> (<em>xr.Dataset</em>) – The dataset one want to use to
+derive the forecast statistics.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mom6.mom6_module.mom6_statistics.CoordinateWrangle.check_coord_name">
 <span class="sig-name descname"><span class="pre">check_coord_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_statistics.html#CoordinateWrangle.check_coord_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_statistics.CoordinateWrangle.check_coord_name" title="Link to this definition">#</a></dt>
@@ -478,6 +491,19 @@ to 0-360</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_statistics.</span></span><span class="sig-name descname"><span class="pre">ForecastClimatology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initialization_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'init'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'member'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'month'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_statistics.html#ForecastClimatology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_statistics.ForecastClimatology" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for calculating the climatology of forecast</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_data</strong> (<em>xr.Dataset</em>) – The dataset one want to use to
+derive the forecast statistics.</p></li>
+<li><p><strong>var_name</strong> (<em>str</em>) – The variable name in the dataset</p></li>
+<li><p><strong>initialization_name</strong> (<em>str</em><em>, </em><em>optional</em>) – initialization dimension name, by default ‘init’</p></li>
+<li><p><strong>member_name</strong> (<em>str</em><em>, </em><em>optional</em>) – ensemble member dimension name, by default ‘member’</p></li>
+<li><p><strong>time_frequency</strong> (<em>TimeGroupByOptions</em><em>, </em><em>optional</em>) – name in time frequency to do the time group, by default ‘month’
+‘year’, ‘month’, ‘dayofyear’ are the available options.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mom6.mom6_module.mom6_statistics.ForecastClimatology.generate_anom_batch">
 <span class="sig-name descname"><span class="pre">generate_anom_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">climo_start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1993</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">climo_end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anom_start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1993</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anom_end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lazy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precompute_climo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">da_climo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_statistics.html#ForecastClimatology.generate_anom_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_statistics.ForecastClimatology.generate_anom_batch" title="Link to this definition">#</a></dt>
@@ -547,8 +573,21 @@ to be ‘compute’, ‘persist’ or keep ‘lazy’, by default ‘lazy’</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_statistics.</span></span><span class="sig-name descname"><span class="pre">ForecastQuantile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initialization_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'init'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">member_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'member'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'month'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_statistics.html#ForecastQuantile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_statistics.ForecastQuantile" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for calculating the quantile of forecast</p>
-<p>The method should be able to accomadate the
+<p>The method should be able to accommodate the
 raw and regridded format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_data</strong> (<em>xr.Dataset</em>) – The dataset one want to use to
+derive the forecast statistics.</p></li>
+<li><p><strong>var_name</strong> (<em>str</em>) – The variable name in the dataset</p></li>
+<li><p><strong>initialization_name</strong> (<em>str</em><em>, </em><em>optional</em>) – initialization dimension name, by default ‘init’</p></li>
+<li><p><strong>member_name</strong> (<em>str</em><em>, </em><em>optional</em>) – ensemble member dimension name, by default ‘member’</p></li>
+<li><p><strong>time_frequency</strong> (<em>TimeGroupByOptions</em><em>, </em><em>optional</em>) – name in time frequency to do the time group, by default ‘month’
+‘year’, ‘month’, ‘dayofyear’ are the available options.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mom6.mom6_module.mom6_statistics.ForecastQuantile.generate_quantile">
 <span class="sig-name descname"><span class="pre">generate_quantile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quantile_start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1993</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile_end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">90.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_statistics.html#ForecastQuantile.generate_quantile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_statistics.ForecastQuantile.generate_quantile" title="Link to this definition">#</a></dt>
@@ -585,6 +624,19 @@ value loaded in the memory.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_statistics.</span></span><span class="sig-name descname"><span class="pre">HindcastClimatology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'month'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_statistics.html#HindcastClimatology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_statistics.HindcastClimatology" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for calculating the climatology of hindcast</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_data</strong> (<em>xr.Dataset</em>) – The dataset one want to use to
+derive the historical run statistics.</p></li>
+<li><p><strong>var_name</strong> (<em>str</em>) – The variable name in the dataset</p></li>
+<li><p><strong>initialization_name</strong> (<em>str</em><em>, </em><em>optional</em>) – initialization dimension name, by default ‘init’</p></li>
+<li><p><strong>member_name</strong> (<em>str</em><em>, </em><em>optional</em>) – ensemble member dimension name, by default ‘member’</p></li>
+<li><p><strong>time_frequency</strong> (<em>TimeGroupByOptions</em><em>, </em><em>optional</em>) – name in time frequency to do the time group, by default ‘month’
+‘year’, ‘month’, ‘dayofyear’ are the available options.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mom6.mom6_module.mom6_statistics.HindcastClimatology.generate_anom_batch">
 <span class="sig-name descname"><span class="pre">generate_anom_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">climo_start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1993</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">climo_end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anom_start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1993</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anom_end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'lazy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precompute_climo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">da_climo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_statistics.html#HindcastClimatology.generate_anom_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_statistics.HindcastClimatology.generate_anom_batch" title="Link to this definition">#</a></dt>
@@ -667,8 +719,21 @@ to be ‘compute’, ‘persist’ or keep ‘lazy’, by default ‘lazy’</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_statistics.</span></span><span class="sig-name descname"><span class="pre">HistoricalQuantile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'time'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'month'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_statistics.html#HistoricalQuantile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_statistics.HistoricalQuantile" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for calculating the quantile of historical</p>
-<p>The method should be able to accomadate the
+<p>The method should be able to accommodate the
 raw and regridded format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_data</strong> (<em>xr.Dataset</em>) – The dataset one want to use to
+derive the historical run statistics.</p></li>
+<li><p><strong>var_name</strong> (<em>str</em>) – The variable name in the dataset</p></li>
+<li><p><strong>initialization_name</strong> (<em>str</em><em>, </em><em>optional</em>) – initialization dimension name, by default ‘init’</p></li>
+<li><p><strong>member_name</strong> (<em>str</em><em>, </em><em>optional</em>) – ensemble member dimension name, by default ‘member’</p></li>
+<li><p><strong>time_frequency</strong> (<em>TimeGroupByOptions</em><em>, </em><em>optional</em>) – name in time frequency to do the time group, by default ‘month’
+‘year’, ‘month’, ‘dayofyear’ are the available options.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="mom6.mom6_module.mom6_statistics.HistoricalQuantile.generate_quantile">
 <span class="sig-name descname"><span class="pre">generate_quantile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quantile_start_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1993</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile_end_year</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2020</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">90.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dask_obj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_statistics.html#HistoricalQuantile.generate_quantile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_statistics.HistoricalQuantile.generate_quantile" title="Link to this definition">#</a></dt>
@@ -738,7 +803,7 @@ value loaded in the memory.</p>
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data</p>
+        <p class="prev-next-title"><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data</p>
       </div>
     </a>
     <a class="right-next"
@@ -746,7 +811,7 @@ value loaded in the memory.</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid</p>
+        <p class="prev-next-title"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

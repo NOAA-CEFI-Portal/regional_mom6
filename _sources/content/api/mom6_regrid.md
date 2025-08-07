@@ -1,4 +1,4 @@
-# Module `mom6_regrid` - Regridding the raw grid to rectilinear grid 
+# `mom6_regrid` - Regrid the data
 
 ```{eval-rst}
 .. automodule::  mom6.mom6_module.mom6_regrid

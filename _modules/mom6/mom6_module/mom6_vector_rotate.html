@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mom6.mom6_module.mom6_regrid &#8212; Regional MOM6 Package</title>
+    <title>mom6.mom6_module.mom6_vector_rotate &#8212; Regional MOM6 Package</title>
   
   
   
@@ -56,7 +56,7 @@
     <script async="async" src="../../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mom6/mom6_module/mom6_regrid';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/mom6/mom6_module/mom6_vector_rotate';</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -278,7 +278,7 @@
       
       
       
-      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6/issues/new?title=Issue%20on%20page%20%2F_modules/mom6/mom6_module/mom6_regrid.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6/issues/new?title=Issue%20on%20page%20%2F_modules/mom6/mom6_module/mom6_vector_rotate.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -356,81 +356,105 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for mom6.mom6_module.mom6_regrid</h1><div class="highlight"><pre>
+  <h1>Source code for mom6.mom6_module.mom6_vector_rotate</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">The module include Regridding class</span>
-<span class="sd">for regional mom6 field</span>
+<span class="sd">The module include VectorRotation class</span>
+<span class="sd">for regional mom6 vector field</span>
+
+<span class="sd">The VectorRotation class is following the following steps:</span>
+<span class="sd">1. regrid from the raw u,v grid (Arakawa C grid) to tracer grid</span>
+<span class="sd">2. rotate the regridded u,v to true u (east) and true v (north)</span>
+<span class="sd">The steps are following the Ross et al 2023</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xesmf</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xe</span>
 
-<div class="viewcode-block" id="Regridding">
-<a class="viewcode-back" href="../../../content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Regridding</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;class to handle regridding </span>
-
+<div class="viewcode-block" id="VectorRotation">
+<a class="viewcode-back" href="../../../content/api/mom6_vector_rotate.html#mom6.mom6_module.mom6_vector_rotate.VectorRotation">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VectorRotation</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    class to handle vector rotation due to the grid design</span>
+<span class="sd">    </span>
+<span class="sd">    preprocess and save the input data to self</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ori_dataset : xr.Dataset</span>
-<span class="sd">        dataset that contain the raw data matrix</span>
-<span class="sd">    regrid_dataset : xr.Dataset</span>
-<span class="sd">        dataset that contain the coordinate for regridding</span>
-<span class="sd">    varname : str</span>
-<span class="sd">        variable name</span>
-<span class="sd">    xname : str</span>
-<span class="sd">        x coordinate name</span>
-<span class="sd">    yname : str</span>
-<span class="sd">        y coordinate name</span>
+<span class="sd">    dataset_u : xr.Dataset</span>
+<span class="sd">        dataset that contain the raw u matrix, need to contain coordinate </span>
+<span class="sd">        &#39;geolon_u&#39;,&#39;geolat_u&#39;</span>
+<span class="sd">    u_varname : str</span>
+<span class="sd">        raw u variable name</span>
+<span class="sd">    dataset_v : xr.Dataset</span>
+<span class="sd">        dataset that contain the raw v matrix, need to contain coordinate </span>
+<span class="sd">        &#39;geolon_v&#39;,&#39;geolat_v&#39;</span>
+<span class="sd">    v_varname : str</span>
+<span class="sd">        raw v variable name</span>
+<span class="sd">    ds_rotate : xr.Dataset</span>
+<span class="sd">        dataset that contain the rotation matrix, need to contain coordinate </span>
+<span class="sd">        &#39;geolon&#39;,&#39;geolat&#39;</span>
+<span class="sd">    rot_cosname : str, optional</span>
+<span class="sd">        rotation matrix cosine variable name, by default &#39;cosrot&#39;</span>
+<span class="sd">    rot_sinname : str, optional</span>
+<span class="sd">        rotation matrix sine variable name, by default &#39;sinrot&#39;</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    KeyError</span>
-<span class="sd">        if the coordinate name is not found in the dataset</span>
+<span class="sd">        Catching the improper raw u dataset coordinate name</span>
+<span class="sd">    KeyError</span>
+<span class="sd">        Catching the improper raw v dataset coordinate name</span>
+<span class="sd">    KeyError</span>
+<span class="sd">        Catching the improper rotation matrix coordinate name</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    -------</span>
-<span class="sd">    ds_var = xr.merge([ds_var, ds_static], combine_attrs=&#39;override&#39;)</span>
-
-<span class="sd">    # call regridding class</span>
-<span class="sd">    class_regrid = Regridding(ds_var, &#39;tob&#39;, &#39;geolon&#39;, &#39;geolat&#39;)</span>
-
-<span class="sd">    # perform regridding for 900x800 regular spacing grid</span>
-<span class="sd">    ds_regrid = class_regrid.regrid_regular(900, 800)</span>
-<span class="sd">    </span>
-<span class="sd">    # perform regridding to a specific grid used in ds_specific</span>
-<span class="sd">    ds_regrid = class_regrid.regrid_specific(ds_specific)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span><span class="w">  </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">ori_dataset</span> <span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
-        <span class="n">varname</span> <span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">ori_xname</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;lon&#39;</span><span class="p">,</span>
-        <span class="n">ori_yname</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;lat&#39;</span><span class="p">,</span>
+        <span class="n">dataset_u</span> <span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
+        <span class="n">u_varname</span> <span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dataset_v</span> <span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
+        <span class="n">v_varname</span> <span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ds_rotate</span> <span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
+        <span class="n">rot_cosname</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cosrot&#39;</span><span class="p">,</span>
+        <span class="n">rot_sinname</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;sinrot&#39;</span>
     <span class="p">):</span>
 
         <span class="c1"># prepare dataset for interpolation</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span> <span class="o">=</span> <span class="n">ori_dataset</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="n">ori_xname</span><span class="p">:</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="n">ori_yname</span><span class="p">:</span><span class="s1">&#39;lat&#39;</span><span class="p">})</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">u</span> <span class="o">=</span> <span class="n">dataset_u</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;geolon_u&#39;</span><span class="p">:</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;geolat_u&#39;</span><span class="p">:</span><span class="s1">&#39;lat&#39;</span><span class="p">})</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span> <span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Coordinates should have </span><span class="si">{</span><span class="n">ori_xname</span><span class="si">}</span><span class="s2"> &amp; </span><span class="si">{</span><span class="n">ori_yname</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;Coordinates should have &#39;geolon_u&#39; &amp; &#39;geolat_u&#39;&quot;</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uname</span> <span class="o">=</span> <span class="n">u_varname</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">varname</span> <span class="o">=</span> <span class="n">varname</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">dataset_v</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;geolon_v&#39;</span><span class="p">:</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;geolat_v&#39;</span><span class="p">:</span><span class="s1">&#39;lat&#39;</span><span class="p">})</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="s2">&quot;Coordinates should have &#39;geolon_v&#39; &amp; &#39;geolat_v&#39;&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vname</span> <span class="o">=</span> <span class="n">v_varname</span>
 
-<div class="viewcode-block" id="Regridding.generate_regridder">
-<a class="viewcode-back" href="../../../content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding.generate_regridder">[docs]</a>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rotate</span> <span class="o">=</span> <span class="n">ds_rotate</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="s1">&#39;geolon&#39;</span><span class="p">:</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;geolat&#39;</span><span class="p">:</span><span class="s1">&#39;lat&#39;</span><span class="p">})</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span> <span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="s2">&quot;Coordinates should have &#39;geolon&#39; &amp; &#39;geolat&#39;&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cosrot</span> <span class="o">=</span> <span class="n">rot_cosname</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sinrot</span> <span class="o">=</span> <span class="n">rot_sinname</span>
+
+<div class="viewcode-block" id="VectorRotation.generate_regridder">
+<a class="viewcode-back" href="../../../content/api/mom6_vector_rotate.html#mom6.mom6_module.mom6_vector_rotate.VectorRotation.generate_regridder">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_regridder</span><span class="p">(</span>
         <span class="n">ds_ori</span> <span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
         <span class="n">ds_regrid</span> <span class="p">:</span><span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span>
     <span class="p">)</span><span class="o">-&gt;</span><span class="n">xe</span><span class="o">.</span><span class="n">Regridder</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;create regridder for interpolation</span>
-<span class="sd">        fixed to bilinear interpolation at the moment</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -450,107 +474,55 @@ document.write(`
         <span class="k">return</span> <span class="n">regridder</span></div>
 
 
-<div class="viewcode-block" id="Regridding.regular_grid">
-<a class="viewcode-back" href="../../../content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding.regular_grid">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">regular_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nx</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">ny</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;create a regular grid for regridding</span>
-<span class="sd">        </span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ds : xr.Dataset</span>
-<span class="sd">            original dataset</span>
+<div class="viewcode-block" id="VectorRotation.generate_true_uv">
+<a class="viewcode-back" href="../../../content/api/mom6_vector_rotate.html#mom6.mom6_module.mom6_vector_rotate.VectorRotation.generate_true_uv">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_true_uv</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span><span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;rotate the raw u, v to true u (east) and true v (north)</span>
+
+<span class="sd">        Steps:</span>
+<span class="sd">        1. interpolate/regrid from u v point to tracer point</span>
+<span class="sd">        2. linear combined rotate u v for true u v</span>
+<span class="sd">            True east U  =  u*COSROT + v*SINROT</span>
+<span class="sd">            True north V = -u*SINROT + v*COSROT</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        xr.Dataset</span>
-<span class="sd">            regular grid dataset</span>
+<span class="sd">        dict</span>
+<span class="sd">            u: the true u dataarray</span>
+<span class="sd">            v: the true v dataarray</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Create longitude and latitude arrays (e.g., 1D arrays)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-            <span class="n">nx</span><span class="o">-</span><span class="mi">1</span>
-        <span class="p">)</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
-            <span class="n">ny</span><span class="o">-</span><span class="mi">1</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Create a dummy data variable (optional, can be empty)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="n">y</span><span class="p">},</span>
-            <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="c1"># Create an xarray dataset with empty dataarray</span>
-        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="n">data</span><span class="p">})</span>
-        <span class="k">return</span> <span class="n">ds</span></div>
-
-
-<div class="viewcode-block" id="Regridding.regrid_regular">
-<a class="viewcode-back" href="../../../content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding.regrid_regular">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">regrid_regular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nx</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">ny</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;regrid the data</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        xr.Dataset</span>
-<span class="sd">            regridded dataset</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># create regular grid</span>
-        <span class="n">ds_regrid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regular_grid</span><span class="p">(</span>
-            <span class="n">nx</span><span class="o">=</span><span class="n">nx</span><span class="p">,</span>
-            <span class="n">ny</span><span class="o">=</span><span class="n">ny</span>
-        <span class="p">)</span>
-
         <span class="c1"># generate regridder</span>
-        <span class="n">regridder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">,</span> <span class="n">ds_regrid</span><span class="p">)</span>
+        <span class="n">regridder_u2t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">)</span>
+        <span class="n">regridder_v2t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">)</span>
 
         <span class="c1"># regrid to tracer point(memory intensive if the whole dataset is big)</span>
-        <span class="n">da</span> <span class="o">=</span> <span class="n">regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">])</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;persist&quot;</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;.persisting data...&#39;</span><span class="p">)</span>
-            <span class="n">da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span> <span class="c1">#type: ignore</span>
+        <span class="n">da_u_regrid</span> <span class="o">=</span> <span class="n">regridder_u2t</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">uname</span><span class="p">])</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span>
+        <span class="n">da_v_regrid</span> <span class="o">=</span> <span class="n">regridder_v2t</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">vname</span><span class="p">])</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span>
 
+        <span class="c1"># rotate the regridded u, v</span>
+        <span class="n">da_u_true</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">da_u_regrid</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cosrot</span><span class="p">]</span><span class="o">+</span>
+            <span class="n">da_v_regrid</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sinrot</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">da_v_true</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="o">-</span><span class="n">da_u_regrid</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">sinrot</span><span class="p">]</span><span class="o">+</span>
+            <span class="n">da_v_regrid</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">rotate</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">cosrot</span><span class="p">]</span>
+        <span class="p">)</span>
 
-        <span class="c1"># create dataset</span>
-        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">:</span> <span class="n">da</span><span class="p">})</span>
+        <span class="c1"># correct rotate geolon geolat to data</span>
+        <span class="n">da_u_true</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">geolon</span>
+        <span class="n">da_u_true</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u</span><span class="o">.</span><span class="n">geolat</span>
+        <span class="n">da_v_true</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="o">.</span><span class="n">geolon</span>
+        <span class="n">da_v_true</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="o">.</span><span class="n">geolat</span>
 
-        <span class="k">return</span> <span class="n">ds</span></div>
+        <span class="c1"># drop lon lat from the dataset</span>
+        <span class="n">da_u_true</span> <span class="o">=</span> <span class="n">da_u_true</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">([</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">])</span>
+        <span class="n">da_v_true</span> <span class="o">=</span> <span class="n">da_v_true</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">([</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span><span class="s1">&#39;lat&#39;</span><span class="p">])</span>
 
-
-<div class="viewcode-block" id="Regridding.regrid_specific">
-<a class="viewcode-back" href="../../../content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding.regrid_specific">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">regrid_specific</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ds_specific</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;regrid the data to the same grid as ds_specific</span>
-<span class="sd">        ds_specific should have the dim name &#39;lon&#39; and &#39;lat&#39;</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ds_specific : xr.Dataset</span>
-<span class="sd">            dataset that contains the coordinate for regridding</span>
-<span class="sd">        </span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        xr.Dataset</span>
-<span class="sd">            regridded dataset</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># generate regridder</span>
-        <span class="n">regridder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">,</span> <span class="n">ds_specific</span><span class="p">)</span>
-
-        <span class="c1"># regrid to tracer point(memory intensive if the whole dataset is big)</span>
-        <span class="n">da</span> <span class="o">=</span> <span class="n">regridder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ori_dataset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">])</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;persist&quot;</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;.persisting data...&#39;</span><span class="p">)</span>
-            <span class="n">da</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span> <span class="c1">#type: ignore</span>
-
-        <span class="c1"># create dataset</span>
-        <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">({</span><span class="bp">self</span><span class="o">.</span><span class="n">varname</span><span class="p">:</span> <span class="n">da</span><span class="p">})</span>
-
-        <span class="k">return</span> <span class="n">ds</span></div>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s1">&#39;u&#39;</span><span class="p">:</span> <span class="n">da_u_true</span><span class="p">,</span>
+            <span class="s1">&#39;v&#39;</span><span class="p">:</span> <span class="n">da_v_true</span>
+        <span class="p">}</span></div>
 </div>
 
 </pre></div>

@@ -180,7 +180,11 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="content/get_started/install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/get_started/install.html">Regional MOM6 preprocessing package</a></li>
+
+
+
+
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
@@ -189,15 +193,18 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="content/api/mom6_read.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="content/api/mom6_statistics.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="content/api/mom6_regrid.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/api/mom6_read.html"><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/api/mom6_statistics.html"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="content/api/mom6_regrid.html"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="content/api/api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="content/api/generated/mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/generated/mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/generated/mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/generated/mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
 <li class="toctree-l2"><a class="reference internal" href="content/api/generated/mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="content/api/generated/mom6.mom6_module.mom6_vector_rotate.html">mom6.mom6_module.mom6_vector_rotate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="content/api/generated/mom6.mom6_module.mom6_mhw.html">mom6.mom6_module.mom6_mhw</a></li>
+<li class="toctree-l2"><a class="reference internal" href="content/api/generated/mom6.mom6_module.mom6_indexes.html">mom6.mom6_module.mom6_indexes</a></li>
 </ul>
 </details></li>
 </ul>
@@ -355,15 +362,18 @@ document.write(`
 <div class="genindex-jumpbox">
  <a href="#A"><strong>A</strong></a>
  | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -381,7 +391,17 @@ document.write(`
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/mom6_indexes.html#mom6.mom6_module.mom6_indexes.ColdPoolIndex">ColdPoolIndex (class in mom6.mom6_module.mom6_indexes)</a>
+</li>
       <li><a href="content/api/mom6_statistics.html#mom6.mom6_module.mom6_statistics.CoordinateWrangle">CoordinateWrangle (class in mom6.mom6_module.mom6_statistics)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/mom6_detrend.html#mom6.mom6_module.mom6_detrend.ForecastDetrend.detrend_linear">detrend_linear() (mom6.mom6_module.mom6_detrend.ForecastDetrend method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -393,6 +413,8 @@ document.write(`
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/mom6_detrend.html#mom6.mom6_module.mom6_detrend.ForecastDetrend">ForecastDetrend (class in mom6.mom6_module.mom6_detrend)</a>
+</li>
       <li><a href="content/api/mom6_statistics.html#mom6.mom6_module.mom6_statistics.ForecastQuantile">ForecastQuantile (class in mom6.mom6_module.mom6_statistics)</a>
 </li>
   </ul></td>
@@ -415,6 +437,16 @@ document.write(`
         <li><a href="content/api/mom6_statistics.html#mom6.mom6_module.mom6_statistics.HindcastClimatology.generate_climo">(mom6.mom6_module.mom6_statistics.HindcastClimatology method)</a>
 </li>
       </ul></li>
+      <li><a href="content/api/mom6_mhw.html#mom6.mom6_module.mom6_mhw.MarineHeatwaveForecast.generate_forecast_batch">generate_forecast_batch() (mom6.mom6_module.mom6_mhw.MarineHeatwaveForecast method)</a>
+</li>
+      <li><a href="content/api/mom6_mhw.html#mom6.mom6_module.mom6_mhw.MarineHeatwaveForecast.generate_forecast_single">generate_forecast_single() (mom6.mom6_module.mom6_mhw.MarineHeatwaveForecast method)</a>
+</li>
+      <li><a href="content/api/mom6_indexes.html#mom6.mom6_module.mom6_indexes.ColdPoolIndex.generate_index">generate_index() (mom6.mom6_module.mom6_indexes.ColdPoolIndex method)</a>
+
+      <ul>
+        <li><a href="content/api/mom6_indexes.html#mom6.mom6_module.mom6_indexes.GulfStreamIndex.generate_index">(mom6.mom6_module.mom6_indexes.GulfStreamIndex method)</a>
+</li>
+      </ul></li>
       <li><a href="content/api/mom6_statistics.html#mom6.mom6_module.mom6_statistics.ForecastQuantile.generate_quantile">generate_quantile() (mom6.mom6_module.mom6_statistics.ForecastQuantile method)</a>
 
       <ul>
@@ -424,6 +456,16 @@ document.write(`
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding.generate_regridder">generate_regridder() (mom6.mom6_module.mom6_regrid.Regridding static method)</a>
+
+      <ul>
+        <li><a href="content/api/mom6_vector_rotate.html#mom6.mom6_module.mom6_vector_rotate.VectorRotation.generate_regridder">(mom6.mom6_module.mom6_vector_rotate.VectorRotation static method)</a>
+</li>
+      </ul></li>
+      <li><a href="content/api/mom6_forecast_tercile.html#mom6.mom6_module.mom6_forecast_tercile.Tercile.generate_tercile">generate_tercile() (mom6.mom6_module.mom6_forecast_tercile.Tercile method)</a>
+</li>
+      <li><a href="content/api/mom6_forecast_tercile.html#mom6.mom6_module.mom6_forecast_tercile.Tercile.generate_tercile_probability">generate_tercile_probability() (mom6.mom6_module.mom6_forecast_tercile.Tercile static method)</a>
+</li>
+      <li><a href="content/api/mom6_vector_rotate.html#mom6.mom6_module.mom6_vector_rotate.VectorRotation.generate_true_uv">generate_true_uv() (mom6.mom6_module.mom6_vector_rotate.VectorRotation method)</a>
 </li>
       <li><a href="content/api/mom6_read.html#mom6.mom6_module.mom6_read.AccessFiles.get">get() (mom6.mom6_module.mom6_read.AccessFiles method)</a>
 </li>
@@ -437,6 +479,8 @@ document.write(`
         <li><a href="content/api/mom6_read.html#mom6.mom6_module.mom6_read.S3Store.get_files">(mom6.mom6_module.mom6_read.S3Store method)</a>
 </li>
       </ul></li>
+      <li><a href="content/api/mom6_indexes.html#mom6.mom6_module.mom6_indexes.GulfStreamIndex">GulfStreamIndex (class in mom6.mom6_module.mom6_indexes)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -463,13 +507,19 @@ document.write(`
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/mom6_mhw.html#mom6.mom6_module.mom6_mhw.MarineHeatwaveForecast">MarineHeatwaveForecast (class in mom6.mom6_module.mom6_mhw)</a>
+</li>
       <li>
     module
 
       <ul>
-        <li><a href="content/api/generated/mom6.mom6_module.mom6_detrend.html#module-mom6.mom6_module.mom6_detrend">mom6.mom6_module.mom6_detrend</a>
+        <li><a href="content/api/generated/mom6.mom6_module.mom6_detrend.html#module-mom6.mom6_module.mom6_detrend">mom6.mom6_module.mom6_detrend</a>, <a href="content/api/mom6_detrend.html#module-mom6.mom6_module.mom6_detrend">[1]</a>
 </li>
-        <li><a href="content/api/generated/mom6.mom6_module.mom6_forecast_tercile.html#module-mom6.mom6_module.mom6_forecast_tercile">mom6.mom6_module.mom6_forecast_tercile</a>
+        <li><a href="content/api/generated/mom6.mom6_module.mom6_forecast_tercile.html#module-mom6.mom6_module.mom6_forecast_tercile">mom6.mom6_module.mom6_forecast_tercile</a>, <a href="content/api/mom6_forecast_tercile.html#module-mom6.mom6_module.mom6_forecast_tercile">[1]</a>
+</li>
+        <li><a href="content/api/generated/mom6.mom6_module.mom6_indexes.html#module-mom6.mom6_module.mom6_indexes">mom6.mom6_module.mom6_indexes</a>, <a href="content/api/mom6_indexes.html#module-mom6.mom6_module.mom6_indexes">[1]</a>
+</li>
+        <li><a href="content/api/generated/mom6.mom6_module.mom6_mhw.html#module-mom6.mom6_module.mom6_mhw">mom6.mom6_module.mom6_mhw</a>, <a href="content/api/mom6_mhw.html#module-mom6.mom6_module.mom6_mhw">[1]</a>
 </li>
         <li><a href="content/api/generated/mom6.mom6_module.mom6_read.html#module-mom6.mom6_module.mom6_read">mom6.mom6_module.mom6_read</a>, <a href="content/api/mom6_read.html#module-mom6.mom6_module.mom6_read">[1]</a>
 </li>
@@ -477,21 +527,37 @@ document.write(`
 </li>
         <li><a href="content/api/generated/mom6.mom6_module.mom6_statistics.html#module-mom6.mom6_module.mom6_statistics">mom6.mom6_module.mom6_statistics</a>, <a href="content/api/mom6_statistics.html#module-mom6.mom6_module.mom6_statistics">[1]</a>
 </li>
+        <li><a href="content/api/generated/mom6.mom6_module.mom6_vector_rotate.html#module-mom6.mom6_module.mom6_vector_rotate">mom6.mom6_module.mom6_vector_rotate</a>, <a href="content/api/mom6_vector_rotate.html#module-mom6.mom6_module.mom6_vector_rotate">[1]</a>
+</li>
       </ul></li>
       <li>
     mom6.mom6_module.mom6_detrend
 
       <ul>
-        <li><a href="content/api/generated/mom6.mom6_module.mom6_detrend.html#module-mom6.mom6_module.mom6_detrend">module</a>
+        <li><a href="content/api/generated/mom6.mom6_module.mom6_detrend.html#module-mom6.mom6_module.mom6_detrend">module</a>, <a href="content/api/mom6_detrend.html#module-mom6.mom6_module.mom6_detrend">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    mom6.mom6_module.mom6_forecast_tercile
+
+      <ul>
+        <li><a href="content/api/generated/mom6.mom6_module.mom6_forecast_tercile.html#module-mom6.mom6_module.mom6_forecast_tercile">module</a>, <a href="content/api/mom6_forecast_tercile.html#module-mom6.mom6_module.mom6_forecast_tercile">[1]</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    mom6.mom6_module.mom6_forecast_tercile
+    mom6.mom6_module.mom6_indexes
 
       <ul>
-        <li><a href="content/api/generated/mom6.mom6_module.mom6_forecast_tercile.html#module-mom6.mom6_module.mom6_forecast_tercile">module</a>
+        <li><a href="content/api/generated/mom6.mom6_module.mom6_indexes.html#module-mom6.mom6_module.mom6_indexes">module</a>, <a href="content/api/mom6_indexes.html#module-mom6.mom6_module.mom6_indexes">[1]</a>
+</li>
+      </ul></li>
+      <li>
+    mom6.mom6_module.mom6_mhw
+
+      <ul>
+        <li><a href="content/api/generated/mom6.mom6_module.mom6_mhw.html#module-mom6.mom6_module.mom6_mhw">module</a>, <a href="content/api/mom6_mhw.html#module-mom6.mom6_module.mom6_mhw">[1]</a>
 </li>
       </ul></li>
       <li>
@@ -515,6 +581,13 @@ document.write(`
         <li><a href="content/api/generated/mom6.mom6_module.mom6_statistics.html#module-mom6.mom6_module.mom6_statistics">module</a>, <a href="content/api/mom6_statistics.html#module-mom6.mom6_module.mom6_statistics">[1]</a>
 </li>
       </ul></li>
+      <li>
+    mom6.mom6_module.mom6_vector_rotate
+
+      <ul>
+        <li><a href="content/api/generated/mom6.mom6_module.mom6_vector_rotate.html#module-mom6.mom6_module.mom6_vector_rotate">module</a>, <a href="content/api/mom6_vector_rotate.html#module-mom6.mom6_module.mom6_vector_rotate">[1]</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -526,15 +599,25 @@ document.write(`
   </ul></td>
 </tr></table>
 
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/mom6_detrend.html#mom6.mom6_module.mom6_detrend.ForecastDetrend.polyfit_coef">polyfit_coef() (mom6.mom6_module.mom6_detrend.ForecastDetrend method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding.regrid_regular">regrid_regular() (mom6.mom6_module.mom6_regrid.Regridding method)</a>
+      <li><a href="content/api/mom6_indexes.html#mom6.mom6_module.mom6_indexes.ColdPoolIndex.regrid_and_mask">regrid_and_mask() (mom6.mom6_module.mom6_indexes.ColdPoolIndex method)</a>
 </li>
-      <li><a href="content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding.regrid_specific">regrid_specific() (mom6.mom6_module.mom6_regrid.Regridding method)</a>
+      <li><a href="content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding.regrid_regular">regrid_regular() (mom6.mom6_module.mom6_regrid.Regridding method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding.regrid_specific">regrid_specific() (mom6.mom6_module.mom6_regrid.Regridding method)</a>
+</li>
       <li><a href="content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding">Regridding (class in mom6.mom6_module.mom6_regrid)</a>
 </li>
       <li><a href="content/api/mom6_regrid.html#mom6.mom6_module.mom6_regrid.Regridding.regular_grid">regular_grid() (mom6.mom6_module.mom6_regrid.Regridding method)</a>
@@ -553,7 +636,19 @@ document.write(`
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/mom6_forecast_tercile.html#mom6.mom6_module.mom6_forecast_tercile.Tercile">Tercile (class in mom6.mom6_module.mom6_forecast_tercile)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="content/api/mom6_statistics.html#mom6.mom6_module.mom6_statistics.CoordinateWrangle.to_360">to_360() (mom6.mom6_module.mom6_statistics.CoordinateWrangle method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="content/api/mom6_vector_rotate.html#mom6.mom6_module.mom6_vector_rotate.VectorRotation">VectorRotation (class in mom6.mom6_module.mom6_vector_rotate)</a>
 </li>
   </ul></td>
 </tr></table>

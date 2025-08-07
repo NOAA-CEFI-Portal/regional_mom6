@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Installation &#8212; Regional MOM6 Package</title>
+    <title>Regional MOM6 preprocessing package &#8212; Regional MOM6 Package</title>
   
   
   
@@ -181,7 +181,11 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Regional MOM6 preprocessing package</a></li>
+
+
+
+
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
 <ul class="nav bd-sidenav">
@@ -190,15 +194,18 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../api/mom6_read.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - get the CEFI data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api/mom6_statistics.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate CEFI statistics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api/mom6_regrid.html">Module <code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regridding the raw grid to rectilinear grid</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/mom6_read.html"><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/mom6_statistics.html"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/mom6_regrid.html"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../api/api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/generated/mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/generated/mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/generated/mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/generated/mom6.mom6_module.mom6_detrend.html">mom6.mom6_module.mom6_detrend</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/generated/mom6.mom6_module.mom6_forecast_tercile.html">mom6.mom6_module.mom6_forecast_tercile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/generated/mom6.mom6_module.mom6_vector_rotate.html">mom6.mom6_module.mom6_vector_rotate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/generated/mom6.mom6_module.mom6_mhw.html">mom6.mom6_module.mom6_mhw</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/generated/mom6.mom6_module.mom6_indexes.html">mom6.mom6_module.mom6_indexes</a></li>
 </ul>
 </details></li>
 </ul>
@@ -386,7 +393,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Installation</h1>
+    <h1>Regional MOM6 preprocessing package</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -396,9 +403,13 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-developement-environment">Setting up the developement environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#syncing-with-the-noaa-cefi-portal-version">Syncing with the NOAA-CEFI-Portal version</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Regional MOM6 preprocessing package</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-the-package-using-conda">Installing the package using <code class="docutils literal notranslate"><span class="pre">Conda</span></code></a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#test-installation-of-the-package">Test installation of the package</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-developement-environment">Setting up the developement environment</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#syncing-with-the-noaa-cefi-portal-version">Syncing with the NOAA-CEFI-Portal version</a></li>
 </ul>
+
             </nav>
         </div>
     </div>
@@ -410,10 +421,44 @@ document.write(`
                 <article class="bd-article">
                   
   <p><a class="reference external" href="https://github.com/NOAA-PSL/regional_mom6/actions/workflows/gha_pytest_push.yml"><img alt="unittest" src="https://github.com/NOAA-PSL/regional_mom6/actions/workflows/gha_pytest_push.yml/badge.svg" /></a></p>
-<section class="tex2jax_ignore mathjax_ignore" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
+<section id="regional-mom6-preprocessing-package">
+<h1>Regional MOM6 preprocessing package<a class="headerlink" href="#regional-mom6-preprocessing-package" title="Link to this heading">#</a></h1>
+<p>This is a developing regional mom6 module help both preprocessing the data and perform various statistical analysis shown in <a class="reference external" href="https://gmd.copernicus.org/articles/16/6943/2023/">Ross et al., 2023</a>.
+Many scripts are the modified version of the <a class="reference external" href="https://github.com/NOAA-GFDL/CEFI-regional-MOM6">GFDL CEFI github repository</a>.</p>
+<p>Current stage of the module is for establishing the processing workflow in the <a class="reference external" href="https://psl.noaa.gov/cefi_portal/">CEFI data portal</a>.
+Future availability of a more sophisticated python package for various end-user purposes is in the roadmap of this project.</p>
+<p>We welcome external contribution to the package. Please feel free to submit issue for any inputs and joining the development core team. Thank you!</p>
+</section>
+<section id="installing-the-package-using-conda">
+<h1>Installing the package using <code class="docutils literal notranslate"><span class="pre">Conda</span></code><a class="headerlink" href="#installing-the-package-using-conda" title="Link to this heading">#</a></h1>
+<p>We recommend using conda to manage the virtual environment that one is going to install the package. Due to the esmpy and ESMF are complex, compiled libraries, <code class="docutils literal notranslate"><span class="pre">pip</span></code> will not be able to install the module.
+Therefore a installation of the xesmf package using conda with conda-forge channel is needed.
+Please following the steps to install the package correctly</p>
+<ol class="arabic">
+<li><p>Install the xesmf using <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">xesmf</span>
+</pre></div>
+</div>
+</li>
+<li><p>Install the mom6 package using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">rmom6_preprocessing</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="test-installation-of-the-package">
+<h1>Test installation of the package<a class="headerlink" href="#test-installation-of-the-package" title="Link to this heading">#</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">mom6</span>
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">mom6.mom6_module</span><span class="w"> </span><span class="kn">import</span> <span class="n">mom6_regrid</span>
+</pre></div>
+</div>
+</section>
 <section id="setting-up-the-developement-environment">
-<h2>Setting up the developement environment<a class="headerlink" href="#setting-up-the-developement-environment" title="Link to this heading">#</a></h2>
+<h1>Setting up the developement environment<a class="headerlink" href="#setting-up-the-developement-environment" title="Link to this heading">#</a></h1>
 <ol class="arabic">
 <li><p>Fork this repository using the button in the upper right of the GitHub page. This will create a copy of the repository in your own GitHub profile, giving you full control over it.</p></li>
 <li><p>Clone the repository to your local machine from your forked version.</p>
@@ -441,7 +486,7 @@ document.write(`
 </ol>
 </section>
 <section id="syncing-with-the-noaa-cefi-portal-version">
-<h2>Syncing with the NOAA-CEFI-Portal version<a class="headerlink" href="#syncing-with-the-noaa-cefi-portal-version" title="Link to this heading">#</a></h2>
+<h1>Syncing with the NOAA-CEFI-Portal version<a class="headerlink" href="#syncing-with-the-noaa-cefi-portal-version" title="Link to this heading">#</a></h1>
 <ol class="arabic">
 <li><p>Create a remote <code class="docutils literal notranslate"><span class="pre">upstream</span></code> to track the changes that is on NOAA-CEFI-Portal</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">upstream</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">NOAA</span><span class="o">-</span><span class="n">CEFI</span><span class="o">-</span><span class="n">Portal</span><span class="o">/</span><span class="n">regional_mom6</span><span class="o">.</span><span class="n">git</span>   
@@ -476,7 +521,6 @@ document.write(`
 <p>Make sure you have included the <code class="docutils literal notranslate"><span class="pre">upstream/main</span></code> changes before creating a pull request on NOAA-CEFI-Portal/regional_mom6</p>
 </li>
 </ol>
-</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -543,9 +587,13 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-developement-environment">Setting up the developement environment</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#syncing-with-the-noaa-cefi-portal-version">Syncing with the NOAA-CEFI-Portal version</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Regional MOM6 preprocessing package</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#installing-the-package-using-conda">Installing the package using <code class="docutils literal notranslate"><span class="pre">Conda</span></code></a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#test-installation-of-the-package">Test installation of the package</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-developement-environment">Setting up the developement environment</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#syncing-with-the-noaa-cefi-portal-version">Syncing with the NOAA-CEFI-Portal version</a></li>
 </ul>
+
   </nav></div>
 
 </div></div>

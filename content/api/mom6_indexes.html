@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API Reference for mom6_module &#8212; Regional MOM6 Package</title>
+    <title>mom6_indexes - Calculate indexes &#8212; Regional MOM6 Package</title>
   
   
   
@@ -57,11 +57,9 @@
     <script async="async" src="../../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/api_reference_content';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'content/api/mom6_indexes';</script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="mom6.mom6_module.mom6_read" href="generated/mom6.mom6_module.mom6_read.html" />
-    <link rel="prev" title="mom6_regrid - Regrid the data" href="mom6_regrid.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -123,6 +121,8 @@
     <div class="bd-container__inner bd-page-width">
       
       
+      
+        
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -193,11 +193,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/regrid_tutorial.html">Regridding the Raw Grid to Regular Grid</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">API reference</span></p>
-<ul class="current nav bd-sidenav">
+<ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="mom6_read.html"><code class="docutils literal notranslate"><span class="pre">mom6_read</span></code> - Get the CEFI data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mom6_statistics.html"><code class="docutils literal notranslate"><span class="pre">mom6_statistics</span></code> - Calculate statistics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mom6_regrid.html"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</a></li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api_reference_content.html">API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code></a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_read.html">mom6.mom6_module.mom6_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_statistics.html">mom6.mom6_module.mom6_statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="generated/mom6.mom6_module.mom6_regrid.html">mom6.mom6_module.mom6_regrid</a></li>
@@ -279,7 +279,7 @@
       
       
       
-      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6/issues/new?title=Issue%20on%20page%20%2Fcontent/api/api_reference_content.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/NOAA-CEFI-Portal/regional_mom6/issues/new?title=Issue%20on%20page%20%2Fcontent/api/mom6_indexes.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -309,7 +309,7 @@
       
       
       
-      <li><a href="../../_sources/content/api/api_reference_content.md" target="_blank"
+      <li><a href="../../_sources/content/api/mom6_indexes.md" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -380,7 +380,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -391,11 +393,27 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>API Reference for mom6_module</h1>
+    <h1>mom6_indexes - Calculate indexes</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mom6.mom6_module.mom6_indexes.ColdPoolIndex"><code class="docutils literal notranslate"><span class="pre">ColdPoolIndex</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mom6.mom6_module.mom6_indexes.ColdPoolIndex.generate_index"><code class="docutils literal notranslate"><span class="pre">ColdPoolIndex.generate_index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mom6.mom6_module.mom6_indexes.ColdPoolIndex.regrid_and_mask"><code class="docutils literal notranslate"><span class="pre">ColdPoolIndex.regrid_and_mask()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mom6.mom6_module.mom6_indexes.GulfStreamIndex"><code class="docutils literal notranslate"><span class="pre">GulfStreamIndex</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mom6.mom6_module.mom6_indexes.GulfStreamIndex.generate_index"><code class="docutils literal notranslate"><span class="pre">GulfStreamIndex.generate_index()</span></code></a></li>
+</ul>
+</li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -405,38 +423,107 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="api-reference-for-mom6-module">
-<h1>API Reference for <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code><a class="headerlink" href="#api-reference-for-mom6-module" title="Link to this heading">#</a></h1>
-<p>This section provides the API reference for the <code class="docutils literal notranslate"><span class="pre">mom6_module</span></code> subpackage in the <code class="docutils literal notranslate"><span class="pre">mom6</span></code> library.</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="mom6_read.html#module-mom6.mom6_module.mom6_read" title="mom6.mom6_module.mom6_read"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mom6.mom6_module.mom6_read</span></code></a></p></td>
-<td><p>The module is created to read CEFI regional mom6 data under the CEFI data structure.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mom6_statistics.html#module-mom6.mom6_module.mom6_statistics" title="mom6.mom6_module.mom6_statistics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mom6.mom6_module.mom6_statistics</span></code></a></p></td>
-<td><p>This is the script to generate the general statistics of all field based on the forecast(reforecast) and historical run that is generated by Andrew Ross at GFDL.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mom6_regrid.html#module-mom6.mom6_module.mom6_regrid" title="mom6.mom6_module.mom6_regrid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mom6.mom6_module.mom6_regrid</span></code></a></p></td>
-<td><p>The module include Regridding class for regional mom6 field</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mom6_detrend.html#module-mom6.mom6_module.mom6_detrend" title="mom6.mom6_module.mom6_detrend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mom6.mom6_module.mom6_detrend</span></code></a></p></td>
-<td><p>This is the module to implement the detrending</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mom6_forecast_tercile.html#module-mom6.mom6_module.mom6_forecast_tercile" title="mom6.mom6_module.mom6_forecast_tercile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mom6.mom6_module.mom6_forecast_tercile</span></code></a></p></td>
-<td><p>The module include the class to determine the tercile probability of the forecast or reforecast</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mom6_vector_rotate.html#module-mom6.mom6_module.mom6_vector_rotate" title="mom6.mom6_module.mom6_vector_rotate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mom6.mom6_module.mom6_vector_rotate</span></code></a></p></td>
-<td><p>The module include VectorRotation class for regional mom6 vector field</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mom6_mhw.html#module-mom6.mom6_module.mom6_mhw" title="mom6.mom6_module.mom6_mhw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mom6.mom6_module.mom6_mhw</span></code></a></p></td>
-<td><p>This is the script to generate the marine heatwave analysis including the statistic of climatology and percentile threshold based on the forecast(reforecast) and historical run that is generated by Andrew Ross at GFDL.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="mom6_indexes.html#module-mom6.mom6_module.mom6_indexes" title="mom6.mom6_module.mom6_indexes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mom6.mom6_module.mom6_indexes</span></code></a></p></td>
-<td><p>This is the module to calculate the various indexes from the regional MOM6 output shown in Ross et al., 2023</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+  <section class="tex2jax_ignore mathjax_ignore" id="module-mom6.mom6_module.mom6_indexes">
+<span id="mom6-indexes-calculate-indexes"></span><h1><code class="docutils literal notranslate"><span class="pre">mom6_indexes</span></code> - Calculate indexes<a class="headerlink" href="#module-mom6.mom6_module.mom6_indexes" title="Link to this heading">#</a></h1>
+<p>This is the module to calculate the various indexes from the
+regional MOM6 output shown in Ross et al., 2023</p>
+<p>Indexes include:
+1. Gulf stream index</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mom6.mom6_module.mom6_indexes.ColdPoolIndex">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_indexes.</span></span><span class="sig-name descname"><span class="pre">ColdPoolIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ds_cpi_mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom_temp_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bottomT'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'CPI_mask'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_indexes.html#ColdPoolIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_indexes.ColdPoolIndex" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is used to create the Cold Pool Index calculation
+Original sources are [Ross et al., 2023](<a class="reference external" href="https://gmd.copernicus.org/articles/16/6943/2023/">https://gmd.copernicus.org/articles/16/6943/2023/</a>).
+and [GFDL CEFI github repository]
+(<a class="github reference external" href="https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main">NOAA-GFDL/CEFI-regional-MOM6</a></p>
+<blockquote>
+<div><p>/diagnostics/physics/NWA12/coldpool.py)</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_data</strong> (<em>xr.Dataset</em>) – The bottom temperature dataset used to
+derive the cold pool index.</p></li>
+<li><p><strong>ds_cpi_mask</strong> (<em>xr.Dataset</em>) – The CPI mask.</p></li>
+<li><p><strong>str</strong> (<em>mask_name&quot;</em>) – The bottom temperature variable name in the data set</p></li>
+<li><p><strong>str</strong> – The CPI mask variable name in the <cite>ds_cpi_mask</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mom6.mom6_module.mom6_indexes.ColdPoolIndex.generate_index">
+<span class="sig-name descname"><span class="pre">generate_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_indexes.html#ColdPoolIndex.generate_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_indexes.ColdPoolIndex.generate_index" title="Link to this definition">#</a></dt>
+<dd><p>Masked data to the Coldpool Domain and Calculate Index
+Coldpool Domain:</p>
+<blockquote>
+<div><p>Depth: Between 20m and 200m isobath
+Time: Between June and September from 1959 to 2022
+Temperature: Average bottom temperature was cooler than 10 degrees Celsius (and &gt; 6?)
+Location: Mid-Atlantic Bight (MAB) domain between 38N-41.5N and between 75W-68.5W</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>da_cpi_ann</strong> – Yearly cold pool index calculation based on yearly climatology</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>xr.DataArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mom6.mom6_module.mom6_indexes.ColdPoolIndex.regrid_and_mask">
+<span class="sig-name descname"><span class="pre">regrid_and_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_indexes.html#ColdPoolIndex.regrid_and_mask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_indexes.ColdPoolIndex.regrid_and_mask" title="Link to this definition">#</a></dt>
+<dd><p>Regrid data from MOM6 model to the mask grid
+to apply the mask</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>da_regrid</strong> – regridded and masked dataset</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>xr.DataArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mom6.mom6_module.mom6_indexes.GulfStreamIndex">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mom6.mom6_module.mom6_indexes.</span></span><span class="sig-name descname"><span class="pre">GulfStreamIndex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ssh_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ssh'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_indexes.html#GulfStreamIndex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_indexes.GulfStreamIndex" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The class is use to recreate the Gulf Stream Index calculation in detail.
+Original sources are [Ross et al., 2023](<a class="reference external" href="https://gmd.copernicus.org/articles/16/6943/2023/">https://gmd.copernicus.org/articles/16/6943/2023/</a>).
+and [GFDL CEFI github repository]
+(<a class="github reference external" href="https://github.com/NOAA-GFDL/CEFI-regional-MOM6/blob/main/diagnostics/physics/ssh_eval.py">NOAA-GFDL/CEFI-regional-MOM6</a>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_data</strong> (<em>xr.Dataset</em>) – The sea level height dataset one want to use to
+derived the gulf stream index. The coordinate
+must have the name “lon” and “lat” exactly</p></li>
+<li><p><strong>ssh_name</strong> (<em>str</em>) – The sea level height variable name in the dataset</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mom6.mom6_module.mom6_indexes.GulfStreamIndex.generate_index">
+<span class="sig-name descname"><span class="pre">generate_index</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/mom6/mom6_module/mom6_indexes.html#GulfStreamIndex.generate_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mom6.mom6_module.mom6_indexes.GulfStreamIndex.generate_index" title="Link to this definition">#</a></dt>
+<dd><p>Generate the gulf stream index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dataset containing the gulf_stream_index
+variables.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>xr.Dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
     <script type="text/x-thebe-config">
@@ -469,30 +556,35 @@ document.write(`
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="mom6_regrid.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title"><code class="docutils literal notranslate"><span class="pre">mom6_regrid</span></code> - Regrid the data</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="generated/mom6.mom6_module.mom6_read.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mom6.mom6_module.mom6_read</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mom6.mom6_module.mom6_indexes.ColdPoolIndex"><code class="docutils literal notranslate"><span class="pre">ColdPoolIndex</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mom6.mom6_module.mom6_indexes.ColdPoolIndex.generate_index"><code class="docutils literal notranslate"><span class="pre">ColdPoolIndex.generate_index()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mom6.mom6_module.mom6_indexes.ColdPoolIndex.regrid_and_mask"><code class="docutils literal notranslate"><span class="pre">ColdPoolIndex.regrid_and_mask()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mom6.mom6_module.mom6_indexes.GulfStreamIndex"><code class="docutils literal notranslate"><span class="pre">GulfStreamIndex</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#mom6.mom6_module.mom6_indexes.GulfStreamIndex.generate_index"><code class="docutils literal notranslate"><span class="pre">GulfStreamIndex.generate_index()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
