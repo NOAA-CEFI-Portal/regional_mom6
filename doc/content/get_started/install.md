@@ -10,7 +10,7 @@ Future availability of a more sophisticated python package for various end-user 
 We welcome external contribution to the package. Please feel free to submit issue for any inputs and joining the development core team. Thank you!
 
 ## Installing the package using `Conda`
-We recommand using conda to mamage the virtual environment that one is going to install the package. Due to the esmpy and ESMF are complex, compiled librarie, `pip` will not be able to install the module. 
+We recommend using conda to manage the virtual environment that one is going to install the package. Due to the esmpy and ESMF are complex, compiled libraries, `pip` will not be able to install the module. 
 Therefore a installation of the xesmf package using conda with conda-forge channel is needed. 
 Please following the steps to install the package correctly
 
