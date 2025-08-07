@@ -1,7 +1,7 @@
-# `mom6_vector_rotate` - Rotate the vector 
+# `mom6_mhw` - Calculate marine heatwave
 
 ```{eval-rst}
-.. automodule::  mom6.mom6_module.mom6_vector_rotate
+.. automodule::  mom6.mom6_module.mom6_mhw
    :members:
    :undoc-members:
    :show-inheritance:
