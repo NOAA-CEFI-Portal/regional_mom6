@@ -52,11 +52,11 @@ class BruntVaisalaFrequency:
         temp_col: np.ndarray,
         salt_col: np.ndarray,
         depth_col: np.ndarray,
-        lon: np.ndarray,
-        lat: np.ndarray,
+        lon: float,
+        lat: float,
         eos_version: Literal['eos-80','teos-10'] = 'eos-80',
         interp_method : Literal['linear', 'cubic'] = 'cubic'
-    ) -> np.ndarray:
+    ) -> float:
         """
         Calculates the Brunt-Väisälä frequency (BBV) for a single water column.
 
