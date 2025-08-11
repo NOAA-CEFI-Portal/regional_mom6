@@ -147,7 +147,7 @@ def ild_bbv_batch(dict_json:dict):
         )
         ds_tos = xr.open_dataset(
             tos_path,
-            chunks={'time': 1, 'yh': 50, 'xh': 50}
+            chunks={'time': 1, 'lat': 50, 'lon': 50}
         )
         da_z = ds_thetao['z_l']
         da_lon = ds_thetao['lon']
