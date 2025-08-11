@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rmom6_preprocessing"
-version = "0.10.5"
+version = "0.10.7"
 description = "Regional MOM6 CEFI preprocessing and data access"
 authors = [
     { name="Chia-Wei Hsu", email="chia-wei.hsu@noaa.gov" }
@@ -23,7 +23,8 @@ dependencies = [
     "zarr==2.18.3",
     "fsspec",
     "s3fs",
-    "gcsfs"
+    "gcsfs",
+    "gsw",
 ]
 
 [project.urls]
