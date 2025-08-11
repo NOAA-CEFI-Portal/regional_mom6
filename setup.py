@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="rmom6_preprocessing",
-    version="0.10.5",
+    version="0.10.7",
     description="Regional MOM6 CEFI preprocessing and data access",
     author="Chia-Wei Hsu",
     author_email="chia-wei.hsu@noaa.gov",
@@ -21,7 +21,8 @@ setup(
         "zarr==2.18.3",
         "fsspec",
         "s3fs",
-        "gcsfs"
+        "gcsfs",
+        "gsw",
     ],
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
