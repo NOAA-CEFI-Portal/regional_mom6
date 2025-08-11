@@ -78,5 +78,15 @@
         "script": "../preprocess/mom6_climo_batch.py",
         "config": "../preprocess/mom6_climo_batch_nep_hcast_daily_regrid.json"
       }
+    ],
+    "ILD and BBV calculation": [
+      {
+        "script": "../preprocess/mom6_ild_bbv_batch.py",
+        "config": "../preprocess/mom6_ild_bbv_batch_nep_hcast_mon_raw.json"
+      },
+      {
+        "script": "../preprocess/mom6_ild_bbv_batch.py",
+        "config": "../preprocess/mom6_ild_bbv_batch_nep_hcast_mon_regrid.json"
+      }
     ]
 }
