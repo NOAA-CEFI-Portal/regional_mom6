@@ -1,0 +1,11 @@
+{
+    "local_top_dir": "/Projects/CEFI/regional_mom6/",
+    "region": "northwest_atlantic",
+    "subdomain": "full_domain",
+    "experiment_type": "hindcast",
+    "output_frequency": "monthly",
+    "grid_type": "raw",
+    "release": "r20250715",
+    "data_source": "local",
+    "worker_number": 40
+}
