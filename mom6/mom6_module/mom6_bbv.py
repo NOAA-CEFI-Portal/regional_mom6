@@ -149,8 +149,6 @@ class BruntVaisalaFrequency:
         Calculates the column averaged Brunt-Väisälä Frequency (BBV) for the entire dataset.
         """
 
-        print("--- Calculating Brunt-Väisälä Frequency (BBV) ---")
-
         # Apply the BBV helper function across all dimensions except 'z'
         da_bbv_200 = xr.apply_ufunc(
             self.__class__.column_bbv,

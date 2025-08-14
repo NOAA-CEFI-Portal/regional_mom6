@@ -25,6 +25,7 @@ dependencies = [
     "s3fs",
     "gcsfs",
     "gsw",
+    "kerchunk",
 ]
 
 [project.urls]

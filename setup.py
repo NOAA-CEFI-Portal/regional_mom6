@@ -23,6 +23,7 @@ setup(
         "s3fs",
         "gcsfs",
         "gsw",
+        "kerchunk",
     ],
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",

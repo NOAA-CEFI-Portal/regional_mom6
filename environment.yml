@@ -6,6 +6,7 @@ dependencies:
   - netcdf4
   - pydap
   - zarr=2.18.3
+  - kerchunk
   - fsspec
   - s3fs
   - gcsfs

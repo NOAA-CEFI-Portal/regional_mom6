@@ -21,7 +21,7 @@ class IsothermalLayerDepth:
     """
     
     def __init__(
-        self, 
+        self,
         da_sst: xr.DataArray,
         da_thetao: xr.DataArray,
         da_depth: xr.DataArray,
