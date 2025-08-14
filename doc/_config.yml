@@ -5,10 +5,12 @@ title: Regional MOM6 Package
 author: regional_mom6 development team
 logo: CEFI_python_tool.png
 
-# Force re-execution of notebooks on each build.
+# Force re-execution of notebooks on each build with cell execute 
+# limit of 60 mins
 # See https://jupyterbook.org/content/execute.html
 execute:
-  execute_notebooks: force
+  execute_notebooks: auto
+  timeout: 3600
 
 # Define the name of the latex output file for PDF builds
 latex:

@@ -165,10 +165,7 @@ def ild_bbv_batch(dict_json:dict):
         ild_temp_offset=0.5,
         depth_dim_name='z_l'
     )
-    ds_ild = ild_obj.calculate_ild().compute()
-
-    # close tos
-    ds_tos.close()
+    ds_ild = ild_obj.calculate_ild()
 
     # copy the encoding and attributes
     varname = 'ild'
@@ -180,27 +177,39 @@ def ild_bbv_batch(dict_json:dict):
     filename_seg[0] = varname
     new_filename = '.'.join(filename_seg)
 
-    ds_ild['cefi_rel_path'] = os.path.join(output_cefi_rel_path,varname)
-    ds_ild['cefi_filename'] = new_filename
-    ds_ild['cefi_variable'] = varname
-    ds_ild['cefi_ori_filename'] = 'N/A'
-    ds_ild['cefi_ori_category'] = 'N/A'
-    ds_ild['cefi_aux'] = "Postprocessed Data : derived Isothermal Layer Depth"
+    # defined filename and path used for output
+    ds_ild.attrs['cefi_rel_path'] = os.path.join(output_cefi_rel_path,varname)
+    ds_ild.attrs['cefi_filename'] = new_filename
+    ds_ild.attrs['cefi_variable'] = varname
+    ds_ild.attrs['cefi_ori_filename'] = 'N/A'
+    ds_ild.attrs['cefi_ori_category'] = 'N/A'
+    ds_ild.attrs['cefi_aux'] = "Postprocessed Data : derived Isothermal Layer Depth"
 
     # find if new file name already exist
     new_file = os.path.join(output_ild_dir, new_filename)
     if os.path.exists(new_file):
         logging.info("%s: already exists. skipping...", new_file)
     else:
+
+        # find the variable dimension info (for chunking)
+        logging.info("Computing...ILD...")
+        
+        # perform calculation
+        ds_ild = ds_ild.compute()
+
         # find the variable dimension info (for chunking)
         logging.info("Outputing %s", new_file)
 
-    # output the processed data
-    output_processed_data(
-        ds_ild,
-        top_dir=dict_json['local_top_dir']
-    )
-    ds_ild.close()
+        # output the processed data
+        output_processed_data(
+            ds_ild,
+            top_dir=dict_json['local_top_dir']
+        )
+
+        # close dataset
+        ds_tos.close()
+        ds_ild.close()
+        logging.info("ILD and SST closed")
 
     # calculate the BBV
     # more worker less threads due to GIL of the task involved
@@ -214,7 +223,7 @@ def ild_bbv_batch(dict_json:dict):
         interp_method='cubic',
         depth_dim_name='z_l'
     )
-    ds_bbv = bbv_obj.calculate_bbv().compute()
+    ds_bbv = bbv_obj.calculate_bbv()
 
     # copy the encoding and attributes
     varname = 'bbv'
@@ -226,16 +235,13 @@ def ild_bbv_batch(dict_json:dict):
     filename_seg[0] = varname
     new_filename = '.'.join(filename_seg)
 
-    ds_bbv['cefi_rel_path'] = os.path.join(output_cefi_rel_path,varname)
-    ds_bbv['cefi_filename'] = new_filename
-    ds_bbv['cefi_variable'] = varname
-    ds_bbv['cefi_ori_filename'] = 'N/A'
-    ds_bbv['cefi_ori_category'] = 'N/A'
-    ds_bbv['cefi_aux'] = "Postprocessed Data : derived Brunt-Vaisala Frequency"
-
-    # close datasets
-    ds_thetao.close()
-    ds_so.close()
+    # defined filename and path used for output
+    ds_bbv.attrs['cefi_rel_path'] = os.path.join(output_cefi_rel_path,varname)
+    ds_bbv.attrs['cefi_filename'] = new_filename
+    ds_bbv.attrs['cefi_variable'] = varname
+    ds_bbv.attrs['cefi_ori_filename'] = 'N/A'
+    ds_bbv.attrs['cefi_ori_category'] = 'N/A'
+    ds_bbv.attrs['cefi_aux'] = "Postprocessed Data : derived Brunt-Vaisala Frequency"
 
     # find if new file name already exist
     new_file = os.path.join(output_bbv_dir, new_filename)
@@ -245,12 +251,19 @@ def ild_bbv_batch(dict_json:dict):
         # find the variable dimension info (for chunking)
         logging.info("Outputing %s", new_file)
 
-    # output the processed data
-    output_processed_data(
-        ds_bbv,
-        top_dir=dict_json['local_top_dir']
-    )
-    ds_bbv.close()
+        # perform calculation
+        ds_bbv = ds_bbv.compute()
+
+        # close datasets
+        ds_thetao.close()
+        ds_so.close()
+
+        # output the processed data
+        output_processed_data(
+            ds_bbv,
+            top_dir=dict_json['local_top_dir']
+        )
+        ds_bbv.close()
 
 
 if __name__=="__main__":
