@@ -11,7 +11,9 @@ logo: CEFI_python_tool.png
 execute:
   execute_notebooks: auto
   timeout: 3600
-
+  exclude_patterns:
+    - 'doc/content/tutorials/brunt_vaisala_freq_tutorial.ipynb'
+    - 'doc/content/tutorials/isothermal_layer_depth_tutorial.ipynb'
 # Define the name of the latex output file for PDF builds
 latex:
   latex_documents:
