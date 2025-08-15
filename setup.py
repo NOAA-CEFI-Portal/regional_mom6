@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="rmom6_preprocessing",
-    version="0.10.7",
+    version="0.10.8",
     description="Regional MOM6 CEFI preprocessing and data access",
     author="Chia-Wei Hsu",
     author_email="chia-wei.hsu@noaa.gov",
