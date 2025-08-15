@@ -12,6 +12,7 @@ parts:
     - file: content/tutorials/data_access_tutorial
     - file: content/tutorials/regrid_tutorial
     - file: content/tutorials/isothermal_layer_depth_tutorial
+    - file: content/tutorials/brunt_vaisala_freq_tutorial
   - caption: API reference
     chapters:
     - file: content/api/mom6_read
