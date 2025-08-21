@@ -3,9 +3,9 @@
     "region": "northwest_atlantic",
     "subdomain": "full_domain",
     "experiment_type": "decadal_forecast",
-    "output_frequency": "monthly",
+    "output_frequency": "yearly",
     "grid_type": "raw",
-    "release": "r20250502",
+    "release": "r20250819",
     "data_source": "local",
     "output": {
         "cefi_grid_type": "regrid",

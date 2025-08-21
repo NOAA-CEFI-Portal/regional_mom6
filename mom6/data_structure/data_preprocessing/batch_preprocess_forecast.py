@@ -176,6 +176,14 @@ def cefi_preprocess(dict_setting:dict):
                 # find the variable dimension info (for chunking)
                 print(f"processing {new_file}")
                 ds = xr.open_dataset(file,chunks={})
+
+                # fix int64 not working on thredds server
+                ds['init'].encoding['dtype'] = 'int32'
+                ds['lead'].encoding['dtype'] = 'int32'
+                ds['member'].encoding['dtype'] = 'int32'
+                ds.to_netcdf(os.path.join(new_dir,'temp.nc'))
+
+                # get the variable dimension info
                 dims = list(ds[variable].dims)
                 
                 # assign chunk size for different dim
@@ -200,7 +208,7 @@ def cefi_preprocess(dict_setting:dict):
                     nco_command += [
                         '--cnk_dmn', f'{dim},{chunks[ndim]}'
                     ]
-                nco_command += [file, new_file]
+                nco_command += [os.path.join(new_dir,'temp.nc'), new_file]
 
                 # Run the NCO command using subprocess
                 try:
@@ -209,6 +217,8 @@ def cefi_preprocess(dict_setting:dict):
                 except subprocess.CalledProcessError as e:
                     print(f'Error executing NCO command: {e}')
 
+                # remove temp file
+                os.remove(os.path.join(new_dir,'temp.nc'))
 
                 # NCO command for adding global attribute
                 for key, value in file_global_attrs.__dict__.items():

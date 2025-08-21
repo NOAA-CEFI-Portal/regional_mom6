@@ -23,6 +23,7 @@ import glob
 import shutil
 import logging
 import subprocess
+import numpy as np
 import xarray as xr
 from mom6.data_structure import portal_data
 from mom6.mom6_module.util import load_json
@@ -47,7 +48,6 @@ def cefi_preprocess(dict_setting:dict):
     """
     # original data path
     ori_path = dict_setting['ori_path']
-    
 
     # new cefi data path setting
     cefi_portal_base = dict_setting['cefi_portal_base']
@@ -69,27 +69,56 @@ def cefi_preprocess(dict_setting:dict):
     ensemble_info = dict_setting['ensemble_info']
 
 
-    # loop through all file in the original path
-    all_new_dir = []
-    # initialize static files and file name
-    static_file = None
-    static_filename = None
-    if len(glob.glob(f'{ori_path}/*.nc')) == 0:
-        sys.exit('No *.nc files')
+    # find all iYYYY, eE sub folders, and all variables
+    list_iyear = []
+    list_enss = []
+    list_variables = []
+    for iyear in glob.glob(f'{ori_path}/*/'):
+        if os.path.isdir(iyear):
+            iyear_folder_name = os.path.basename(os.path.normpath(iyear))
+            list_iyear.append(iyear_folder_name)
+            for ens in glob.glob(f'{iyear}/*/'):
+                if os.path.isdir(ens):
+                    ens_folder_name = os.path.basename(os.path.normpath(ens))
+                    list_enss.append(ens_folder_name)
+                    for file in glob.glob(f'{ens}/*.nc'):
+                        if os.path.isfile(file):
+                            # get the variable name
+                            variable = os.path.basename(file).split('.')[-2]
+                            if variable not in list_variables:
+                                list_variables.append(variable)
 
-    for file in glob.glob(f'{ori_path}/*.nc'):
-        if 'ocean_static.nc' not in file:
-            # get all dir names and file name
-            file_path_format = file.split('/')
-            # Remove empty strings and strings with only spaces
-            file_path_format = [name for name in file_path_format if name.strip()]
-            # get file name
-            filename = file_path_format[-1]
+    list_iyear = sorted(list(set(list_iyear)))
+    list_enss = sorted(list(set(list_enss)))
+    list_variables = sorted(list(set(list_variables)))
 
-            # each file decipher the format to make sure the file type (CEFI style naming!!!!!!)
-            file_format_list = filename.split('.')
-            variable = file_format_list[0]
-            initial_date = file_format_list[-2]
+    # merge the data based on cefi grouping rule
+    #  same initialization, all ensemble member, single variables
+    for variable in list_variables:
+        for iyear in list_iyear:
+            list_merge_ds = []
+            for ens in list_enss:
+                # find all files for this combination
+                data_path = os.path.join(ori_path,iyear,ens)
+                files = glob.glob(f'{data_path}/*.{variable}.*')
+                if len(files) == 1:
+                    skip_iyear = False
+                    ori_filename = os.path.basename(files[0])
+                    ds = xr.open_dataset(files[0], chunks='auto', decode_timedelta=False)
+                    ds['member'] = np.int32(ens[1:])
+                    ds = ds.set_coords('member')
+                    ds = ds.rename({'time': 'lead'})
+                    list_merge_ds.append(ds)
+                else:
+                    # skip the ens loop
+                    skip_iyear = True
+                    logging.warning(f"Multiple or no files found for {variable} in {data_path}. Skipping this combination.")
+                    break  # Exit ens loop
+            if skip_iyear:
+                logging.warning(f"Skipping year {iyear} for variable {variable}.")
+                continue
+
+            initial_date = f'{iyear}01'
 
             # determine the data path
             cefi_rel_path = portal_data.DataPath(
@@ -101,10 +130,6 @@ def cefi_preprocess(dict_setting:dict):
                 release=release_date
             ).cefi_dir
             new_dir = os.path.join(cefi_portal_base,cefi_rel_path)
-
-            # store all new directories for static copy
-            if new_dir not in all_new_dir:
-                all_new_dir.append(new_dir)
 
             # Check if the release directory already exists
             if not os.path.exists(new_dir):
@@ -133,7 +158,7 @@ def cefi_preprocess(dict_setting:dict):
                 cefi_ori_category = archive_category,
                 cefi_filename = filename,
                 cefi_variable = variable,
-                cefi_ori_filename = file.split('/')[-1],
+                cefi_ori_filename = ori_filename,
                 cefi_archive_version = archive_version,
                 cefi_region = region_file,
                 cefi_subdomain = subdomain_file,
@@ -156,7 +181,10 @@ def cefi_preprocess(dict_setting:dict):
             else:
                 # find the variable dimension info (for chunking)
                 logging.info(f"processing {new_file}")
-                ds = xr.open_dataset(file,chunks={})
+                # merge ds on the coordinate member
+                ds = xr.concat(list_merge_ds, dim='member').compute()
+                ds = ds.sortby('member')
+                ds.to_netcdf(os.path.join(new_dir,'temp.nc'))
                 dims = list(ds[variable].dims)
                 
                 # assign chunk size for different dim
@@ -181,7 +209,9 @@ def cefi_preprocess(dict_setting:dict):
                     nco_command += [
                         '--cnk_dmn', f'{dim},{chunks[ndim]}'
                     ]
-                nco_command += [file, new_file]
+                nco_command += [os.path.join(new_dir,'temp.nc'), new_file]
+
+
 
                 # Run the NCO command using subprocess
                 try:
@@ -189,6 +219,9 @@ def cefi_preprocess(dict_setting:dict):
                     # print(f'NCO rechunk and compress successfully. Output saved to {new_file}')
                 except subprocess.CalledProcessError as e:
                     logging.error(f'Error executing NCO command: {e}')
+                    
+                # remove temp file
+                os.remove(os.path.join(new_dir,'temp.nc'))
 
 
                 # NCO command for adding global attribute
@@ -219,24 +252,6 @@ def cefi_preprocess(dict_setting:dict):
                 except subprocess.CalledProcessError as e:
                     logging.error(f'Error executing NCO command: {e}')
 
-        else:
-            # store any static files and file name
-            static_file = file
-            static_filename = file.split('/')[-1]
-
-    # copy static file
-    for new_dir in all_new_dir:
-        if static_file is not None and static_filename is not None:
-            # create new static file path and filename
-            new_static = os.path.join(new_dir,static_filename)
-            # copy static to the new folder only if it is not there
-            if not os.path.exists(new_static):
-                shutil.copy2(static_file, new_static)
-                logging.info('ocean_static.nc copying to...')
-                logging.info(new_static)
-        else:
-            logging.warning('static file not found so no static file at the new location')
-
 if __name__ == "__main__":
 
     # Ensure a JSON file is provided as an argument
@@ -265,3 +280,5 @@ if __name__ == "__main__":
 
     except Exception as e:
         logging.exception("An error occurred during preprocessing")
+
+    logging.info("Preprocessing finished.")

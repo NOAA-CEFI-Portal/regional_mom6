@@ -1,0 +1,15 @@
+{
+    "ori_path": "/Projects/CEFI/private/scratch/chsu/NEP_hindcast_v3",
+    "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
+    "release_date": "r20250818",
+    "archive_version": "/archive/e1n/fre/cefi/NEP/2025_03/NEP10k_COBALT_92-93_spinup_new_relax_ts/gfdl.ncrc6-intel23-repro/",
+    "region_dir": "northeast_pacific",
+    "region_file": "nep",
+    "subdomain_dir": "full_domain",
+    "subdomain_file": "full",
+    "grid_type": "raw",
+    "experiment_type": "hindcast",
+    "experiment_name": "nep10k_cobalt",
+    "data_doi": "10.5281/zenodo.13936240",
+    "paper_doi": "10.5194/gmd-2024-195"
+}

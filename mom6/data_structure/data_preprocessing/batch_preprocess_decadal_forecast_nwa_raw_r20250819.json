@@ -1,0 +1,20 @@
+{
+    "ori_path": "/Projects/CEFI/private/scratch/kcounts/NWA_dcfcast_v2/",
+    "archive_category": "ocean_annual",
+    "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
+    "release_date": "r20250819",
+    "archive_version": "/archive/vnk/fre/NWA/2024_11/NWA12_COBALT_ICjra3qv5EN4NUDG90d_SPONGE45N90D_PRED_iyyyy0101_eE/gfdl.ncrc6-intel23-prod/",
+    "aux": "archive format _iyyyy0101_e# represents the initialization year (yyyy), and ensemble member number (e#); ensemble members are 1-10",
+    "region_dir": "northwest_atlantic",
+    "region_file": "nwa",
+    "subdomain_dir": "full_domain",
+    "subdomain_file": "full",
+    "grid_type": "raw",
+    "output_frequency": "yearly",
+    "experiment_type_dir": "decadal_forecast",
+    "experiment_type_file": "dc_fcast",
+    "experiment_name": "nwa12_decadal_forecast",
+    "data_doi": "10.5281/zenodo.10412703",
+    "paper_doi": "10.1029/2024GL110946",
+    "ensemble_info": "enss"
+}
