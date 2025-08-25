@@ -179,10 +179,11 @@ def cefi_preprocess(dict_setting:dict):
 
                 # NCO command for adding global attribute
                 for key, value in file_global_attrs.__dict__.items():
-                    #ncatted -O -a source,global,a,c,"satellite_data" input.nc output.nc
+                    #ncatted -O -a source,global,o,c,"satellite_data" input.nc output.nc
+
                     nco_command = [
                         'ncatted', '-O', '-h', '-a',
-                        f'{key},global,a,c,{value}',
+                        f'{key},global,o,c,{value}',
                         new_file, new_file
                     ]
 
