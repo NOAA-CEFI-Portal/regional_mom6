@@ -144,9 +144,15 @@ def cefi_preprocess(dict_setting:dict):
             if os.path.exists(new_file):
                 logging.warning(f"{new_file}: already exists. skipping...")
             else:
-                # find the variable dimension info (for chunking)
-                logging.info(f"processing {new_file}")
-                ds = xr.open_dataset(file,chunks={})
+                # continue to process next file if one file has issue
+                try:
+                    # find the variable dimension info (for chunking)
+                    logging.info(f"processing {new_file}")
+                    ds = xr.open_dataset(file,chunks={})
+                except Exception as e:
+                    logging.error(f'Error opening file {file}: {e}')
+                    continue
+                
                 dims = list(ds[variable].dims)
 
                 # assign chunk size for different dim
