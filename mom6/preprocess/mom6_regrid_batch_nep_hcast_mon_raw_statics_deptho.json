@@ -5,7 +5,7 @@
     "experiment_type": "hindcast",
     "output_frequency": "monthly",
     "grid_type": "raw",
-    "release": "r20250509",
+    "release": "r20250912",
     "data_source": "local",
     "static_variable": "deptho",
     "output": {

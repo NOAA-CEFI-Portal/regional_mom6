@@ -5,20 +5,20 @@
     "experiment_type": "hindcast",
     "output_frequency": "monthly",
     "grid_type": "raw",
-    "release": "r20250509",
+    "release": "r20250912",
     "data_source": "local",
     "u_name": "uo",
     "v_name": "vo",
     "output_u": {
-        "cefi_rel_path": "cefi_portal/northeast_pacific/full_domain/hindcast/monthly/raw/r20250509",
-        "cefi_filename": "uo_rotate.nep.full.hcast.monthly.raw.r20250509.199301-202412.nc",
+        "cefi_rel_path": "cefi_portal/northeast_pacific/full_domain/hindcast/monthly/raw/r20250912",
+        "cefi_filename": "uo_rotate.nep.full.hcast.monthly.raw.r20250912.199301-202506.nc",
         "cefi_grid_type": "raw",
         "cefi_variable": "uo_rotate",
         "cefi_aux": "Postprocessed Data : regrid to tracer points and rotate to east-west"
     },
     "output_v": {
-        "cefi_rel_path": "cefi_portal/northeast_pacific/full_domain/hindcast/monthly/raw/r20250509",
-        "cefi_filename": "vo_rotate.nep.full.hcast.monthly.raw.r20250509.199301-202412.nc",
+        "cefi_rel_path": "cefi_portal/northeast_pacific/full_domain/hindcast/monthly/raw/r20250912",
+        "cefi_filename": "vo_rotate.nep.full.hcast.monthly.raw.r20250912.199301-202506.nc",
         "cefi_grid_type": "raw",
         "cefi_variable": "vo_rotate",
         "cefi_aux": "Postprocessed Data : regrid to tracer points and rotate to north-south"
