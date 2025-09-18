@@ -15,6 +15,9 @@ class DataStructure:
     top_directory_derivative: Tuple[str, ...] = (
         'cefi_derivative',
     )
+    top_directory_unverified: Tuple[str, ...] = (
+        'unverified',
+    )   
     region: Tuple[str, ...] = (
         'northwest_atlantic',
         'northeast_pacific',
