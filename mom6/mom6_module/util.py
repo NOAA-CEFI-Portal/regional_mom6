@@ -114,8 +114,15 @@ def log_filename(json_file:str)->str:
 
 def setup_logging(logfile):
     """Set up logging to write messages to a log file."""
+    # Remove all handlers associated with the root logger object (for repeated calls)
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+
     logging.basicConfig(
-        filename=logfile,
         level=logging.INFO,
         format="%(asctime)s - %(levelname)s - %(message)s",
+        handlers=[
+            logging.FileHandler(logfile),
+            logging.StreamHandler(sys.stdout)
+        ]
     )
