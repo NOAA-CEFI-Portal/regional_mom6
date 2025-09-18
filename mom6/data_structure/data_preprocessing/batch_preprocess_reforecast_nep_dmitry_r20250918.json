@@ -1,0 +1,21 @@
+{
+    "ori_path": "/Projects/CEFI/private/scratch/chsu/NEP_ss_refcast_v1/YYYY/",
+    "ori_start_year": 1993,
+    "ori_end_year": 1994,
+    "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
+    "release_date": "r20250918",
+    "archive_version": "/archive/Dmitry.Dukhovskoy/fre/NEP/forecast_bgc/NEPbgc_fcst_dailyOB01/yyyy-mm-e##/history/",
+    "aux": "archive format yyyy-mm-e## represents the initialization year (yyyy), month (mm), and ensemble member number (e##)",
+    "region_dir": "northeast_pacific",
+    "region_file": "nep",
+    "subdomain_dir": "full_domain",
+    "subdomain_file": "full",
+    "grid_type": "raw",
+    "output_frequency": "monthly",
+    "experiment_type_dir": "seasonal_reforecast",
+    "experiment_type_file": "ss_refcast",
+    "experiment_name": "nep10k_cobalt_reforecast",
+    "data_doi": "N/A",
+    "paper_doi": "N/A",
+    "ensemble_info": "enss"
+}
