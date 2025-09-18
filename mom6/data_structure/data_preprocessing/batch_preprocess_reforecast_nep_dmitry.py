@@ -146,7 +146,7 @@ def cefi_preprocess(dict_setting:dict):
             # get file group
             list_ds = []
             for ens in range(1,10+1):
-                list_ds.append(xr.open_dataset(f"{year_path}/{process_file_tag}-e{ens:02d}.nc",chunks='auto'))
+                list_ds.append(xr.open_dataset(f"{year_path}/{process_file_tag}-e{ens:02d}.nc").load())
             ds = xr.concat(list_ds,dim='member')
             ds['time'] = np.arange(0,12)
             ds['member'] = np.arange(1,11)
