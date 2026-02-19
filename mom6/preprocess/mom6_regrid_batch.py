@@ -138,6 +138,14 @@ def regrid_batch(dict_json:dict):
                         ydimorder = dims.index('yh')
                         # merge static field to include lon lat info
                         ds_var = xr.merge([ds_var, ds_static], combine_attrs='override')
+                    elif all(dim in dims for dim in ['ih', 'jh']):
+                        # currently only support tracer grid regridding
+                        xname = 'geolon'
+                        yname = 'geolat'
+                        xdimorder = dims.index('ih')
+                        ydimorder = dims.index('jh')
+                        # merge static field to include lon lat info
+                        ds_var = xr.merge([ds_var, ds_static], combine_attrs='override')
                     elif all(dim in dims for dim in ['xh', 'yq']):
                         xname = 'geolon_v'
                         yname = 'geolat_v'
@@ -318,6 +326,12 @@ def regrid_static(dict_json:dict):
                     yname = 'geolat'
                     xdimorder = dims.index('xh')
                     ydimorder = dims.index('yh')
+                elif all(dim in dims for dim in ['ih', 'jh']):
+                    # currently only support tracer grid regridding
+                    xname = 'geolon'
+                    yname = 'geolat'
+                    xdimorder = dims.index('ih')
+                    ydimorder = dims.index('jh')
                 elif all(dim in dims for dim in ['xh', 'yq']):
                     xname = 'geolon_v'
                     yname = 'geolat_v'
