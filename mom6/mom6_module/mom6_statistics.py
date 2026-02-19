@@ -510,6 +510,7 @@ class HindcastClimatology:
         """
         # getting the dataset
         ds_data = self.dataset
+        ds_data = ds_data.sortby(self.timename)
 
         # crop data
         da_data = ds_data[self.varname].sel(

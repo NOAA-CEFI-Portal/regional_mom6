@@ -105,19 +105,24 @@ def cefi_preprocess(dict_setting:dict):
             # get file name
             filename = file_path_format[-1]
 
-            # Dmitry naming format "ocean2D_cobalt_btm_1993-10-e01.nc"
+            # Dmitry naming format "ocean3Dmonth_init199307e01_199307.nc"
             filename_seg = filename.split('_')
-            modified_cat = filename_seg[:-1]
-            modified_cat = '_'.join(modified_cat)
+            modified_cat = filename_seg[0]
+            #modified_cat = '_'.join(modified_cat)
+            print(filename)
+            print(filename_seg)
+            print(modified_cat)
             category = category_lookup(modified_cat)
-            init_date = filename_seg[-1]
-            init_date = init_date.split('-')
-            iyear = int(init_date[0])
-            imonth = int(init_date[1])
-            # ensemble = init_date[2].split('.')[0]
+            init_date = filename_seg[1]
+            #init_date = init_date.split('-')
+            #iyear = int(init_date[0])
+            #imonth = int(init_date[1])
+            iyear = int(init_date[4:8])
+            imonth = int(init_date[8:10])
+            ensemble = int(init_date[11:13])
 
             # process file tag
-            process_file_tag = f"{modified_cat}_{iyear:04d}-{imonth:02d}"
+            process_file_tag = f"{modified_cat}_init{iyear:04d}{imonth:02d}"
             if process_file_tag in process_file_tags:
                 logging.info(f'file {process_file_tag} already processed, skipping this file {file}')
                 continue
@@ -149,7 +154,8 @@ def cefi_preprocess(dict_setting:dict):
             # get file group
             list_ds = []
             for ens in range(1,10+1):
-                list_ds.append(xr.open_dataset(f"{year_path}/{process_file_tag}-e{ens:02d}.nc").load())
+                list_ds.append(xr.open_mfdataset(f"{year_path}/{process_file_tag}e{ens:02d}_*.nc",combine="by_coords").load())
+                print(list_ds)
             ds = xr.concat(list_ds,dim='member')
             ds['time'] = np.arange(0,12)
             ds['member'] = np.arange(1,11)

@@ -101,17 +101,16 @@ def ild_bbv_batch(dict_json:dict):
         # prepare dataset and lazy load them
         ds_so = xr.open_dataset(
             so_path,
-            chunks={'time': 1, 'yh': 50, 'xh': 50, 'z_l': -1}
+            chunks={'time': 1, 'jh': 50, 'ih': 50, 'z_l': -1}
         )
         ds_thetao = xr.open_dataset(
             thetao_path,
-            chunks={'time': 1, 'yh': 50, 'xh': 50, 'z_l': -1}
+            chunks={'time': 1, 'jh': 50, 'ih': 50, 'z_l': -1}
         )
         ds_tos = xr.open_dataset(
             tos_path,
-            chunks={'time': 1, 'yh': 50, 'xh': 50}
+            chunks={'time': 1, 'jh': 50, 'ih': 50}
         )
-
         da_z = ds_thetao['z_l']
 
     elif grid_type == 'regrid':

@@ -206,11 +206,25 @@ def rotate_batch(dict_json:dict)->tuple:
         parallel=True
     )
 
+    dims_u = (ds_u.dims)
+    if all(dim in dims_u for dim in ['iq','jh']):
+        ds_u = ds_u.rename({
+                        'iq':'xq',
+                        'jh':'yh'
+                        })
+
     ds_v = xr.open_mfdataset(
         vfile_list,
         combine='by_coords',
         parallel=True
     )
+
+    dims_v = (ds_v.dims)
+    if all(dim in dims_v for dim in ['ih','jq']):
+        ds_v = ds_v.rename({
+                        'ih':'xh',
+                        'jq':'yq'
+                        })
 
     # prepare static data
     try:
@@ -218,6 +232,15 @@ def rotate_batch(dict_json:dict)->tuple:
     except ValueError:
         ds_static = xr.open_dataset(statics[0])
 
+    dims_static = (ds_static.dims)
+    if all(dim in dims_static for dim in ['ih','iq','jh','jq']):
+        ds_static = ds_static.rename({
+                                'ih':'xh',
+                                'iq':'xq',
+                                'jh':'yh',
+                                'jq':'yq'
+                                })
+    
     # prepare the rotation matrix to regular coord names
 
     ds_rotate = xr.open_dataset(rotations[0])
@@ -239,7 +262,7 @@ def rotate_batch(dict_json:dict)->tuple:
     # merge static field to include lon lat info
     ds_u = xr.merge([ds_u,ds_static],combine_attrs='override')
     ds_v = xr.merge([ds_v,ds_static],combine_attrs='override')
-
+    
     # setup the rotation class
     class_rotate = VectorRotation(ds_u,u_name,ds_v,v_name,ds_rotate)
 
