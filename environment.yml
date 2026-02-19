@@ -16,3 +16,8 @@ dependencies:
   - pytest
   - beautifulsoup4
   - matplotlib
+  - pip
+  - pip:
+    - rmom6-preprocessing
+  
+  
