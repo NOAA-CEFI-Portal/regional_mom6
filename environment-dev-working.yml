@@ -1,0 +1,33 @@
+name: cefi
+channels:
+  - conda-forge
+dependencies:
+  - dask
+  - netcdf4
+  - pydap
+  - zarr
+  - kerchunk
+  - fsspec
+  - s3fs
+  - gcsfs
+  - gsw
+  - python
+  - pip
+  - libnsl
+  - unicodedata2
+  - wheel
+  - xarray=2025.7.1
+  - xesmf
+  - prefect
+  - pytest
+  - beautifulsoup4
+  - matplotlib
+  - jupyter-book
+  - sphinx
+  - sphinx-autodoc-typehints
+  - sphinxcontrib-napoleon
+  - pip:
+    - backports-tarfile
+    - build
+    - twine
+
