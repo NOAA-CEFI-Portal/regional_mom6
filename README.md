@@ -4,18 +4,18 @@ NOAA Changing, Ecosystems, and Fisheries Initiative (CEFI) - Data Portal Team
 ========
 
 ## Regional MOM6 preprocessing package
-This is a developing regional mom6 module to help both preprocessing the data, and performing various statistical analysis shown in [Ross et al., 2023](https://gmd.copernicus.org/articles/16/6943/2023/).
+This is a developing regional mom6 module to help both preprocessing the data, and performing various statistical analyses as shown in [Ross et al., 2023](https://gmd.copernicus.org/articles/16/6943/2023/).
 Many scripts are the modified version of the [GFDL CEFI github repository](https://github.com/NOAA-GFDL/CEFI-regional-MOM6).
 
 Current stage of the module is for estabilishing the processing workflow in the [CEFI data portal](https://psl.noaa.gov/cefi_portal/). 
 Future availability of a more sophisticated python pakcage for various end-user purposes is in the roadmap of this project.
   
-We welcome external contribution to the package. Please feel free to submit issue for any inputs and joining the development core team. Thank you!
+We welcome external contribution to the package. Please feel free to submit issues for any inputs and joining the development core team. Thank you!
 
 ## Installing the package using `Conda`
 We recommend using conda to manage the virtual environment that one is going to install the package. Because esmpy and ESMF are complex, compiled libraries, `pip` will not be able to install the module. 
-Therefore a installation of the xesmf package using conda with conda-forge channel is needed. 
-Please following these steps to install the package correctly.
+Therefore an installation of the xesmf package using conda with conda-forge channel is needed. 
+Please follow these steps to install the package correctly.
 
 1. Install the xesmf using `conda install`
    ```
@@ -100,7 +100,7 @@ from mom6.mom6_module import mom6_regrid
    ```
    git push origin <feature-branch-name>
    ```
-   Make sure you have included the `upstream/main` changes before creating a pull request on NOAA-CEFI-Portal/regional_mom6
+   Make sure you have included the `upstream/main` changes before creating a pull request on NOAA-CEFI-Portal/regional_mom6.
 
 
 
