@@ -1,0 +1,16 @@
+{
+    "ori_path": "/Projects/CEFI/private/scratch/kcounts/multi_decadal_outlook/",
+    "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
+    "release_date": "r20260331",
+    "archive_version": "/archive/e1n/fre/cefi/NEP/2025_07/NEP10k_202507_physics_bgc/gfdl.ncrc6-intel23-repro/",
+    "region_dir": "northwest_atlantic",
+    "region_file": "nwa",
+    "subdomain_dir": "full_domain",
+    "subdomain_file": "full",
+    "grid_type": "raw",
+    "output_frequency": "yearly",
+    "experiment_type": "multi_decadal_outlook",
+    "experiment_name": "nwa10k_cobalt",
+    "data_doi": "10.5281/zenodo.13936240",
+    "paper_doi": "10.5194/gmd-2024-195"
+}
