@@ -1,0 +1,11 @@
+{
+    "local_top_dir": "/Projects/CEFI/regional_mom6/",
+    "region": "pacific_islands",
+    "subdomain": "full_domain",
+    "experiment_type": "hindcast",
+    "output_frequency": "daily",
+    "grid_type": "regrid",
+    "release": "r20250912",
+    "data_source": "local",
+    "worker_number": 40
+}
