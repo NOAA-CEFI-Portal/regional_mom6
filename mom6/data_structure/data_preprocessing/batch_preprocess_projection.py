@@ -47,6 +47,7 @@ def cefi_preprocess(dict_setting:dict):
     # new cefi data path setting
     cefi_portal_base = dict_setting['cefi_portal_base']
     release_date = dict_setting['release_date']
+    forcing_dirs = dict_setting['sub_dirs']
     archive_version = dict_setting['archive_version']
     region_dir = dict_setting['region_dir']
     region_file = dict_setting['region_file']
@@ -65,7 +66,6 @@ def cefi_preprocess(dict_setting:dict):
     # initialize static files and file name
     static_file = None
     static_filename = None
-    forcing_dirs = ['SSP126','SSP245','SSP370','SSP585']
     for forcing in forcing_dirs:
         for file in glob.glob(f'{ori_path}/{forcing}/*.nc'):
             filename = os.path.basename(file)

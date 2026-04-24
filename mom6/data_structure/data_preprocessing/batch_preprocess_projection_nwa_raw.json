@@ -2,6 +2,7 @@
     "ori_path": "/Projects/CEFI/private/scratch/kcounts/multi_decadal_outlook/",
     "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
     "release_date": "r20260331",
+    "sub_dirs": ["SSP126","SSP245","SSP370","SSP585"],
     "archive_version": "/archive/e1n/fre/cefi/NEP/2025_07/NEP10k_202507_physics_bgc/gfdl.ncrc6-intel23-repro/",
     "region_dir": "northwest_atlantic",
     "region_file": "nwa",

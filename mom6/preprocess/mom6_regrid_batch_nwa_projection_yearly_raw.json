@@ -1,0 +1,15 @@
+{
+    "local_top_dir": "/Projects/CEFI/regional_mom6/",
+    "region": "northwest_atlantic",
+    "subdomain": "full_domain",
+    "experiment_type": "multi_decadal_outlook",
+    "output_frequency": "yearly",
+    "grid_type": "raw",
+    "release": "r20260331",
+    "data_source": "local",
+    "sub_dirs": ["SSP126","SSP245","SSP370","SSP585"],
+    "output": {
+        "cefi_grid_type": "regrid",
+        "cefi_aux": "Postprocessed Data : regrid to regular grid"
+    }
+}
