@@ -239,7 +239,8 @@ def regrid_static(dict_json:dict):
     grid_type=dict_json['grid_type']
     release=dict_json['release']
     data_source=dict_json['data_source']
-
+    sub_dir=dict_json['sub_dirs'][0]
+    
     # determine the data path
     output_cefi_rel_path = portal_data.DataPath(
         region=region,
@@ -269,7 +270,8 @@ def regrid_static(dict_json:dict):
         output_frequency=output_frequency,
         grid_type=grid_type,
         release=release,
-        data_source=data_source
+        data_source=data_source,
+        sub_dir=sub_dir
     )
 
     statics = local_access.get(variable='ocean_static')

@@ -516,11 +516,17 @@ class LocalStore:
         )
 
         self.cefi_rel_dir = cefi_data_path.cefi_dir
-        self.cefi_local_dir = os.path.join(
-            local_top_dir,
-            self.cefi_rel_dir,
-            self.sub_dir
-        )
+        if self.sub_dir is None:
+            self.cefi_local_dir = os.path.join(
+                local_top_dir,
+                self.cefi_rel_dir
+            )
+        else:
+            self.cefi_local_dir = os.path.join(
+                local_top_dir,
+                self.cefi_rel_dir,
+                self.sub_dir
+            )
 
         # quick check on the top level directory
         top_level_dir = os.path.exists(os.path.join(
