@@ -34,7 +34,8 @@ class DataStructure:
         'seasonal_reforecast',
         'seasonal_forecast_initialization',
         'decadal_forecast',
-        'long_term_projection'
+        'long_term_projection',
+        'multi_decadal_outlook'
     )
     output_frequency: Tuple[str, ...] = (
         'daily',
@@ -97,7 +98,8 @@ class FilenameStructure:
         'ss_refcast',
         'ss_fcast_init',
         'dc_forecast',
-        'ltm_proj'
+        'ltm_proj',
+        'multi_decade'
     )
     output_frequency: Tuple[str, ...] = (
         'daily',
@@ -495,5 +497,57 @@ class ProjectionFilename:
             f"{self.release}."+
             f"{self.forcing}."+
             f"{self.ensemble_info}."+
+            f"{self.date_range}.nc"
+        )
+
+@dataclass
+class MultiDecadeFilename:
+    """constructing cefi filename for projection run
+    """
+    variable: str
+    region: str
+    subdomain: str
+    output_frequency: str
+    release: str
+    grid_type: str
+    forcing: str
+    date_range: str
+    experiment_type: str = 'multi_decade'
+
+    def __post_init__(self):
+        # Access the shared FilenameStructure instance
+        filename_structure = FilenameStructure()
+
+        # Validate each attribute
+        validate_attribute(self.region, filename_structure.region, "region")
+        validate_attribute(self.subdomain, filename_structure.subdomain, "subdomain")
+        if self.experiment_type != 'multi_decade':
+            raise ValueError(
+                f"Invalid experiment_type: {self.experiment_type}. "+
+                "Must be 'multi_decade'."
+            )
+        validate_attribute(self.grid_type, filename_structure.grid_type, "grid_type")
+        validate_attribute(
+            self.output_frequency, filename_structure.output_frequency, "output_frequency"
+        )
+        validate_release(self.release)
+
+        # Regular expression to match the required format
+        if not re.match(r"^\d{4}$", self.date_range):
+            raise ValueError(
+                "date_range must be in the format 'YYYY', e.g., '1970'"
+            )
+
+    @property
+    def filename(self) -> str:
+        """construct the filename based on attributes"""
+        return (
+            f"{self.variable}."+
+            f"{self.region}.{self.subdomain}."+
+            f"{self.experiment_type}."+
+            f"{self.output_frequency}."+
+            f"{self.grid_type}."+
+            f"{self.release}."+
+            f"{self.forcing}."+
             f"{self.date_range}.nc"
         )

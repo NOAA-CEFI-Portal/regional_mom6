@@ -492,7 +492,8 @@ class LocalStore:
         experiment_type : ModelExperimentTypeOptions,
         output_frequency : ModelOutputFrequencyOptions,
         grid_type : ModelGridTypeOptions,
-        release : str
+        release : str,
+        sub_dir : Optional[str] = None
     ) -> None:
 
         self.local_top_dir = local_top_dir
@@ -502,6 +503,7 @@ class LocalStore:
         self.output_frequency = output_frequency
         self.grid_type = grid_type
         self.release = release
+        self.sub_dir = sub_dir
 
         # check kwarg input exists using data class
         cefi_data_path = portal_data.DataPath(
@@ -514,10 +516,17 @@ class LocalStore:
         )
 
         self.cefi_rel_dir = cefi_data_path.cefi_dir
-        self.cefi_local_dir = os.path.join(
-            local_top_dir,
-            self.cefi_rel_dir
-        )
+        if self.sub_dir is None:
+            self.cefi_local_dir = os.path.join(
+                local_top_dir,
+                self.cefi_rel_dir
+            )
+        else:
+            self.cefi_local_dir = os.path.join(
+                local_top_dir,
+                self.cefi_rel_dir,
+                self.sub_dir
+            )
 
         # quick check on the top level directory
         top_level_dir = os.path.exists(os.path.join(
@@ -628,6 +637,7 @@ class AccessFiles:
         release : str,
         data_source : DataSourceOptions,
         local_top_dir : Optional[str] = None,
+        sub_dir : Optional[str] = None
     ) -> None:
 
         self.storage = None
@@ -644,7 +654,8 @@ class AccessFiles:
                     experiment_type,
                     output_frequency,
                     grid_type,
-                    release
+                    release,
+                    sub_dir
                 )
         elif data_source == 'opendap':
             self.storage = OpenDapStore(
