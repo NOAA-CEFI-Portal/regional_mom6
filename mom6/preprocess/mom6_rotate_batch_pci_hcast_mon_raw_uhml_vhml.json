@@ -1,0 +1,26 @@
+{
+    "local_top_dir": "/Projects/CEFI/regional_mom6/",
+    "region": "pacific_islands",
+    "subdomain": "full_domain",
+    "experiment_type": "hindcast",
+    "output_frequency": "monthly",
+    "grid_type": "raw",
+    "release": "r20260427",
+    "data_source": "local",
+    "u_name": "uhml",
+    "v_name": "vhml",
+    "output_u": {
+        "cefi_rel_path": "cefi_portal/pacific_islands/full_domain/hindcast/monthly/raw/r20250912",
+        "cefi_filename": "uhml_rotate.pci.full.hcast.monthly.raw.r20250912.199301-202506.nc",
+        "cefi_grid_type": "regrid",
+        "cefi_variable": "uhml_rotate",
+        "cefi_aux": "Postprocessed Data : regrid to tracer points and rotate to east-west"
+    },
+    "output_v": {
+        "cefi_rel_path": "cefi_portal/pacific_islands/full_domain/hindcast/monthly/raw/r20250912",
+        "cefi_filename": "vhml_rotate.pci.full.hcast.monthly.raw.r20250912.199301-202506.nc",
+        "cefi_grid_type": "regrid",
+        "cefi_variable": "vhml_rotate",
+        "cefi_aux": "Postprocessed Data : regrid to tracer points and rotate to north-south"
+    }
+}
