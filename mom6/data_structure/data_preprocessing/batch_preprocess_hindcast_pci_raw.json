@@ -1,7 +1,7 @@
 {
     "ori_path": "/Projects/CEFI/private/scratch/kcounts/PCI_hindcast",
     "cefi_portal_base": "/Projects/CEFI/regional_mom6/",
-    "release_date": "r20260424",
+    "release_date": "r20260427",
     "archive_version": "/archive/g1n/fre/cefi/HIC/2026_02_ekefix/cefi_hic_6km_v3_cobalt2v3_woa_glodap_bgc_noLaplacian_02_ekefix_np/gfdl.ncrc6-intel23-prod/",
     "region_dir": "pacific_islands",
     "region_file": "pci",
@@ -9,7 +9,7 @@
     "subdomain_file": "full",
     "grid_type": "raw",
     "experiment_type": "hindcast",
-    "experiment_name": "nep10k_cobalt",
-    "data_doi": "10.5281/zenodo.13936240",
-    "paper_doi": "10.5194/gmd-2024-195"
+    "experiment_name": "HIC6k",
+    "data_doi": "10.5281/zenodo.19485393",
+    "paper_doi": ""
 }
