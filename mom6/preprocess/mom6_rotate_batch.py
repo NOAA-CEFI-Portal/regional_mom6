@@ -248,8 +248,8 @@ def rotate_batch(dict_json:dict)->tuple:
         .rename({
             'yT':'yh',
             'xT':'xh',
-            'GEOLON':'geolon',
-            'GEOLAT':'geolat',
+            'geolon':'geolon',
+            'geolat':'geolat',
             'COSROT':'cosrot',
             'SINROT':'sinrot'
         })
